@@ -47,7 +47,6 @@ public class X3TECH
         new MBlockItemInit().registerMItems();
 
         MinecraftForge.EVENT_BUS.register(this);
-
     }
 
     private void setup(final FMLCommonSetupEvent event)
