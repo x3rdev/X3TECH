@@ -7,6 +7,7 @@ import com.github.x3rmination.core.material.MaterialInit.MBlockInit;
 import com.github.x3rmination.core.material.MaterialInit.MBlockItemInit;
 import com.github.x3rmination.core.material.MaterialInit.MItemInit;
 import com.github.x3rmination.init.BlockInit;
+import com.github.x3rmination.init.BlockItemInit;
 import com.github.x3rmination.init.ItemInit;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -28,7 +29,7 @@ public class ColorLoader {
         BlockColors blockColors = event.getBlockColors();
 
         ItemInit.MATERIALS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
-        ItemInit.BLOCK_ITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
+        BlockItemInit.BLOCK_ITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
         BlockInit.MATERIAL_BLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
 
         MItemInit.MITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));

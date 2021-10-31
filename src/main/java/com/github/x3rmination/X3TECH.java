@@ -5,6 +5,7 @@ import com.github.x3rmination.core.material.MaterialInit.MBlockInit;
 import com.github.x3rmination.core.material.MaterialInit.MBlockItemInit;
 import com.github.x3rmination.core.material.MaterialInit.MItemInit;
 import com.github.x3rmination.init.BlockInit;
+import com.github.x3rmination.init.BlockItemInit;
 import com.github.x3rmination.init.ItemInit;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -35,7 +36,7 @@ public class X3TECH
 
         ItemInit.ITEMS.register(eventBus);
         ItemInit.MATERIALS.register(eventBus);
-        ItemInit.BLOCK_ITEMS.register(eventBus);
+        BlockItemInit.BLOCK_ITEMS.register(eventBus);
         BlockInit.BLOCKS.register(eventBus);
         BlockInit.MATERIAL_BLOCKS.register(eventBus);
 

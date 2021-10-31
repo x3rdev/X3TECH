@@ -17,6 +17,8 @@ public class MItemInit {
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
             MITEMS.register(materialBase.getName(),
                     () -> new MItemBase(new Item.Properties().tab(ItemInit.ModItemTab.instance), materialBase.getColor()));
+            MITEMS.register(materialBase.getName() + "_nugget",
+                    () -> new MItemBase(new Item.Properties().tab(ItemInit.ModItemTab.instance), materialBase.getColor()));
         }
     }
 }

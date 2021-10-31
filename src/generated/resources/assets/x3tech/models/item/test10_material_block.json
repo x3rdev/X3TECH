@@ -1,6 +1,0 @@
-{
-  "parent": "x3tech:block/base_block",
-  "textures": {
-    "layer0": "x3tech:block/base_block"
-  }
-}

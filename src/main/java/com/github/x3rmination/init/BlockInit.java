@@ -19,4 +19,5 @@ public class BlockInit {
 
     public static final RegistryObject<Block> TEST_BLOCK = MATERIAL_BLOCKS.register("test_block",
             () -> new MBlockBase(AbstractBlock.Properties.of(Material.HEAVY_METAL).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops(), new Color(255, 0, 0)));
+
 }

@@ -22,12 +22,16 @@ public class ItemModelProvider extends net.minecraftforge.client.model.generator
 
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
             MIngotBuilder(materialBase.getName());
+            MNuggetBuilder(materialBase.getName());
             MBlockItemBuilder(materialBase.getName());
         }
     }
 
     private ItemModelBuilder MIngotBuilder(String name) {
         return getBuilder(name).parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_ingot");
+    }
+    private ItemModelBuilder MNuggetBuilder(String name) {
+        return getBuilder(name+"_nugget").parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_nugget");
     }
     private ItemModelBuilder MBlockItemBuilder(String name) {
         return getBuilder(name+"_block").parent(getExistingFile(ResourceLocation.tryParse(X3TECH.MOD_ID + ":block/base_block"))).texture("layer0", X3TECH.MOD_ID + ":block/base_block");

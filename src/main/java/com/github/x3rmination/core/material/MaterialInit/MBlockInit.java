@@ -24,7 +24,7 @@ public class MBlockInit {
     public void registerMItems() {
 
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
-            MBlockBase value = new MBlockBase(AbstractBlock.Properties.of(Material.HEAVY_METAL).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops(), materialBase.getColor());
+            MBlockBase value = new MBlockBase(AbstractBlock.Properties.of(Material.HEAVY_METAL).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().strength(materialBase.getMiningResistance(), materialBase.getExplosionResistance()).harvestLevel(materialBase.getMiningLevel()), materialBase.getColor());
             blocksLibrary.put(materialBase.getName(), value);
             MBLOCKS.register(materialBase.getName() + "_block",
                     () -> value);
