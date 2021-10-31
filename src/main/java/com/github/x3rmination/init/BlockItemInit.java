@@ -12,10 +12,11 @@ import java.awt.*;
 
 public class BlockItemInit {
 
-    public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, X3TECH.MOD_ID);
+    public static final DeferredRegister<Item> MATERIAL_BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, X3TECH.MOD_ID);
 
-    public static final RegistryObject<BlockItem> TEST_BLOCK = BLOCK_ITEMS.register("test_block",
+    public static final RegistryObject<BlockItem> TEST_BLOCK = MATERIAL_BLOCK_ITEMS.register("test_block",
             () -> new MBlockItemBase(BlockInit.TEST_BLOCK.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance), new Color(255, 0, 0)));
-
+    public static final RegistryObject<BlockItem> TEST_ORE = MATERIAL_BLOCK_ITEMS.register("test_ore",
+            () -> new MBlockItemBase(BlockInit.TEST_ORE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance), new Color(40, 100, 123)));
 
 }

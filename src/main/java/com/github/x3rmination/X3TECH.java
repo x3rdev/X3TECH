@@ -7,8 +7,6 @@ import com.github.x3rmination.core.material.MaterialInit.MItemInit;
 import com.github.x3rmination.init.BlockInit;
 import com.github.x3rmination.init.BlockItemInit;
 import com.github.x3rmination.init.ItemInit;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,19 +30,22 @@ public class X3TECH
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener(this::setup);
         eventBus.addListener(this::doClientStuff);
+        eventBus.addListener(MBlockInit::renderTypeSet);
         eventBus.addListener(ColorLoader::loadColors);
 
         ItemInit.ITEMS.register(eventBus);
         ItemInit.MATERIALS.register(eventBus);
-        BlockItemInit.BLOCK_ITEMS.register(eventBus);
+        BlockItemInit.MATERIAL_BLOCK_ITEMS.register(eventBus);
         BlockInit.BLOCKS.register(eventBus);
         BlockInit.MATERIAL_BLOCKS.register(eventBus);
 
         MItemInit.MITEMS.register(eventBus);
         new MItemInit().registerMItems();
         MBlockInit.MBLOCKS.register(eventBus);
+        MBlockInit.MOREBLOCKS.register(eventBus);
         new MBlockInit().registerMItems();
         MBlockItemInit.MBLOCKITEMS.register(eventBus);
+        MBlockItemInit.MBLOCKOREITEMS.register(eventBus);
         new MBlockItemInit().registerMItems();
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -56,7 +57,6 @@ public class X3TECH
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        RenderTypeLookup.setRenderLayer(BlockInit.TEST_BLOCK.get(), RenderType.cutoutMipped());
     }
 
     @SubscribeEvent

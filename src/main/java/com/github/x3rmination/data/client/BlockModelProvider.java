@@ -20,19 +20,46 @@ public class BlockModelProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
             MBlockBuilder(materialBase.getName());
+            if(materialBase.materialHasOre()){
+                MOreBlockBuilder(materialBase.getName());
+            }
         }
     }
 
     private void MBlockBuilder(String name) {
-//        models().singleTexture(name + "_block", mcLoc("cube")
         simpleBlock(MBlockInit.blocksLibrary.get(name), models().singleTexture(name + "_block", mcLoc("cube"), "all", ResourceLocation.tryParse("x3tech:block/base_block"))
-                .element().face(Direction.NORTH).tintindex(0).uvs(0,0,16,16).texture("#all").end()
+                .element()
+                .face(Direction.NORTH).tintindex(0).uvs(0,0,16,16).texture("#all").end()
                 .face(Direction.SOUTH).tintindex(0).uvs(0,0,16,16).texture("#all").end()
                 .face(Direction.EAST).tintindex(0).uvs(0,0,16,16).texture("#all").end()
                 .face(Direction.WEST).tintindex(0).uvs(0,0,16,16).texture("#all").end()
                 .face(Direction.UP).tintindex(0).uvs(0,0,16,16).texture("#all").end()
                 .face(Direction.DOWN).tintindex(0).uvs(0,0,16,16).texture("#all").end()
                 .end().texture("particle", "#all"));
+
+    }
+
+    private void MOreBlockBuilder(String name) {
+        simpleBlock(MBlockInit.blocksLibrary.get(name.concat("_ore")), models().singleTexture(name + "_ore", mcLoc("cube"), "texture", ResourceLocation.tryParse("minecraft:block/stone"))
+                .element()
+                .face(Direction.NORTH).uvs(0,0,16,16).texture("#texture").end()
+                .face(Direction.SOUTH).uvs(0,0,16,16).texture("#texture").end()
+                .face(Direction.EAST).uvs(0,0,16,16).texture("#texture").end()
+                .face(Direction.WEST).uvs(0,0,16,16).texture("#texture").end()
+                .face(Direction.UP).uvs(0,0,16,16).texture("#texture").end()
+                .face(Direction.DOWN).uvs(0,0,16,16).texture("#texture").end()
+                .end()
+                .element()
+                .face(Direction.NORTH).tintindex(0).uvs(0,0,16,16).texture("#overlay").end()
+                .face(Direction.SOUTH).tintindex(0).uvs(0,0,16,16).texture("#overlay").end()
+                .face(Direction.EAST).tintindex(0).uvs(0,0,16,16).texture("#overlay").end()
+                .face(Direction.WEST).tintindex(0).uvs(0,0,16,16).texture("#overlay").end()
+                .face(Direction.UP).tintindex(0).uvs(0,0,16,16).texture("#overlay").end()
+                .face(Direction.DOWN).tintindex(0).uvs(0,0,16,16).texture("#overlay").end()
+                .end()
+                .texture("overlay", "x3tech:block/base_ore")
+                .texture("particle", "#overlay")
+        );
 
     }
 }

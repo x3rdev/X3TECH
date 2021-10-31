@@ -9,13 +9,15 @@ public class MaterialBase {
     private final int explosionResistance;
     private final int miningResistance;
     private final int miningLevel;
+    private final boolean hasOre;
 
-    public MaterialBase(String name, Color color, int miningResistance, int explosionResistance, int miningLevel){
+    public MaterialBase(String name, Color color, int miningResistance, int explosionResistance, int miningLevel, boolean hasOre){
         this.color = color;
         this.name = name;
         this.explosionResistance = explosionResistance;
         this.miningResistance = miningResistance;
         this.miningLevel = miningLevel;
+        this.hasOre = hasOre;
     }
 
     public Color getColor() {
@@ -35,6 +37,10 @@ public class MaterialBase {
     }
 
     public int getMiningResistance() {
-        return miningResistance;
+        return this.miningResistance;
+    }
+
+    public boolean materialHasOre() {
+        return this.hasOre;
     }
 }

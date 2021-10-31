@@ -29,12 +29,15 @@ public class ColorLoader {
         BlockColors blockColors = event.getBlockColors();
 
         ItemInit.MATERIALS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
-        BlockItemInit.BLOCK_ITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
+        BlockItemInit.MATERIAL_BLOCK_ITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
         BlockInit.MATERIAL_BLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
 
         MItemInit.MITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
-        MBlockItemInit.MBLOCKITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
+        MBlockItemInit.MBLOCKITEMS.getEntries().forEach(blockItemObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), blockItemObj.get()));
+        MBlockItemInit.MBLOCKOREITEMS.getEntries().forEach(blockOreItemObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), blockOreItemObj.get()));
+
         MBlockInit.MBLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
+        MBlockInit.MOREBLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
 
     }
 
