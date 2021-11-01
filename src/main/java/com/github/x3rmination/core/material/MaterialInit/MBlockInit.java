@@ -43,6 +43,10 @@ public class MBlockInit {
     }
 
     public static void renderTypeSet(final FMLClientSetupEvent event) {
-        RenderTypeLookup.setRenderLayer(MBlockInit.blocksLibrary.get("test1_material_ore"), RenderType.cutout());
+        for (MaterialBase materialBase : MaterialRegistry.materialList) {
+            if(materialBase.materialHasOre()) {
+                RenderTypeLookup.setRenderLayer(MBlockInit.blocksLibrary.get(materialBase.getName()+"_ore"), RenderType.cutout());
+            }
+        }
     }
 }

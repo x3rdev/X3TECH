@@ -1,0 +1,6 @@
+{
+  "parent": "x3tech:block/base_ore",
+  "textures": {
+    "layer0": "x3tech:block/base_ore"
+  }
+}

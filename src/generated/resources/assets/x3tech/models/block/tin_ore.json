@@ -1,0 +1,80 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "texture": "minecraft:block/stone",
+    "overlay": "x3tech:block/base_ore",
+    "particle": "#overlay"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#texture"
+        },
+        "up": {
+          "texture": "#texture"
+        },
+        "north": {
+          "texture": "#texture"
+        },
+        "south": {
+          "texture": "#texture"
+        },
+        "west": {
+          "texture": "#texture"
+        },
+        "east": {
+          "texture": "#texture"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#overlay",
+          "tintindex": 0
+        },
+        "up": {
+          "texture": "#overlay",
+          "tintindex": 0
+        },
+        "north": {
+          "texture": "#overlay",
+          "tintindex": 0
+        },
+        "south": {
+          "texture": "#overlay",
+          "tintindex": 0
+        },
+        "west": {
+          "texture": "#overlay",
+          "tintindex": 0
+        },
+        "east": {
+          "texture": "#overlay",
+          "tintindex": 0
+        }
+      }
+    }
+  ]
+}

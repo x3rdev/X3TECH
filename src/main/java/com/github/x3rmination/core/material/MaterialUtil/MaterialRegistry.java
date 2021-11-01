@@ -9,7 +9,8 @@ public class MaterialRegistry {
     public static final List<MaterialBase> materialList = new ArrayList<>();
 
     static {
-        materialList.add(new MaterialBase("test1_material", new Color(200, 10, 44), 3, 1200, 3, true));
-        materialList.add(new MaterialBase("test2_material", new Color(60, 100, 10), 5, 1, 2, false));
+        materialList.add(new MaterialBase("copper", new Color(237, 126, 57), 3, 1200, 3, true));
+        materialList.add(new MaterialBase("tin", new Color(190, 204, 209), 5, 1, 2, true));
+        materialList.add(new MaterialBase("bronze", new Color(230, 155, 101), 5, 1, 2, false));
     }
 }
