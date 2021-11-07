@@ -1,13 +1,11 @@
 package com.github.x3rmination;
 
-import com.github.x3rmination.client.ColorLoader;
+import com.github.x3rmination.client.color.ColorLoader;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
 import com.github.x3rmination.data.tags.ModTags;
-import com.github.x3rmination.init.BlockInit;
-import com.github.x3rmination.init.BlockItemInit;
-import com.github.x3rmination.init.ItemInit;
+import com.github.x3rmination.registry.ModRegistration;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,11 +30,7 @@ public class X3TECH {
         eventBus.addListener(MBlockInit::renderTypeSet);
         eventBus.addListener(ColorLoader::loadColors);
 
-        ItemInit.ITEMS.register(eventBus);
-        ItemInit.MATERIALS.register(eventBus);
-        BlockItemInit.MATERIAL_BLOCK_ITEMS.register(eventBus);
-        BlockInit.BLOCKS.register(eventBus);
-        BlockInit.MATERIAL_BLOCKS.register(eventBus);
+        ModRegistration.register();
 
         MItemInit.MITEMS.register(eventBus);
         new MItemInit().registerMItems();

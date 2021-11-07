@@ -33,7 +33,7 @@ public class MBlockInit {
             MBLOCKS.register(materialBase.getName() + "_block",
                     () -> mBlockBase);
             if(materialBase.materialHasOre()) {
-                MOreBlockBase mOreBlockBase = new MOreBlockBase(AbstractBlock.Properties.of(Material.STONE).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().harvestLevel(materialBase.getMiningLevel()), materialBase.getColor());
+                MOreBlockBase mOreBlockBase = new MOreBlockBase(AbstractBlock.Properties.of(Material.STONE).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().harvestLevel(materialBase.getMiningLevel()).strength(materialBase.getMiningResistance()), materialBase.getColor());
                 blockLibrary.put(materialBase.getName() + "_ore", mOreBlockBase);
                 MOREBLOCKS.register(materialBase.getName() + "_ore",
                         () -> mOreBlockBase);

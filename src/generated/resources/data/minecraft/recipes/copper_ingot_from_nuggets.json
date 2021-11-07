@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "x3tech:copper_nugget"
+    }
+  },
+  "result": {
+    "item": "x3tech:copper_ingot"
+  }
+}

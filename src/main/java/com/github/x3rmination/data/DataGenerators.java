@@ -3,6 +3,7 @@ package com.github.x3rmination.data;
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.data.client.BlockModelProvider;
 import com.github.x3rmination.data.client.ItemModelProvider;
+import com.github.x3rmination.data.loottable.LootTableProvider;
 import com.github.x3rmination.data.recipes.RecipesProvider;
 import com.github.x3rmination.data.tags.BlockTagsProvider;
 import com.github.x3rmination.data.tags.ItemTagsProvider;
@@ -28,6 +29,6 @@ public class DataGenerators {
         generator.addProvider(blockTagsProvider);
         generator.addProvider(new ItemTagsProvider(generator, blockTagsProvider, event.getExistingFileHelper()));
         generator.addProvider(new RecipesProvider(generator));
-
+        generator.addProvider(new LootTableProvider(generator));
     }
 }

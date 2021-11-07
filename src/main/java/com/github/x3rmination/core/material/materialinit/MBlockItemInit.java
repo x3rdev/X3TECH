@@ -4,7 +4,7 @@ import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.items.MBlockItemBase;
 import com.github.x3rmination.core.material.materialutil.MaterialBase;
 import com.github.x3rmination.core.material.materialutil.MaterialRegistry;
-import com.github.x3rmination.init.ItemInit;
+import com.github.x3rmination.registry.init.ItemInit;
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

@@ -1,4 +1,4 @@
-package com.github.x3rmination.client;
+package com.github.x3rmination.client.color;
 
 import com.github.x3rmination.common.blocks.MBlockBase;
 import net.minecraft.block.BlockState;

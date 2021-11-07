@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "x3tech:tin_ore"
+  },
+  "result": "x3tech:tin_ingot",
+  "experience": 0.7,
+  "cookingtime": 100
+}

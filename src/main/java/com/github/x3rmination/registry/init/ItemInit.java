@@ -1,29 +1,20 @@
-package com.github.x3rmination.init;
+package com.github.x3rmination.registry.init;
 
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.items.MItemBase;
+import com.github.x3rmination.registry.ModRegistration;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.awt.*;
 
 public class ItemInit {
 
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, X3TECH.MOD_ID);
-    public static final DeferredRegister<Item> MATERIALS = DeferredRegister.create(ForgeRegistries.ITEMS, X3TECH.MOD_ID);
-
-
     //Items
-    public static final RegistryObject<Item> TEST_INGOT = MATERIALS.register("test_ingot",
-            () -> new MItemBase(new Item.Properties().tab(ModItemTab.instance), new Color(0, 250, 0)));
-    public static final RegistryObject<Item> GINGOT = MATERIALS.register("gingot",
+    public static final RegistryObject<Item> GINGOT = ModRegistration.ITEMS.register("gingot",
             () -> new MItemBase(new Item.Properties().tab(ModItemTab.instance), new Color(255, 255, 255)));
-
-
 
     public static class ModItemTab extends ItemGroup {
         public static final ModItemTab instance = new ModItemTab(ItemGroup.TABS.length, X3TECH.MOD_ID);
@@ -37,4 +28,6 @@ public class ItemInit {
             return new ItemStack(ItemInit.GINGOT.get());
         }
     }
+
+    static void register() {}
 }

@@ -1,4 +1,4 @@
-package com.github.x3rmination.client;
+package com.github.x3rmination.client.color;
 
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.items.MBlockItemBase;
@@ -6,9 +6,7 @@ import com.github.x3rmination.common.items.MItemBase;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
-import com.github.x3rmination.init.BlockInit;
-import com.github.x3rmination.init.BlockItemInit;
-import com.github.x3rmination.init.ItemInit;
+import com.github.x3rmination.registry.ModRegistration;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,9 +26,9 @@ public class ColorLoader {
         ItemColors itemColors = event.getItemColors();
         BlockColors blockColors = event.getBlockColors();
 
-        ItemInit.MATERIALS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
-        BlockItemInit.MATERIAL_BLOCK_ITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
-        BlockInit.MATERIAL_BLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
+        ModRegistration.MATERIALS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
+        ModRegistration.MATERIAL_BLOCK_ITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
+        ModRegistration.MATERIAL_BLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
 
         MItemInit.MITEMS.getEntries().forEach(ingObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MItemBase)stack.getItem()).getColor(stack, 0), ingObj.get()));
         MBlockItemInit.MBLOCKITEMS.getEntries().forEach(blockItemObj -> itemColors.register((stack, index) -> index > 0 ? -1 : ((MBlockItemBase)stack.getItem()).getColor(stack, 0), blockItemObj.get()));

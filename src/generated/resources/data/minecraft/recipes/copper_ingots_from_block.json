@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "x3tech:copper_block"
+    }
+  ],
+  "result": {
+    "item": "x3tech:copper_ingot",
+    "count": 9
+  }
+}
