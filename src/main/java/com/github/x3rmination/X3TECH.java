@@ -1,9 +1,10 @@
 package com.github.x3rmination;
 
 import com.github.x3rmination.client.ColorLoader;
-import com.github.x3rmination.core.material.MaterialInit.MBlockInit;
-import com.github.x3rmination.core.material.MaterialInit.MBlockItemInit;
-import com.github.x3rmination.core.material.MaterialInit.MItemInit;
+import com.github.x3rmination.core.material.materialinit.MBlockInit;
+import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
+import com.github.x3rmination.core.material.materialinit.MItemInit;
+import com.github.x3rmination.data.tags.ModTags;
 import com.github.x3rmination.init.BlockInit;
 import com.github.x3rmination.init.BlockItemInit;
 import com.github.x3rmination.init.ItemInit;
@@ -19,9 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod("x3tech")
-public class X3TECH
-{
-    // Directly reference a log4j logger.
+public class X3TECH {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "x3tech";
     public static final String MINECRAFT_ID = "minecraft";
@@ -41,29 +40,36 @@ public class X3TECH
 
         MItemInit.MITEMS.register(eventBus);
         new MItemInit().registerMItems();
+
         MBlockInit.MBLOCKS.register(eventBus);
         MBlockInit.MOREBLOCKS.register(eventBus);
         new MBlockInit().registerMItems();
+
         MBlockItemInit.MBLOCKITEMS.register(eventBus);
         MBlockItemInit.MBLOCKOREITEMS.register(eventBus);
         new MBlockItemInit().registerMItems();
 
+        new ModTags.Blocks().createBlockTags();
+        new ModTags.Items().createItemTags();
+
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    private void setup(final FMLCommonSetupEvent event)
-    {
-        // some preinit code
+    private void setup(final FMLCommonSetupEvent event) {
+
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
+
     }
 
     @SubscribeEvent
-    public void setupClient(final FMLClientSetupEvent event) {}
+    public void setupClient(final FMLClientSetupEvent event) {
+
+    }
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
-        // do something when the server starts
+
     }
 }

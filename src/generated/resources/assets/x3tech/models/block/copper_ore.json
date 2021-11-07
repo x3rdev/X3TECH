@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cube",
+  "parent": "minecraft:block/cube_all",
   "textures": {
     "texture": "minecraft:block/stone",
     "overlay": "x3tech:block/base_ore",

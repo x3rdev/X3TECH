@@ -1,4 +1,4 @@
-package com.github.x3rmination.core.material.MaterialUtil;
+package com.github.x3rmination.core.material.materialutil;
 
 import java.awt.*;
 

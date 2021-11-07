@@ -1,10 +1,10 @@
-package com.github.x3rmination.core.material.MaterialInit;
+package com.github.x3rmination.core.material.materialinit;
 
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.blocks.MBlockBase;
 import com.github.x3rmination.common.blocks.MOreBlockBase;
-import com.github.x3rmination.core.material.MaterialUtil.MaterialBase;
-import com.github.x3rmination.core.material.MaterialUtil.MaterialRegistry;
+import com.github.x3rmination.core.material.materialutil.MaterialBase;
+import com.github.x3rmination.core.material.materialutil.MaterialRegistry;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -23,19 +23,18 @@ public class MBlockInit {
     public static final DeferredRegister<Block> MBLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, X3TECH.MOD_ID);
     public static final DeferredRegister<Block> MOREBLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, X3TECH.MOD_ID);
 
-
-    public static final Map<String, MBlockBase> blocksLibrary = new HashMap<>();
+    public static final Map<String, MBlockBase> blockLibrary = new HashMap<>();
 
     public void registerMItems() {
 
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
             MBlockBase mBlockBase = new MBlockBase(AbstractBlock.Properties.of(Material.HEAVY_METAL).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().strength(materialBase.getMiningResistance(), materialBase.getExplosionResistance()).harvestLevel(materialBase.getMiningLevel()), materialBase.getColor());
-            blocksLibrary.put(materialBase.getName(), mBlockBase);
+            blockLibrary.put(materialBase.getName() + "_block", mBlockBase);
             MBLOCKS.register(materialBase.getName() + "_block",
                     () -> mBlockBase);
             if(materialBase.materialHasOre()) {
                 MOreBlockBase mOreBlockBase = new MOreBlockBase(AbstractBlock.Properties.of(Material.STONE).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().harvestLevel(materialBase.getMiningLevel()), materialBase.getColor());
-                blocksLibrary.put(materialBase.getName().concat("_ore"), mOreBlockBase);
+                blockLibrary.put(materialBase.getName() + "_ore", mOreBlockBase);
                 MOREBLOCKS.register(materialBase.getName() + "_ore",
                         () -> mOreBlockBase);
             }
@@ -45,7 +44,7 @@ public class MBlockInit {
     public static void renderTypeSet(final FMLClientSetupEvent event) {
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
             if(materialBase.materialHasOre()) {
-                RenderTypeLookup.setRenderLayer(MBlockInit.blocksLibrary.get(materialBase.getName()+"_ore"), RenderType.cutout());
+                RenderTypeLookup.setRenderLayer(MBlockInit.blockLibrary.get(materialBase.getName()+"_ore"), RenderType.cutout());
             }
         }
     }

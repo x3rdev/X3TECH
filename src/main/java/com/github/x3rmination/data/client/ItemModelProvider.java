@@ -1,8 +1,8 @@
 package com.github.x3rmination.data.client;
 
 import com.github.x3rmination.X3TECH;
-import com.github.x3rmination.core.material.MaterialUtil.MaterialBase;
-import com.github.x3rmination.core.material.MaterialUtil.MaterialRegistry;
+import com.github.x3rmination.core.material.materialutil.MaterialBase;
+import com.github.x3rmination.core.material.materialutil.MaterialRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -28,7 +28,7 @@ public class ItemModelProvider extends net.minecraftforge.client.model.generator
     }
 
     private ItemModelBuilder MIngotBuilder(String name) {
-        return getBuilder(name).parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_ingot");
+        return getBuilder(name+"_ingot").parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_ingot");
     }
     private ItemModelBuilder MNuggetBuilder(String name) {
         return getBuilder(name+"_nugget").parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_nugget");
