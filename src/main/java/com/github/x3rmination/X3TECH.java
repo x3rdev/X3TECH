@@ -31,18 +31,18 @@ public class X3TECH {
         eventBus.addListener(ColorLoader::loadColors);
 
         ModRegistration.register();
-
+        // Generic Items
         MItemInit.MITEMS.register(eventBus);
         new MItemInit().registerMItems();
-
+        // Blocks
         MBlockInit.MBLOCKS.register(eventBus);
         MBlockInit.MOREBLOCKS.register(eventBus);
         new MBlockInit().registerMItems();
-
+        // Block Items
         MBlockItemInit.MBLOCKITEMS.register(eventBus);
         MBlockItemInit.MBLOCKOREITEMS.register(eventBus);
         new MBlockItemInit().registerMItems();
-
+        // Tags
         new ModTags.Blocks().createBlockTags();
         new ModTags.Items().createItemTags();
 
