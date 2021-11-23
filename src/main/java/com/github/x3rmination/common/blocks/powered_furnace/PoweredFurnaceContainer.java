@@ -53,9 +53,19 @@ public class PoweredFurnaceContainer extends Container {
     public int getProgressArrowScale() {
         int progress = fields.get(0);
         if(progress > 0){
-            return progress * 24 / PoweredFurnaceTileEntity.PROCESS_TIME;
+            return progress * 24 / new PoweredFurnaceTileEntity().getProcessTime();
         }
         return 0;
+    }
+    public int getRFMeterScale(){
+        float s = this.getRf()*49/this.getMaxRf();
+        return (49 - (Math.round(s)));
+    }
+    public int getRf(){
+        return fields.get(1);
+    }
+    public int getMaxRf(){
+        return fields.get(2);
     }
 
     @Override

@@ -29,32 +29,50 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import javax.annotation.Nullable;
 
 public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
-    static int PROCESS_TIME;
+
+    private static int processTime;
+
 
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] handlers;
 
     private int progress = 0;
+    private long redstoneFlux = 0;
+    private long maxRedstoneFlux = 10000;
 
     private final IIntArray fields = new IIntArray() {
         @Override
         public int get(int index) {
-            if (index == 0) {
-                return progress;
+            switch(index) {
+                case 0:
+                    return progress;
+                case 1:
+                    return (int) redstoneFlux;
+                case 2:
+                    return (int) maxRedstoneFlux;
+                default:
+                    return 0;
             }
-            return 0;
         }
 
         @Override
         public void set(int index, int value) {
-            if (index == 0) {
-                progress = value;
+            switch(index) {
+                case 0:
+                    progress = value;
+                    break;
+                case 1:
+                    redstoneFlux = value;
+                    break;
+                case 2:
+                    maxRedstoneFlux = value;
+                    break;
             }
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return 3;
         }
     };
 
@@ -78,8 +96,12 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.LIT, Boolean.TRUE), 3);
         } else {
+            redstoneFlux = 10000;
             stopWork();
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.LIT, Boolean.FALSE), 3);
+        }
+        if(redstoneFlux > maxRedstoneFlux){
+            redstoneFlux = maxRedstoneFlux;
         }
     }
 
@@ -102,23 +124,29 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         assert this.level != null;
         ItemStack current = getItem(1);
         ItemStack output = getWorkOutput(recipe);
-        PROCESS_TIME = recipe.getCookingTime()/10 + 5;
+        processTime = recipe.getCookingTime()/10 + 5;
         if(!current.isEmpty()) {
             int newCount = current.getCount() + output.getCount();
-
             if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
                 stopWork();
                 return;
             }
         }
 
-        if(progress < PROCESS_TIME) {
+        if(progress < processTime) {
             progress += 1;
         }
 
-        if(progress >= PROCESS_TIME) {
+        if(progress >= processTime) {
             finishWork(recipe, current, output);
         }
+        if(redstoneFlux-10 > 0){
+            redstoneFlux -= 10;
+        }
+    }
+
+    public int getProcessTime(){
+        return processTime;
     }
 
     private void stopWork() {
@@ -196,8 +224,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Override
     public boolean stillValid(PlayerEntity playerEntity) {
-        return
-                this.level != null && this.level.getBlockEntity(this.worldPosition) == this && playerEntity.distanceToSqr(this.worldPosition.getX(),this.worldPosition.getY() + 0.5, this.worldPosition.getZ()) <= 64;
+        return this.level != null && this.level.getBlockEntity(this.worldPosition) == this && playerEntity.distanceToSqr(this.worldPosition.getX(),this.worldPosition.getY() + 0.5, this.worldPosition.getZ()) <= 64;
     }
 
     @Override
@@ -210,8 +237,8 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         super.load(state, tags);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(tags, this.items);
-
         this.progress = tags.getInt("Progress");
+        this.redstoneFlux = tags.getLong("RF");
     }
 
     @Override
@@ -219,6 +246,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         super.save(tags);
         ItemStackHelper.saveAllItems(tags, this.items);
         tags.putInt("Progress", this.progress);
+        tags.putLong("RF", this.redstoneFlux);
         return tags;
     }
 
@@ -234,6 +262,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     public CompoundNBT getUpdateTag() {
         CompoundNBT tags = super.getUpdateTag();
         tags.putInt("Progress", this.progress);
+        tags.putLong("RF", this.redstoneFlux);
         return tags;
     }
 
