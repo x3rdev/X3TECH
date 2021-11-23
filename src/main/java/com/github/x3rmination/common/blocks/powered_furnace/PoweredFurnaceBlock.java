@@ -8,13 +8,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -27,9 +26,11 @@ import javax.annotation.Nullable;
 public class PoweredFurnaceBlock extends Block {
 
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public PoweredFurnaceBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.FALSE));
     }
 
     @Override
@@ -42,7 +43,6 @@ public class PoweredFurnaceBlock extends Block {
     public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
         return new PoweredFurnaceTileEntity();
     }
-
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
@@ -86,11 +86,13 @@ public class PoweredFurnaceBlock extends Block {
 
     @Override
     public BlockState mirror(BlockState blockState, Mirror mirror) {
-        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
+        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(LIT, false);
     }
 
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
         stateBuilder.add(FACING);
+        stateBuilder.add(LIT);
+
     }
 }

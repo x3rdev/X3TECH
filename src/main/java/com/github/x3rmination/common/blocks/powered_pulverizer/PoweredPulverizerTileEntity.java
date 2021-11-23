@@ -1,5 +1,7 @@
 package com.github.x3rmination.common.blocks.powered_pulverizer;
 
+import com.github.x3rmination.common.crafting.recipe.PoweredPulverizerRecipe;
+import com.github.x3rmination.registry.init.RecipesInit;
 import com.github.x3rmination.registry.init.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,8 +10,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 
 public class PoweredPulverizerTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
 
-    static final int PROCESS_TIME = 10;
+    static int PROCESS_TIME;
 
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] handlers;
@@ -74,7 +74,7 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
         if(this.level == null || this.level.isClientSide) {
             return;
         }
-        FurnaceRecipe recipe = getRecipe();
+        PoweredPulverizerRecipe recipe = getRecipe();
         if(recipe != null) {
             doWork(recipe);
         } else {
@@ -83,23 +83,23 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
     }
 
     @Nullable
-    public FurnaceRecipe getRecipe() {
+    public PoweredPulverizerRecipe getRecipe() {
         if (this.level == null || getItem(0).isEmpty()) {
             return null;
         }
-        return this.level.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, this, this.level).orElse(null);
+        return this.level.getRecipeManager().getRecipeFor(RecipesInit.PULVERIZING, this, this.level).orElse(null);
     }
 
-    private ItemStack getWorkOutput(@Nullable FurnaceRecipe recipe) {
+    private ItemStack getWorkOutput(@Nullable PoweredPulverizerRecipe recipe) {
         if (recipe != null) {
             return recipe.assemble(this);
         }
         return ItemStack.EMPTY;
     }
 
-    private void doWork(FurnaceRecipe recipe) {
+    private void doWork(PoweredPulverizerRecipe recipe) {
         assert this.level != null;
-
+        PROCESS_TIME = recipe.getProcessTime();
         ItemStack current = getItem(1);
         ItemStack output = getWorkOutput(recipe);
 
@@ -125,7 +125,7 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
         progress = 0;
     }
 
-    private void finishWork(FurnaceRecipe recipe, ItemStack current, ItemStack output) {
+    private void finishWork(PoweredPulverizerRecipe recipe, ItemStack current, ItemStack output) {
         if(!current.isEmpty()){
             current.grow(output.getCount());
         } else {
@@ -143,7 +143,11 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack itemStack, @Nullable Direction direction) {
-        return this.canPlaceItem(index, itemStack);
+        if(index == 0) {
+            return this.canPlaceItem(index, itemStack);
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -193,8 +197,7 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
 
     @Override
     public boolean stillValid(PlayerEntity playerEntity) {
-        return
-                this.level != null && this.level.getBlockEntity(this.worldPosition) == this && playerEntity.distanceToSqr(this.worldPosition.getX(),this.worldPosition.getY() + 0.5, this.worldPosition.getZ()) <= 64;
+        return this.level != null && this.level.getBlockEntity(this.worldPosition) == this && playerEntity.distanceToSqr(this.worldPosition.getX(),this.worldPosition.getY() + 0.5, this.worldPosition.getZ()) <= 64;
     }
 
     @Override

@@ -1,7 +1,7 @@
 {
 	"parent": "minecraft:block/block",
 	"textures": {
-		"0": "x3tech:block/powered_furnace",
+		"0": "x3tech:block/powered_furnace_lit",
 		"1": "x3tech:block/machine_frame",
 		"particle": "x3tech:block/powered_furnace"
 	},

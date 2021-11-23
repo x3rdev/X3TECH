@@ -1,0 +1,8 @@
+{
+  "type": "x3tech:pulverizing",
+  "ingredient": {
+    "item": "x3tech:tin_ingot"
+  },
+  "result": "x3tech:tin_dust",
+  "count": 1
+}

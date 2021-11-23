@@ -29,7 +29,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import javax.annotation.Nullable;
 
 public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
-    static final int PROCESS_TIME = 10;
+    static int PROCESS_TIME;
 
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] handlers;
@@ -76,8 +76,10 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         FurnaceRecipe recipe = getRecipe();
         if(recipe != null) {
             doWork(recipe);
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.LIT, Boolean.TRUE), 3);
         } else {
             stopWork();
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.LIT, Boolean.FALSE), 3);
         }
     }
 
@@ -98,10 +100,9 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     private void doWork(FurnaceRecipe recipe) {
         assert this.level != null;
-
         ItemStack current = getItem(1);
         ItemStack output = getWorkOutput(recipe);
-
+        PROCESS_TIME = recipe.getCookingTime()/10 + 5;
         if(!current.isEmpty()) {
             int newCount = current.getCount() + output.getCount();
 
@@ -130,7 +131,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         } else {
             setItem(1, output);
         }
-
         progress = 0;
         this.removeItem(0, 1);
     }
@@ -142,7 +142,11 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack itemStack, @Nullable Direction direction) {
-        return this.canPlaceItem(index, itemStack);
+        if(index == 0) {
+            return this.canPlaceItem(index, itemStack);
+        } else {
+            return false;
+        }
     }
 
     @Override

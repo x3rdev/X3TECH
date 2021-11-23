@@ -1,0 +1,8 @@
+{
+  "type": "x3tech:pulverizing",
+  "ingredient": {
+    "item": "x3tech:copper_ore"
+  },
+  "result": "x3tech:copper_dust",
+  "count": 2
+}

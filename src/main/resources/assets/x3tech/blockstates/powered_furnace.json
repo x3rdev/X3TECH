@@ -1,33 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,lit=false": {
       "model": "x3tech:block/powered_furnace",
       "y": 90
     },
     "facing=east,lit=true": {
-      "model": "minecraft:block/furnace_on",
+      "model": "x3tech:block/powered_furnace_lit",
       "y": 90
     },
-    "facing=north": {
+    "facing=north,lit=false": {
       "model": "x3tech:block/powered_furnace"
     },
     "facing=north,lit=true": {
-      "model": "minecraft:block/furnace_on"
+      "model": "x3tech:block/powered_furnace_lit"
     },
-    "facing=south": {
+    "facing=south,lit=false": {
       "model": "x3tech:block/powered_furnace",
       "y": 180
     },
     "facing=south,lit=true": {
-      "model": "minecraft:block/furnace_on",
+      "model": "x3tech:block/powered_furnace_lit",
       "y": 180
     },
-    "facing=west": {
+    "facing=west,lit=false": {
       "model": "x3tech:block/powered_furnace",
       "y": 270
     },
     "facing=west,lit=true": {
-      "model": "minecraft:block/furnace_on",
+      "model": "x3tech:block/powered_furnace_lit",
       "y": 270
     }
   }

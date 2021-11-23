@@ -1,0 +1,8 @@
+{
+  "type": "x3tech:pulverizing",
+  "ingredient": {
+    "item": "x3tech:copper_ingot"
+  },
+  "result": "x3tech:copper_dust",
+  "count": 1
+}

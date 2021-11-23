@@ -18,8 +18,15 @@ import javax.annotation.Nullable;
 
 public class PoweredPulverizerRecipe extends SingleItemRecipe {
 
-    public PoweredPulverizerRecipe(ResourceLocation recipeId, Ingredient input, ItemStack result) {
-        super(RecipesInit.Types.POWERED_PULVERIZER_RECIPE, RecipesInit.Serializers.POWERED_PULVERIZER_RECIPE.get(), recipeId, "", input, result);
+    int processTime;
+
+    public PoweredPulverizerRecipe(ResourceLocation recipeId, Ingredient input, ItemStack result, int processTime) {
+        super(RecipesInit.PULVERIZING, RecipesInit.PULVERIZING_SERIALIZER.get(), recipeId, "", input, result);
+        this.processTime = processTime;
+    }
+
+    public int getProcessTime() {
+        return processTime;
     }
 
     @Override
@@ -34,10 +41,10 @@ public class PoweredPulverizerRecipe extends SingleItemRecipe {
             Ingredient ingredient = Ingredient.fromJson(jsonObject.get("ingredient"));
             ResourceLocation itemId = new ResourceLocation(JSONUtils.getAsString(jsonObject, "result"));
             int count = JSONUtils.getAsInt(jsonObject, "count", 1);
-
+            int processTime = JSONUtils.getAsInt(jsonObject, "time", 15);
             ItemStack result = new ItemStack(ForgeRegistries.ITEMS.getValue(itemId), count);
 
-            return new PoweredPulverizerRecipe(recipeId, ingredient, result);
+            return new PoweredPulverizerRecipe(recipeId, ingredient, result, processTime);
         }
 
         @Nullable
@@ -45,14 +52,15 @@ public class PoweredPulverizerRecipe extends SingleItemRecipe {
         public PoweredPulverizerRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient ingredient = Ingredient.fromNetwork(buffer);
             ItemStack result = buffer.readItem();
-            return new PoweredPulverizerRecipe(recipeId, ingredient, result);
+            int processTime = buffer.readInt();
+            return new PoweredPulverizerRecipe(recipeId, ingredient, result, processTime);
         }
 
         @Override
         public void toNetwork(PacketBuffer buffer, PoweredPulverizerRecipe recipe) {
             recipe.ingredient.toNetwork(buffer);
             buffer.writeItem(recipe.result);
-
+            buffer.writeInt(recipe.processTime);
         }
     }
 }
