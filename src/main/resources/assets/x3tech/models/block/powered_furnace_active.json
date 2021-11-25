@@ -1,8 +1,9 @@
 {
 	"parent": "minecraft:block/block",
 	"textures": {
-		"0": "x3tech:block/powered_furnace_lit",
+		"0": "x3tech:block/powered_furnace_active",
 		"1": "x3tech:block/machine_frame",
+		"2": "x3tech:block/machine_frame_side",
 		"particle": "x3tech:block/powered_furnace"
 	},
 	"elements": [
@@ -11,9 +12,9 @@
 			"to": [16, 16, 16],
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"east": {"uv": [0, 0, 15, 16], "texture": "#1"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#1"},
-				"west": {"uv": [1, 0, 16, 16], "texture": "#1"},
+				"east": {"uv": [0, 0, 15, 16], "texture": "#2"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"west": {"uv": [1, 0, 16, 16], "texture": "#2"},
 				"up": {"uv": [0, 1, 16, 16], "texture": "#1"},
 				"down": {"uv": [0, 0, 16, 15], "texture": "#1"}
 			}
@@ -78,6 +79,5 @@
 				"down": {"uv": [2, 11, 14, 12], "texture": "#0"}
 			}
 		}
-	],
-	"gui_light": "side"
+	]
 }

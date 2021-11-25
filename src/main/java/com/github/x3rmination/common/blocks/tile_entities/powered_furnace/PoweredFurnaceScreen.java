@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
 
 import com.github.x3rmination.X3TECH;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -36,10 +36,9 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
         // Arrow
         blit(matrixStack, posX + 67, posY + 35, 176, 14, menu.getProgressArrowScale() + 1, 16);
         // RF meter
-        blit(matrixStack, posX + 10,posY + 19, 176, 32, 11, menu.getRFMeterScale());
-        System.out.println(menu.getRf());
-        System.out.println(menu.getMaxRf());
-        System.out.println(menu.getRFMeterScale());
+        if(menu.getRFMeterScale() != 0) {
+            blit(matrixStack, posX + 10, posY + 19, 176, 32, 11, menu.getRFMeterScale() + 1);
+        }
         // -1 For alignment
         if(mouseX > posX + 10 - 1 && mouseX < posX + 10 + 11 - 1 && mouseY > posY + 19 - 1 && mouseY < posY + 68 - 1) {
             renderTooltip(matrixStack, new StringTextComponent(menu.getRf() + "/" + menu.getMaxRf() + " RF"), mouseX, mouseY);

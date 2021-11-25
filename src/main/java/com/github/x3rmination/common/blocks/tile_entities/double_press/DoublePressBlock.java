@@ -1,5 +1,8 @@
-package com.github.x3rmination.common.blocks.powered_pulverizer;
+package com.github.x3rmination.common.blocks.tile_entities.double_press;
 
+
+
+import com.github.x3rmination.core.util.block.CustomBlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
@@ -8,13 +11,11 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -23,12 +24,14 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("deprecation")
-public class PoweredPulverizerBlock extends Block {
-    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+public class DoublePressBlock extends Block {
 
-    public PoweredPulverizerBlock(Properties properties) {
+    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
+
+    public DoublePressBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, Boolean.FALSE));
     }
 
     @Override
@@ -39,9 +42,8 @@ public class PoweredPulverizerBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
-        return new PoweredPulverizerTileEntity();
+        return new DoublePressTileEntity();
     }
-
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
@@ -54,8 +56,8 @@ public class PoweredPulverizerBlock extends Block {
 
     private void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity){
         TileEntity tileEntity = world.getBlockEntity(blockPos);
-        if(tileEntity instanceof PoweredPulverizerTileEntity && playerEntity instanceof ServerPlayerEntity) {
-            PoweredPulverizerTileEntity pfe = (PoweredPulverizerTileEntity) tileEntity;
+        if(tileEntity instanceof DoublePressTileEntity && playerEntity instanceof ServerPlayerEntity) {
+            DoublePressTileEntity pfe = (DoublePressTileEntity) tileEntity;
             NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
         }
     }
@@ -85,11 +87,12 @@ public class PoweredPulverizerBlock extends Block {
 
     @Override
     public BlockState mirror(BlockState blockState, Mirror mirror) {
-        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
+        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(ACTIVE, false);
     }
 
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
         stateBuilder.add(FACING);
+        stateBuilder.add(ACTIVE);
     }
 }

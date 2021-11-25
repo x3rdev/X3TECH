@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.powered_pulverizer;
+package com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer;
 
 import com.github.x3rmination.registry.init.ContainerTypeInit;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,8 +12,13 @@ import net.minecraft.util.IIntArray;
 import net.minecraft.util.IntArray;
 
 public class PoweredPulverizerContainer extends Container {
+
     private final IInventory inventory;
     private IIntArray fields;
+    protected int energy;
+    protected int capacity;
+    protected int maxReceive;
+    protected int maxExtract;
 
     public PoweredPulverizerContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(id, playerInventory, new PoweredPulverizerTileEntity(), new IntArray(buffer.readByte()));
@@ -23,6 +28,11 @@ public class PoweredPulverizerContainer extends Container {
         super(ContainerTypeInit.POWERED_PULVERIZER.get(), id);
         this.inventory = inventory;
         this.fields = fields;
+
+        this.energy = 0;
+        this.capacity = 10000;
+        this.maxReceive = 10000;
+        this.maxExtract = 0;
 
         this.addSlot(new Slot(this.inventory, 0, 44, 36));
         this.addSlot(new Slot(this.inventory, 1, 104, 36) {
@@ -53,9 +63,19 @@ public class PoweredPulverizerContainer extends Container {
     public int getProgressArrowScale() {
         int progress = fields.get(0);
         if(progress > 0){
-            return progress * 24 / PoweredPulverizerTileEntity.PROCESS_TIME;
+            return progress * 24 / PoweredPulverizerTileEntity.processTime;
         }
         return 0;
+    }
+    public int getRFMeterScale(){
+        float s = this.getRf()*49/this.getMaxRf();
+        return (49 - (Math.round(s)));
+    }
+    public int getRf(){
+        return fields.get(1);
+    }
+    public int getMaxRf(){
+        return fields.get(2);
     }
 
     @Override

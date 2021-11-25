@@ -1,7 +1,8 @@
 package com.github.x3rmination.registry.init;
 
-import com.github.x3rmination.common.blocks.powered_furnace.PoweredFurnaceBlock;
-import com.github.x3rmination.common.blocks.powered_pulverizer.PoweredPulverizerBlock;
+import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressBlock;
+import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer.PoweredPulverizerBlock;
 import com.github.x3rmination.registry.ModRegistration;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -18,6 +19,11 @@ public class BlockInit {
                     .noOcclusion()));
     public static final RegistryObject<PoweredPulverizerBlock> POWERED_PULVERIZER = ModRegistration.BLOCKS.register("powered_pulverizer",
             () -> new PoweredPulverizerBlock(AbstractBlock.Properties.of(Material.HEAVY_METAL)
+                    .strength(4, 20)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
+    public static final RegistryObject<DoublePressBlock> DOUBLE_PRESS = ModRegistration.BLOCKS.register("double_press",
+            () -> new DoublePressBlock(AbstractBlock.Properties.of(Material.HEAVY_METAL)
                     .strength(4, 20)
                     .sound(SoundType.METAL)
                     .noOcclusion()));

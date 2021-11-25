@@ -1,5 +1,9 @@
-package com.github.x3rmination.common.blocks.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer;
 
+import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.crafting.recipe.PoweredPulverizerRecipe;
+import com.github.x3rmination.core.util.energy.ModEnergyStorage;
+import com.github.x3rmination.registry.init.RecipesInit;
 import com.github.x3rmination.registry.init.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,8 +12,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -22,23 +24,28 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 
-public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
+public class PoweredPulverizerTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
 
-    private static int processTime;
-
+    static int processTime;
 
     private NonNullList<ItemStack> items;
-    private final LazyOptional<? extends IItemHandler>[] handlers;
+    private final LazyOptional<? extends IItemHandler>[] itemHandler;
 
     private int progress = 0;
-    private long redstoneFlux = 0;
-    private long maxRedstoneFlux = 10000;
+    private int energy = 0;
+    private static final int MAX_REDSTONE_FLUX = 10000;
+
+    int defaultUse = 250;
+
+    private final ModEnergyStorage poweredPulverizerEnergyStorage;
+    private final LazyOptional<ModEnergyStorage> energyHandler;
 
     private final IIntArray fields = new IIntArray() {
         @Override
@@ -47,9 +54,9 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
                 case 0:
                     return progress;
                 case 1:
-                    return (int) redstoneFlux;
+                    return poweredPulverizerEnergyStorage.getEnergyStored();
                 case 2:
-                    return (int) maxRedstoneFlux;
+                    return poweredPulverizerEnergyStorage.getMaxEnergyStored();
                 default:
                     return 0;
             }
@@ -57,17 +64,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
         @Override
         public void set(int index, int value) {
-            switch(index) {
-                case 0:
-                    progress = value;
-                    break;
-                case 1:
-                    redstoneFlux = value;
-                    break;
-                case 2:
-                    maxRedstoneFlux = value;
-                    break;
-            }
+
         }
 
         @Override
@@ -76,10 +73,12 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         }
     };
 
-    public PoweredFurnaceTileEntity() {
-        super(TileEntityTypeInit.POWERED_FURNACE.get());
-        this.handlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
+    public PoweredPulverizerTileEntity() {
+        super(TileEntityTypeInit.POWERED_PULVERIZER.get());
+        this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.poweredPulverizerEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX);
+        this.energyHandler = LazyOptional.of(() -> this.poweredPulverizerEnergyStorage);
     }
 
     void encodeExtraData(PacketBuffer buffer) {
@@ -91,40 +90,37 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(this.level == null || this.level.isClientSide) {
             return;
         }
-        FurnaceRecipe recipe = getRecipe();
-        if(recipe != null) {
+
+        PoweredPulverizerRecipe recipe = getRecipe();
+        if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
-            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.LIT, Boolean.TRUE), 3);
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
-            redstoneFlux = 10000;
             stopWork();
-            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.LIT, Boolean.FALSE), 3);
-        }
-        if(redstoneFlux > maxRedstoneFlux){
-            redstoneFlux = maxRedstoneFlux;
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.FALSE), 3);
         }
     }
 
     @Nullable
-    public FurnaceRecipe getRecipe() {
+    public PoweredPulverizerRecipe getRecipe() {
         if (this.level == null || getItem(0).isEmpty()) {
             return null;
         }
-        return this.level.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, this, this.level).orElse(null);
+        return this.level.getRecipeManager().getRecipeFor(RecipesInit.PULVERIZING, this, this.level).orElse(null);
     }
 
-    private ItemStack getWorkOutput(@Nullable FurnaceRecipe recipe) {
+    private ItemStack getWorkOutput(@Nullable PoweredPulverizerRecipe recipe) {
         if (recipe != null) {
             return recipe.assemble(this);
         }
         return ItemStack.EMPTY;
     }
 
-    private void doWork(FurnaceRecipe recipe) {
+    private void doWork(PoweredPulverizerRecipe recipe) {
         assert this.level != null;
         ItemStack current = getItem(1);
         ItemStack output = getWorkOutput(recipe);
-        processTime = recipe.getCookingTime()/10 + 5;
+        processTime = recipe.getProcessTime();
         if(!current.isEmpty()) {
             int newCount = current.getCount() + output.getCount();
             if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
@@ -140,9 +136,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(progress >= processTime) {
             finishWork(recipe, current, output);
         }
-        if(redstoneFlux-10 > 0){
-            redstoneFlux -= 10;
-        }
     }
 
     public int getProcessTime(){
@@ -153,15 +146,26 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         progress = 0;
     }
 
-    private void finishWork(FurnaceRecipe recipe, ItemStack current, ItemStack output) {
+    private void finishWork(PoweredPulverizerRecipe recipe, ItemStack current, ItemStack output) {
         if(!current.isEmpty()){
             current.grow(output.getCount());
         } else {
             setItem(1, output);
         }
+
         progress = 0;
         this.removeItem(0, 1);
     }
+
+    private boolean useEnergy(int amount) {
+        if(poweredPulverizerEnergyStorage.getEnergyStored() < amount){
+            return false;
+        } else {
+            poweredPulverizerEnergyStorage.setEnergy(poweredPulverizerEnergyStorage.getEnergyStored() - amount);
+            return true;
+        }
+    }
+
 
     @Override
     public int[] getSlotsForFace(Direction direction) {
@@ -184,12 +188,12 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Override
     protected ITextComponent getDefaultName() {
-        return new TranslationTextComponent("container.x3tech.powered_furnace");
+        return new TranslationTextComponent("container.x3tech.powered_pulverizer");
     }
 
     @Override
     protected Container createMenu(int id, PlayerInventory inventory) {
-        return new PoweredFurnaceContainer(id, inventory, this, this.fields);
+        return new PoweredPulverizerContainer(id, inventory, this, this.fields);
     }
 
     @Override
@@ -236,17 +240,17 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     public void load(BlockState state, CompoundNBT tags) {
         super.load(state, tags);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.progress = tags.getInt("progress");
         ItemStackHelper.loadAllItems(tags, this.items);
-        this.progress = tags.getInt("Progress");
-        this.redstoneFlux = tags.getLong("RF");
+        energyHandler.ifPresent(modEnergyStorage -> modEnergyStorage.deserializeNBT(tags.getCompound("energy")));
     }
 
     @Override
     public CompoundNBT save(CompoundNBT tags) {
         super.save(tags);
         ItemStackHelper.saveAllItems(tags, this.items);
-        tags.putInt("Progress", this.progress);
-        tags.putLong("RF", this.redstoneFlux);
+        tags.putInt("progress", this.progress);
+        energyHandler.ifPresent(modEnergyStorage -> tags.put("energy", modEnergyStorage.serializeNBT()));
         return tags;
     }
 
@@ -261,8 +265,8 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tags = super.getUpdateTag();
-        tags.putInt("Progress", this.progress);
-        tags.putLong("RF", this.redstoneFlux);
+        tags.putInt("progress", this.progress);
+        tags.putInt("energy", this.energy);
         return tags;
     }
 
@@ -271,21 +275,25 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
         if(!this.remove && side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             if(side == Direction.UP){
-                return this.handlers[0].cast();
+                return this.itemHandler[0].cast();
             } else if(side == Direction.DOWN) {
-                return this.handlers[1].cast();
+                return this.itemHandler[1].cast();
             } else {
-                return this.handlers[2].cast();
+                return this.itemHandler[2].cast();
             }
-        } else {
-            return super.getCapability(cap, side);
+
         }
+        if (cap == CapabilityEnergy.ENERGY) {
+            return energyHandler.cast();
+        }
+        return super.getCapability(cap, side);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        for (LazyOptional<? extends IItemHandler> handler : this.handlers) {
+        for (LazyOptional<? extends IItemHandler> handler : this.itemHandler) {
+            energyHandler.invalidate();
             handler.invalidate();
         }
     }

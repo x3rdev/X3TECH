@@ -3,6 +3,7 @@
 	"textures": {
 		"0": "x3tech:block/machine_frame",
 		"1": "x3tech:block/powered_pulverizer",
+		"2": "x3tech:block/machine_frame_side",
 		"particle": "x3tech:block/machine_frame"
 	},
 	"elements": [

@@ -1,5 +1,6 @@
-package com.github.x3rmination.common.blocks.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
 
+import com.github.x3rmination.core.util.block.CustomBlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
@@ -11,7 +12,6 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -26,11 +26,11 @@ import javax.annotation.Nullable;
 public class PoweredFurnaceBlock extends Block {
 
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
 
     public PoweredFurnaceBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, Boolean.FALSE));
     }
 
     @Override
@@ -86,13 +86,12 @@ public class PoweredFurnaceBlock extends Block {
 
     @Override
     public BlockState mirror(BlockState blockState, Mirror mirror) {
-        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(LIT, false);
+        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(ACTIVE, false);
     }
 
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
         stateBuilder.add(FACING);
-        stateBuilder.add(LIT);
-
+        stateBuilder.add(ACTIVE);
     }
 }

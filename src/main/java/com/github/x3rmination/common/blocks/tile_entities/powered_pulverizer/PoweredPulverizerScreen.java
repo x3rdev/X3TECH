@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.powered_pulverizer;
+package com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer;
 
 import com.github.x3rmination.X3TECH;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class PoweredPulverizerScreen extends ContainerScreen<PoweredPulverizerContainer> {
 
@@ -23,7 +24,7 @@ public class PoweredPulverizerScreen extends ContainerScreen<PoweredPulverizerCo
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         assert minecraft != null;
         RenderSystem.color4f(1, 1, 1, 1);
         minecraft.getTextureManager().bind(TEXTURE);
@@ -35,5 +36,13 @@ public class PoweredPulverizerScreen extends ContainerScreen<PoweredPulverizerCo
 
         // Arrow
         blit(matrixStack, posX + 67, posY + 35, 176, 14, menu.getProgressArrowScale() + 1, 16);
+
+        if(menu.getRFMeterScale() != 0) {
+            blit(matrixStack, posX + 10, posY + 19, 176, 32, 11, menu.getRFMeterScale() + 1);
+        }
+        // -1 For alignment
+        if(mouseX > posX + 10 - 1 && mouseX < posX + 10 + 11 - 1 && mouseY > posY + 19 - 1 && mouseY < posY + 68 - 1) {
+            renderTooltip(matrixStack, new StringTextComponent(menu.getRf() + "/" + menu.getMaxRf() + " RF"), mouseX, mouseY);
+        }
     }
 }

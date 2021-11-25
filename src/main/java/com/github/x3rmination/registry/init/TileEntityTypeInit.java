@@ -1,7 +1,8 @@
 package com.github.x3rmination.registry.init;
 
-import com.github.x3rmination.common.blocks.powered_furnace.PoweredFurnaceTileEntity;
-import com.github.x3rmination.common.blocks.powered_pulverizer.PoweredPulverizerTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer.PoweredPulverizerTileEntity;
 import com.github.x3rmination.registry.ModRegistration;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +21,10 @@ public class TileEntityTypeInit {
             "powered_pulverizer",
             PoweredPulverizerTileEntity::new,
             BlockInit.POWERED_PULVERIZER);
+    public static final RegistryObject<TileEntityType<DoublePressTileEntity>> DOUBLE_PRESS = register(
+            "double_press",
+            DoublePressTileEntity::new,
+            BlockInit.DOUBLE_PRESS);
 
     public static void register() {
     }

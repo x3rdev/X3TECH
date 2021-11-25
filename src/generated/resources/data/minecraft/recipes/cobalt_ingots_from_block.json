@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "x3tech:cobalt_block"
+    }
+  ],
+  "result": {
+    "item": "x3tech:cobalt_ingot",
+    "count": 9
+  }
+}

@@ -16,7 +16,7 @@ public class BlockTagsProvider extends net.minecraft.data.BlockTagsProvider {
     @Override
     public void addTags() {
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
-            tag(ModTags.blockTagLibrary.get(materialBase.getName() + "_block")).add(MBlockInit.blockLibrary.get(materialBase.getName()));
+            tag(ModTags.blockTagLibrary.get(materialBase.getName() + "_block")).add(MBlockInit.blockLibrary.get(materialBase.getName() + "_block"));
             if(materialBase.materialHasOre()) {
                 tag(ModTags.blockTagLibrary.get(materialBase.getName() + "_ore")).add(MBlockInit.blockLibrary.get(materialBase.getName() + "_ore"));
             }

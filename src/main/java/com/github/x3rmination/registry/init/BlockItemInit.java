@@ -11,6 +11,8 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.POWERED_FURNACE.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> POWERED_PULVERIZER = ModRegistration.BLOCK_ITEMS.register("powered_pulverizer",
             () -> new BlockItem(BlockInit.POWERED_PULVERIZER.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
+    public static final RegistryObject<BlockItem> DOUBLE_PRESS = ModRegistration.BLOCK_ITEMS.register("double_press",
+            () -> new BlockItem(BlockInit.DOUBLE_PRESS.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> MACHINE_FRAME = ModRegistration.BLOCK_ITEMS.register("machine_frame",
             () -> new BlockItem(BlockInit.MACHINE_FRAME.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
      public static void register() {}

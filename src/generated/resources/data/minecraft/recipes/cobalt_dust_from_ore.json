@@ -1,0 +1,8 @@
+{
+  "type": "x3tech:pulverizing",
+  "ingredient": {
+    "item": "x3tech:cobalt_ore"
+  },
+  "result": "x3tech:cobalt_dust",
+  "count": 2
+}

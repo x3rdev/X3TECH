@@ -1,33 +1,33 @@
 {
   "variants": {
-    "facing=east,lit=false": {
+    "facing=east,active=false": {
       "model": "x3tech:block/powered_furnace",
       "y": 90
     },
-    "facing=east,lit=true": {
-      "model": "x3tech:block/powered_furnace_lit",
+    "facing=east,active=true": {
+      "model": "x3tech:block/powered_furnace_active",
       "y": 90
     },
-    "facing=north,lit=false": {
+    "facing=north,active=false": {
       "model": "x3tech:block/powered_furnace"
     },
-    "facing=north,lit=true": {
-      "model": "x3tech:block/powered_furnace_lit"
+    "facing=north,active=true": {
+      "model": "x3tech:block/powered_furnace_active"
     },
-    "facing=south,lit=false": {
+    "facing=south,active=false": {
       "model": "x3tech:block/powered_furnace",
       "y": 180
     },
-    "facing=south,lit=true": {
-      "model": "x3tech:block/powered_furnace_lit",
+    "facing=south,active=true": {
+      "model": "x3tech:block/powered_furnace_active",
       "y": 180
     },
-    "facing=west,lit=false": {
+    "facing=west,active=false": {
       "model": "x3tech:block/powered_furnace",
       "y": 270
     },
-    "facing=west,lit=true": {
-      "model": "x3tech:block/powered_furnace_lit",
+    "facing=west,active=true": {
+      "model": "x3tech:block/powered_furnace_active",
       "y": 270
     }
   }
