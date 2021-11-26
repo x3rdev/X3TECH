@@ -1,10 +1,10 @@
 {
   "type": "x3tech:double_pressing",
   "ingredient_top": {
-    "item": "x3tech:copper_ingot"
+    "item": "minecraft:dirt"
   },
   "ingredient_bottom": {
-    "item": "x3tech:cobalt_ingot"
+    "item": "minecraft:stone"
   },
-  "result": "x3tech:copper_plate"
+  "result": "minecraft:diamond_ore"
 }

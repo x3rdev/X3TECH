@@ -91,28 +91,20 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
             return;
         }
         DoublePressRecipe recipe = getRecipe();
-        System.out.println("recipe is null? " + getRecipe());
-        if(recipe != null) {
-            System.out.println(String.valueOf(recipe.getInputTop()));
-            System.out.println(String.valueOf(recipe.getInputBottom()));
-            System.out.println(String.valueOf(recipe.getResult()));
-        }
-        if(recipe != null && useEnergy(defaultUse)) {
+        System.out.println("recipe valid?" + recipe);
+        if(recipe != null && !recipe.getResultItem().isEmpty()) {
+            System.out.println("recipe not empty");
+            //&& useEnergy(defaultUse)
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
             stopWork();
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.FALSE), 3);
         }
-        if(energy > MAX_REDSTONE_FLUX){
-            energy = MAX_REDSTONE_FLUX;
-        }
     }
 
     @Nullable
     public DoublePressRecipe getRecipe() {
-        System.out.println(String.valueOf(getItem(0)));
-        System.out.println(String.valueOf(getItem(1)));
         if (this.level == null || getItem(0).isEmpty() || getItem(1).isEmpty()) {
             return null;
         }
@@ -131,11 +123,14 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
         ItemStack input0 = getItem(0);
         ItemStack input1 = getItem(1);
         ItemStack current = getItem(2);
-        ItemStack output = recipe.getResult();
+        ItemStack output = recipe.getResultItem();
         processTime = recipe.getProcessTime()/10 + 5;
+        System.out.println("doingwork");
         if(!current.isEmpty()) {
+            System.out.println("output not empty");
             int newCount = current.getCount() + output.getCount();
             if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
+                System.out.println("stopping work");
                 stopWork();
                 return;
             }
@@ -180,7 +175,7 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
 
     @Override
     public int[] getSlotsForFace(Direction direction) {
-        return new int[]{0, 1};
+        return new int[]{0, 1, 2};
     }
 
     @Override

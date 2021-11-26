@@ -19,15 +19,15 @@ import javax.annotation.Nullable;
 public class DoublePressRecipe extends BaseRecipe {
 
     private final Ingredient inputTop;
-    private final ItemStack inputBottom;
+    private final Ingredient inputBottom;
     private final ItemStack result;
     private final int processTime;
 
-    public DoublePressRecipe(ResourceLocation id, Ingredient inputTop, ItemStack inputBottom, ItemStack result, int processTime) {
+    public DoublePressRecipe(ResourceLocation id, Ingredient inputTop, Ingredient inputBottom, ItemStack result, int processTime) {
         super(id, RecipesInit.DOUBLE_PRESSING_SERIALIZER.get(), RecipesInit.DOUBLE_PRESSING, result);
-        this.inputBottom = inputBottom;
         this.inputTop = inputTop;
-        this.result = result.copy();
+        this.inputBottom = inputBottom;
+        this.result = result;
         this.processTime = processTime;
     }
 
@@ -39,11 +39,12 @@ public class DoublePressRecipe extends BaseRecipe {
         return this.inputTop;
     }
 
-    public ItemStack getInputBottom() {
+    public Ingredient getInputBottom() {
         return this.inputBottom;
     }
 
-    public ItemStack getResult() {
+    @Override
+    public ItemStack getResultItem() {
         return this.result;
     }
 
@@ -58,11 +59,10 @@ public class DoublePressRecipe extends BaseRecipe {
         public DoublePressRecipe fromJson(ResourceLocation recipeId, JsonObject jsonObject) {
             ResourceLocation itemId = new ResourceLocation(JSONUtils.getAsString(jsonObject, "result"));
             Ingredient ingredientTop = Ingredient.fromJson(jsonObject.get("ingredient_top"));
-            ItemStack ingredientBottom = new ItemStack(JSONUtils.getAsItem(jsonObject, "ingredient_bottom"));
+            Ingredient ingredientBottom = Ingredient.fromJson(jsonObject.get("ingredient_bottom"));
             int count = JSONUtils.getAsInt(jsonObject, "count", 1);
             int processTime = JSONUtils.getAsInt(jsonObject, "time", 15);
             ItemStack result = new ItemStack(ForgeRegistries.ITEMS.getValue(itemId), count);
-
             return new DoublePressRecipe(itemId, ingredientTop, ingredientBottom, result, processTime);
         }
 
@@ -70,7 +70,7 @@ public class DoublePressRecipe extends BaseRecipe {
         @Override
         public DoublePressRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Ingredient ingredientTop = Ingredient.fromNetwork(buffer);
-            ItemStack ingredientBottom = buffer.readItem();
+            Ingredient ingredientBottom = Ingredient.fromNetwork(buffer);
             ItemStack result = buffer.readItem();
             int processTime = buffer.readInt();
             return new DoublePressRecipe(recipeId, ingredientTop, ingredientBottom, result, processTime);
@@ -78,8 +78,8 @@ public class DoublePressRecipe extends BaseRecipe {
 
         @Override
         public void toNetwork(PacketBuffer buffer, DoublePressRecipe recipe) {
-            recipe.getInputTop().toNetwork(buffer);
-            buffer.writeItem(recipe.inputBottom);
+            recipe.inputTop.toNetwork(buffer);
+            recipe.inputBottom.toNetwork(buffer);
             buffer.writeItem(recipe.result);
             buffer.writeInt(recipe.processTime);
         }

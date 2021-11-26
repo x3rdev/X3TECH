@@ -128,6 +128,9 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
                 return;
             }
         }
+        if(recipe == null) {
+            return;
+        }
 
         if(progress < processTime) {
             progress += 1;
