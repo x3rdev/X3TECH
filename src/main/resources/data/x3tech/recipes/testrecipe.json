@@ -1,0 +1,10 @@
+{
+  "type": "x3tech:double_pressing",
+  "ingredient_top": {
+    "item": "x3tech:copper_ingot"
+  },
+  "ingredient_bottom": {
+    "item": "x3tech:cobalt_ingot"
+  },
+  "result": "x3tech:copper_plate"
+}

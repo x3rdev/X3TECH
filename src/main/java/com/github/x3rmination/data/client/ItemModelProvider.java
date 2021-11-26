@@ -19,6 +19,7 @@ public class ItemModelProvider extends net.minecraftforge.client.model.generator
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
             MIngotBuilder(materialBase.getName());
             MNuggetBuilder(materialBase.getName());
+            MPlateBuilder(materialBase.getName());
             MBlockItemBuilder(materialBase.getName());
             MDustBuilder(materialBase.getName());
             if(materialBase.materialHasOre()) {
@@ -36,10 +37,13 @@ public class ItemModelProvider extends net.minecraftforge.client.model.generator
     private ItemModelBuilder MDustBuilder(String name) {
         return getBuilder(name+"_dust").parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_dust");
     }
+    private ItemModelBuilder MPlateBuilder(String name) {
+        return getBuilder(name+"_plate").parent(getExistingFile(mcLoc("item/generated"))).texture("layer0", X3TECH.MOD_ID + ":item/base_plate");
+    }
     private ItemModelBuilder MBlockItemBuilder(String name) {
-        return getBuilder(name + "_block").parent(getExistingFile(ResourceLocation.tryParse(X3TECH.MOD_ID + ":block/base_block"))).texture("layer0", X3TECH.MOD_ID + ":block/base_block");
+        return getBuilder(name+"_block").parent(getExistingFile(ResourceLocation.tryParse(X3TECH.MOD_ID + ":block/base_block"))).texture("layer0", X3TECH.MOD_ID + ":block/base_block");
     }
     private ItemModelBuilder MOreBlockItemBuilder(String name) {
-        return getBuilder(name + "_ore").parent(getExistingFile(ResourceLocation.tryParse(X3TECH.MOD_ID + ":block/base_ore"))).texture("layer0", X3TECH.MOD_ID + ":block/base_ore");
+        return getBuilder(name+"_ore").parent(getExistingFile(ResourceLocation.tryParse(X3TECH.MOD_ID + ":block/base_ore"))).texture("layer0", X3TECH.MOD_ID + ":block/base_ore");
     }
 }

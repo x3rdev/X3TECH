@@ -22,7 +22,7 @@ public class ItemTagsProvider extends net.minecraft.data.ItemTagsProvider {
             }
             tag(ModTags.itemTagLibrary.get(materialBase.getName() + "_ingot")).add(MItemInit.itemLibrary.get(materialBase.getName() + "_ingot"));
             tag(ModTags.itemTagLibrary.get(materialBase.getName() + "_nugget")).add(MItemInit.itemLibrary.get(materialBase.getName() + "_nugget"));
+            tag(ModTags.itemTagLibrary.get(materialBase.getName() + "_plate")).add(MItemInit.itemLibrary.get(materialBase.getName() + "_plate"));
         }
-
     }
 }

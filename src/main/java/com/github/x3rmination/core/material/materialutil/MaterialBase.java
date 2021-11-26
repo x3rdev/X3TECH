@@ -10,7 +10,7 @@ public class MaterialBase {
     private final int miningResistance;
     private final int miningLevel;
     private final boolean hasOre;
-
+    // Info storage class
     public MaterialBase(String name, Color color, int miningResistance, int explosionResistance, int miningLevel, boolean hasOre){
         this.color = color;
         this.name = name;

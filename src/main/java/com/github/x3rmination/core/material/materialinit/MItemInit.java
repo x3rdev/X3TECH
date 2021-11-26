@@ -23,6 +23,7 @@ public class MItemInit {
             MItemBase mIngotItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
             MItemBase mNuggetItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
             MItemBase mDustItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
+            MItemBase mPlateItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
             itemLibrary.put(materialBase.getName().concat("_ingot"), mIngotItemBase);
             MITEMS.register(materialBase.getName().concat("_ingot"),
                     () -> mIngotItemBase);
@@ -32,6 +33,9 @@ public class MItemInit {
             itemLibrary.put(materialBase.getName().concat("_dust"), mDustItemBase);
             MITEMS.register(materialBase.getName().concat("_dust"),
                     () -> mDustItemBase);
+            itemLibrary.put(materialBase.getName().concat("_plate"), mPlateItemBase);
+            MITEMS.register(materialBase.getName().concat("_plate"),
+                    () -> mPlateItemBase);
         }
     }
 }

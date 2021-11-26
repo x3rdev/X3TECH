@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class PoweredPulverizerRecipe extends SingleItemRecipe {
 
-    int processTime;
+    private final int processTime;
 
     public PoweredPulverizerRecipe(ResourceLocation recipeId, Ingredient input, ItemStack result, int processTime) {
         super(RecipesInit.PULVERIZING, RecipesInit.PULVERIZING_SERIALIZER.get(), recipeId, "", input, result);

@@ -57,17 +57,18 @@ public class ModTags {
             for (MaterialBase materialBase : MaterialRegistry.materialList) {
                 ITag.INamedTag<Item> blockItemTag = forge("blocks/" + materialBase.getName());
                 itemTagLibrary.put(materialBase.getName() + "_block", blockItemTag);
-
                 if(materialBase.materialHasOre()){
                     ITag.INamedTag<Item> oreItemTag = forge("ores/" + materialBase.getName());
                     itemTagLibrary.put(materialBase.getName() + "_ore", oreItemTag);
                 }
-
                 ITag.INamedTag<Item> ingotTag = forge("ingots/" + materialBase.getName());
                 itemTagLibrary.put(materialBase.getName() + "_ingot", ingotTag);
 
                 ITag.INamedTag<Item> nuggetTag = forge("nuggets/" + materialBase.getName());
                 itemTagLibrary.put(materialBase.getName() + "_nugget", nuggetTag);
+
+                ITag.INamedTag<Item> plateTag = forge("plate/" + materialBase.getName());
+                itemTagLibrary.put(materialBase.getName() + "_plate", plateTag);
             }
         }
     }

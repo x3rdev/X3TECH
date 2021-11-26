@@ -1,6 +1,8 @@
 package com.github.x3rmination.common.blocks.tile_entities.double_press;
 
+import com.github.x3rmination.common.crafting.recipe.DoublePressRecipe;
 import com.github.x3rmination.core.util.energy.ModEnergyStorage;
+import com.github.x3rmination.registry.init.RecipesInit;
 import com.github.x3rmination.registry.init.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,8 +11,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipe;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -76,7 +76,7 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
     public DoublePressTileEntity() {
         super(TileEntityTypeInit.DOUBLE_PRESS.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
-        this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         this.doublePressEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX);
         this.energyHandler = LazyOptional.of(() -> this.doublePressEnergyStorage);
     }
@@ -90,11 +90,15 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
         if(this.level == null || this.level.isClientSide) {
             return;
         }
-
-        FurnaceRecipe recipe = getRecipe();
+        DoublePressRecipe recipe = getRecipe();
+        System.out.println("recipe is null? " + getRecipe());
+        if(recipe != null) {
+            System.out.println(String.valueOf(recipe.getInputTop()));
+            System.out.println(String.valueOf(recipe.getInputBottom()));
+            System.out.println(String.valueOf(recipe.getResult()));
+        }
         if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
-//            useEnergy(defaultUse);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
             stopWork();
@@ -106,25 +110,29 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
     }
 
     @Nullable
-    public FurnaceRecipe getRecipe() {
-        if (this.level == null || getItem(0).isEmpty()) {
+    public DoublePressRecipe getRecipe() {
+        System.out.println(String.valueOf(getItem(0)));
+        System.out.println(String.valueOf(getItem(1)));
+        if (this.level == null || getItem(0).isEmpty() || getItem(1).isEmpty()) {
             return null;
         }
-        return this.level.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, this, this.level).orElse(null);
+        return this.level.getRecipeManager().getRecipeFor(RecipesInit.DOUBLE_PRESSING, this, this.level).orElse(null);
     }
 
-    private ItemStack getWorkOutput(@Nullable FurnaceRecipe recipe) {
+    private ItemStack getWorkOutput(@Nullable DoublePressRecipe recipe) {
         if (recipe != null) {
             return recipe.assemble(this);
         }
         return ItemStack.EMPTY;
     }
 
-    private void doWork(FurnaceRecipe recipe) {
+    private void doWork(DoublePressRecipe recipe) {
         assert this.level != null;
-        ItemStack current = getItem(1);
-        ItemStack output = getWorkOutput(recipe);
-        processTime = recipe.getCookingTime()/10 + 5;
+        ItemStack input0 = getItem(0);
+        ItemStack input1 = getItem(1);
+        ItemStack current = getItem(2);
+        ItemStack output = recipe.getResult();
+        processTime = recipe.getProcessTime()/10 + 5;
         if(!current.isEmpty()) {
             int newCount = current.getCount() + output.getCount();
             if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
@@ -138,7 +146,7 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
         }
 
         if(progress >= processTime) {
-            finishWork(recipe, current, output);
+            finishWork(recipe, input0, input1, current, output);
         }
     }
 
@@ -150,14 +158,15 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
         progress = 0;
     }
 
-    private void finishWork(FurnaceRecipe recipe, ItemStack current, ItemStack output) {
+    private void finishWork(DoublePressRecipe recipe, ItemStack input0, ItemStack input1, ItemStack current, ItemStack output) {
         if(!current.isEmpty()){
             current.grow(output.getCount());
         } else {
-            setItem(1, output);
+            setItem(2, output);
         }
         progress = 0;
         this.removeItem(0, 1);
+        this.removeItem(1, 1);
     }
 
     private boolean useEnergy(int amount) {
@@ -200,12 +209,17 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
 
     @Override
     public int getContainerSize() {
-        return 2;
+        return 3;
     }
 
     @Override
     public boolean isEmpty() {
-        return getItem(0).isEmpty() && getItem(1).isEmpty();
+        for(int i = 0; i <= this.getContainerSize(); i++) {
+            if(getItem(i).isEmpty()){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -241,7 +255,7 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
     @Override
     public void load(BlockState state, CompoundNBT tags) {
         super.load(state, tags);
-        this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         this.progress = tags.getInt("progress");
         ItemStackHelper.loadAllItems(tags, this.items);
         energyHandler.ifPresent(modEnergyStorage -> modEnergyStorage.deserializeNBT(tags.getCompound("energy")));

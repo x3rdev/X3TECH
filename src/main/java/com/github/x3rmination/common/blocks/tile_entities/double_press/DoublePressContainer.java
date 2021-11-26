@@ -33,8 +33,9 @@ public class DoublePressContainer extends Container {
         this.maxReceive = 10000;
         this.maxExtract = 0;
 
-        this.addSlot(new Slot(this.inventory, 0, 44, 36));
-        this.addSlot(new Slot(this.inventory, 1, 104, 36) {
+        this.addSlot(new Slot(this.inventory, 0, 44, 27));
+        this.addSlot(new Slot(this.inventory, 1, 44, 45));
+        this.addSlot(new Slot(this.inventory, 2, 104, 36) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
