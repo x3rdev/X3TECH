@@ -91,10 +91,7 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
             return;
         }
         DoublePressRecipe recipe = getRecipe();
-        System.out.println("recipe valid?" + recipe);
-        if(recipe != null && !recipe.getResultItem().isEmpty()) {
-            System.out.println("recipe not empty");
-            //&& useEnergy(defaultUse)
+        if(recipe != null && !recipe.getResultItem().isEmpty() && useEnergy(defaultUse)) {
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
@@ -125,12 +122,9 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
         ItemStack current = getItem(2);
         ItemStack output = recipe.getResultItem();
         processTime = recipe.getProcessTime()/10 + 5;
-        System.out.println("doingwork");
         if(!current.isEmpty()) {
-            System.out.println("output not empty");
             int newCount = current.getCount() + output.getCount();
             if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
-                System.out.println("stopping work");
                 stopWork();
                 return;
             }

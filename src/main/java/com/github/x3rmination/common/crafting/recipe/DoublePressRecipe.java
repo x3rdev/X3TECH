@@ -21,12 +21,14 @@ public class DoublePressRecipe extends BaseRecipe {
     private final Ingredient inputTop;
     private final Ingredient inputBottom;
     private final ItemStack result;
+    private final int count;
     private final int processTime;
 
-    public DoublePressRecipe(ResourceLocation id, Ingredient inputTop, Ingredient inputBottom, ItemStack result, int processTime) {
+    public DoublePressRecipe(ResourceLocation id, Ingredient inputTop, Ingredient inputBottom, ItemStack result, int count, int processTime) {
         super(id, RecipesInit.DOUBLE_PRESSING_SERIALIZER.get(), RecipesInit.DOUBLE_PRESSING, result);
         this.inputTop = inputTop;
         this.inputBottom = inputBottom;
+        this.count = 1;
         this.result = result;
         this.processTime = processTime;
     }
@@ -45,7 +47,7 @@ public class DoublePressRecipe extends BaseRecipe {
 
     @Override
     public ItemStack getResultItem() {
-        return this.result;
+        return new ItemStack(this.result.getItem(), this.count);
     }
 
     @Override
@@ -62,8 +64,8 @@ public class DoublePressRecipe extends BaseRecipe {
             Ingredient ingredientBottom = Ingredient.fromJson(jsonObject.get("ingredient_bottom"));
             int count = JSONUtils.getAsInt(jsonObject, "count", 1);
             int processTime = JSONUtils.getAsInt(jsonObject, "time", 15);
-            ItemStack result = new ItemStack(ForgeRegistries.ITEMS.getValue(itemId), count);
-            return new DoublePressRecipe(itemId, ingredientTop, ingredientBottom, result, processTime);
+            ItemStack result = new ItemStack(ForgeRegistries.ITEMS.getValue(itemId));
+            return new DoublePressRecipe(itemId, ingredientTop, ingredientBottom, result, 1, processTime);
         }
 
         @Nullable
@@ -72,8 +74,9 @@ public class DoublePressRecipe extends BaseRecipe {
             Ingredient ingredientTop = Ingredient.fromNetwork(buffer);
             Ingredient ingredientBottom = Ingredient.fromNetwork(buffer);
             ItemStack result = buffer.readItem();
+            int count = buffer.readInt();
             int processTime = buffer.readInt();
-            return new DoublePressRecipe(recipeId, ingredientTop, ingredientBottom, result, processTime);
+            return new DoublePressRecipe(recipeId, ingredientTop, ingredientBottom, result, 1, processTime);
         }
 
         @Override
@@ -82,6 +85,7 @@ public class DoublePressRecipe extends BaseRecipe {
             recipe.inputBottom.toNetwork(buffer);
             buffer.writeItem(recipe.result);
             buffer.writeInt(recipe.processTime);
+            buffer.writeInt(recipe.count);
         }
     }
 }
