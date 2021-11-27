@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.double_press;
+package com.github.x3rmination.common.blocks.tile_entities.single_press;
 
 import com.github.x3rmination.registry.init.ContainerTypeInit;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,7 +11,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.IntArray;
 
-public class DoublePressContainer extends Container {
+public class SinglePressContainer extends Container {
     private final IInventory inventory;
     private IIntArray fields;
     protected int energy;
@@ -19,12 +19,12 @@ public class DoublePressContainer extends Container {
     protected int maxReceive;
     protected int maxExtract;
 
-    public DoublePressContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
-        this(id, playerInventory, new DoublePressTileEntity(), new IntArray(buffer.readByte()));
+    public SinglePressContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
+        this(id, playerInventory, new SinglePressTileEntity(), new IntArray(buffer.readByte()));
     }
 
-    public DoublePressContainer(int id, PlayerInventory playerInventory, IInventory inventory, IIntArray fields) {
-        super(ContainerTypeInit.DOUBLE_PRESS.get(), id);
+    public SinglePressContainer(int id, PlayerInventory playerInventory, IInventory inventory, IIntArray fields) {
+        super(ContainerTypeInit.SINGLE_PRESS.get(), id);
         this.inventory = inventory;
         this.fields = fields;
 
@@ -33,9 +33,8 @@ public class DoublePressContainer extends Container {
         this.maxReceive = 10000;
         this.maxExtract = 0;
 
-        this.addSlot(new Slot(this.inventory, 0, 44, 27));
-        this.addSlot(new Slot(this.inventory, 1, 44, 47));
-        this.addSlot(new Slot(this.inventory, 2, 104, 36) {
+        this.addSlot(new Slot(this.inventory, 0, 44, 36));
+        this.addSlot(new Slot(this.inventory, 1, 104, 36) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
@@ -63,7 +62,7 @@ public class DoublePressContainer extends Container {
     public int getProgressArrowScale() {
         int progress = fields.get(0);
         if(progress > 0){
-            return progress * 24 / new DoublePressTileEntity().getProcessTime();
+            return progress * 24 / new SinglePressTileEntity().getProcessTime();
         }
         return 0;
     }

@@ -1,0 +1,8 @@
+{
+  "type": "x3tech:single_pressing",
+  "ingredient": {
+    "item": "x3tech:tin_ingot"
+  },
+  "result": "x3tech:tin_plate",
+  "count": 1
+}

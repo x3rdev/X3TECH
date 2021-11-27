@@ -91,7 +91,8 @@ public class DoublePressTileEntity extends LockableTileEntity implements ISidedI
             return;
         }
         DoublePressRecipe recipe = getRecipe();
-        if(recipe != null && !recipe.getResultItem().isEmpty() && useEnergy(defaultUse)) {
+        if(recipe != null) {
+            //&& useEnergy(defaultUse)
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.TRUE), 3);
         } else {

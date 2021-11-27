@@ -1,0 +1,9 @@
+{
+  "type": "x3tech:single_pressing",
+  "ingredient": {
+    "item": "x3tech:copper_ingot"
+  },
+  "result": "x3tech:copper_plate",
+  "count": 2,
+  "time": 15
+}

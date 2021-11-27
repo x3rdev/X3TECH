@@ -24,8 +24,9 @@ public class DoublePressRecipe extends BaseRecipe {
     private final int count;
     private final int processTime;
 
+
     public DoublePressRecipe(ResourceLocation id, Ingredient inputTop, Ingredient inputBottom, ItemStack result, int count, int processTime) {
-        super(id, RecipesInit.DOUBLE_PRESSING_SERIALIZER.get(), RecipesInit.DOUBLE_PRESSING, result);
+        super(RecipesInit.DOUBLE_PRESSING, RecipesInit.DOUBLE_PRESSING_SERIALIZER.get(), id, inputTop, result);
         this.inputTop = inputTop;
         this.inputBottom = inputBottom;
         this.count = 1;
@@ -51,8 +52,8 @@ public class DoublePressRecipe extends BaseRecipe {
     }
 
     @Override
-    public boolean matches(IInventory pInv, World pLevel) {
-        return super.matches(pInv, pLevel);
+    public boolean matches(IInventory inventory, World world) {
+        return this.inputTop.test(inventory.getItem(0)) && this.inputBottom.test(inventory.getItem(1));
     }
 
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<DoublePressRecipe> {
@@ -65,7 +66,7 @@ public class DoublePressRecipe extends BaseRecipe {
             int count = JSONUtils.getAsInt(jsonObject, "count", 1);
             int processTime = JSONUtils.getAsInt(jsonObject, "time", 15);
             ItemStack result = new ItemStack(ForgeRegistries.ITEMS.getValue(itemId));
-            return new DoublePressRecipe(itemId, ingredientTop, ingredientBottom, result, 1, processTime);
+            return new DoublePressRecipe(itemId, ingredientTop, ingredientBottom, result, count, processTime);
         }
 
         @Nullable
@@ -76,7 +77,7 @@ public class DoublePressRecipe extends BaseRecipe {
             ItemStack result = buffer.readItem();
             int count = buffer.readInt();
             int processTime = buffer.readInt();
-            return new DoublePressRecipe(recipeId, ingredientTop, ingredientBottom, result, 1, processTime);
+            return new DoublePressRecipe(recipeId, ingredientTop, ingredientBottom, result, count, processTime);
         }
 
         @Override

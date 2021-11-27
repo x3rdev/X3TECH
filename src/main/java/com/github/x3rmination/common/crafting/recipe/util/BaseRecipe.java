@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -14,15 +15,17 @@ import java.util.Objects;
 
 public class BaseRecipe implements IRecipe<IInventory> {
 
+    private final IRecipeType<?> recipeType;
     private final ResourceLocation id;
     private final IRecipeSerializer<?> recipeSerializer;
-    private final IRecipeType<?> recipeType;
     private final ItemStack result;
+    private final Ingredient ingredient;
 
-    protected BaseRecipe(ResourceLocation id, IRecipeSerializer<?> recipeSerializer, IRecipeType<?> recipeType, ItemStack result) {
+    public BaseRecipe(IRecipeType<?> type, IRecipeSerializer<?> serializer, ResourceLocation id, Ingredient ingredient, ItemStack result) {
+        this.recipeType = type;
+        this.recipeSerializer = serializer;
         this.id = Objects.requireNonNull(id, "Recipe name cannot be null.");
-        this.recipeSerializer = recipeSerializer;
-        this.recipeType = recipeType;
+        this.ingredient = ingredient;
         this.result = result;
     }
 
@@ -30,7 +33,8 @@ public class BaseRecipe implements IRecipe<IInventory> {
 
     @Override
     public boolean matches(IInventory pInv, World pLevel) {
-        return true;
+        //Override me!!!
+        return false;
     }
 
     @Override

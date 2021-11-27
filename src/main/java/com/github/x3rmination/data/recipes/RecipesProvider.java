@@ -53,6 +53,9 @@ public class RecipesProvider extends RecipeProvider {
             new SingleItemRecipeBuilder(RecipesInit.PULVERIZING_SERIALIZER.get(), Ingredient.of(MItemInit.itemLibrary.get(materialBase.getName()+"_ingot")), MItemInit.itemLibrary.get(materialBase.getName()+"_dust"), 1)
                     .unlocks("has_item", has(MItemInit.itemLibrary.get(materialBase.getName()+"_ingot")))
                     .save(consumer, materialBase.getName()+"_dust_from_ingot");
+            new SingleItemRecipeBuilder(RecipesInit.SINGLE_PRESSING_SERIALIZER.get(), Ingredient.of(MItemInit.itemLibrary.get(materialBase.getName()+"_ingot")), MItemInit.itemLibrary.get(materialBase.getName()+"_plate"), 1)
+                    .unlocks("has_item", has(MItemInit.itemLibrary.get(materialBase.getName()+"_ingot")))
+                    .save(consumer, materialBase.getName()+"_plate_from_ingot");
             CookingRecipeBuilder.smelting(Ingredient.of(MItemInit.itemLibrary.get(materialBase.getName()+"_dust")), MItemInit.itemLibrary.get(materialBase.getName()+"_ingot"), 0.7f, 200)
                     .unlockedBy("has_item", has(MItemInit.itemLibrary.get(materialBase.getName()+"_dust")))
                     .save(consumer, materialBase.getName() + "_ingot_from_dust");
