@@ -28,12 +28,12 @@ public class MBlockInit {
     public void registerMItems() {
 
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
-            MBlockBase mBlockBase = new MBlockBase(AbstractBlock.Properties.of(Material.HEAVY_METAL).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().strength(materialBase.getMiningResistance(), materialBase.getExplosionResistance()).harvestLevel(materialBase.getMiningLevel()), materialBase.getColor());
+            MBlockBase mBlockBase = new MBlockBase(AbstractBlock.Properties.of(Material.HEAVY_METAL).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().strength(materialBase.getMiningTime(), materialBase.getExplosionResistance()).harvestLevel(materialBase.getMiningLevel()), materialBase.getColor());
             blockLibrary.put(materialBase.getName() + "_block", mBlockBase);
             MBLOCKS.register(materialBase.getName() + "_block",
                     () -> mBlockBase);
             if(materialBase.materialHasOre()) {
-                MOreBlockBase mOreBlockBase = new MOreBlockBase(AbstractBlock.Properties.of(Material.STONE).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().harvestLevel(materialBase.getMiningLevel()).strength(materialBase.getMiningResistance()), materialBase.getColor());
+                MOreBlockBase mOreBlockBase = new MOreBlockBase(AbstractBlock.Properties.of(Material.STONE).harvestTool(ToolType.PICKAXE).requiresCorrectToolForDrops().harvestLevel(materialBase.getMiningLevel()).strength(materialBase.getMiningTime()), materialBase.getColor());
                 blockLibrary.put(materialBase.getName() + "_ore", mOreBlockBase);
                 MOREBLOCKS.register(materialBase.getName() + "_ore",
                         () -> mOreBlockBase);

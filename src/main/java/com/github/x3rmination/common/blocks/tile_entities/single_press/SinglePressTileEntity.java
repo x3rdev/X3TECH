@@ -76,7 +76,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
         super(TileEntityTypeInit.SINGLE_PRESS.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        this.singlePressEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX);
+        this.singlePressEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, false, true);
         this.energyHandler = LazyOptional.of(() -> this.singlePressEnergyStorage);
     }
 
@@ -90,9 +90,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
             return;
         }
         SinglePressRecipe recipe = getRecipe();
-        if(recipe != null) {
-            //&& useEnergy(defaultUse)
-            //&& Arrays.toString(recipe.getIngredients().get(0).getItems()).equals(Arrays.toString(Ingredient.of(this.items.get(0).getItem()).getItems()))
+        if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(SinglePressBlock.ACTIVE, Boolean.TRUE), 3);
         } else {

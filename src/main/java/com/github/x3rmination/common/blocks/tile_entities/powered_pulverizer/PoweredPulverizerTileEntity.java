@@ -77,7 +77,7 @@ public class PoweredPulverizerTileEntity extends LockableTileEntity implements I
         super(TileEntityTypeInit.POWERED_PULVERIZER.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
-        this.poweredPulverizerEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX);
+        this.poweredPulverizerEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, false, true);
         this.energyHandler = LazyOptional.of(() -> this.poweredPulverizerEnergyStorage);
     }
 

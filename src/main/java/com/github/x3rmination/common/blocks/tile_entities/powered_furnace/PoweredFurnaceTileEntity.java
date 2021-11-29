@@ -77,7 +77,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         super(TileEntityTypeInit.POWERED_FURNACE.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
-        this.poweredFurnaceEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX);
+        this.poweredFurnaceEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, false, true);
         this.energyHandler = LazyOptional.of(() -> this.poweredFurnaceEnergyStorage);
     }
 
@@ -94,7 +94,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         FurnaceRecipe recipe = getRecipe();
         if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
-//            useEnergy(defaultUse);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
             stopWork();

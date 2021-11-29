@@ -1,5 +1,7 @@
 package com.github.x3rmination.registry.init;
 
+import com.github.x3rmination.common.blocks.tile_entities.combustion_generator.CombustionGeneratorContainer;
+import com.github.x3rmination.common.blocks.tile_entities.combustion_generator.CombustionGeneratorScreen;
 import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressContainer;
 import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressScreen;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceContainer;
@@ -25,6 +27,7 @@ public class ContainerTypeInit {
     public static final RegistryObject<ContainerType<PoweredPulverizerContainer>> POWERED_PULVERIZER = register("powered_pulverizer", PoweredPulverizerContainer::new);
     public static final RegistryObject<ContainerType<SinglePressContainer>> SINGLE_PRESS = register("single_press", SinglePressContainer::new);
     public static final RegistryObject<ContainerType<DoublePressContainer>> DOUBLE_PRESS = register("double_press", DoublePressContainer::new);
+    public static final RegistryObject<ContainerType<CombustionGeneratorContainer>> COMBUSTION_GENERATOR = register("combustion_generator", CombustionGeneratorContainer::new);
 
 
     public static void register() {}
@@ -35,6 +38,7 @@ public class ContainerTypeInit {
         ScreenManager.register(POWERED_PULVERIZER.get(), PoweredPulverizerScreen::new);
         ScreenManager.register(SINGLE_PRESS.get(), SinglePressScreen::new);
         ScreenManager.register(DOUBLE_PRESS.get(), DoublePressScreen::new);
+        ScreenManager.register(COMBUSTION_GENERATOR.get(), CombustionGeneratorScreen::new);
     }
 
     private static <T extends Container> RegistryObject<ContainerType<T>> register(String name, IContainerFactory<T> factory) {

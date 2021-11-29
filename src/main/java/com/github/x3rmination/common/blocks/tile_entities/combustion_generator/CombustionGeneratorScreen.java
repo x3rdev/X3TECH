@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.combustion_generator;
 
 import com.github.x3rmination.X3TECH;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -9,10 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContainer> {
+public class CombustionGeneratorScreen extends ContainerScreen<CombustionGeneratorContainer> {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/powered_furnace.png");
-    public PoweredFurnaceScreen(PoweredFurnaceContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/combustion_generator.png");
+    public CombustionGeneratorScreen(CombustionGeneratorContainer container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
     }
 

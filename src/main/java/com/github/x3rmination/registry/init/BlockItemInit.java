@@ -15,6 +15,8 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.SINGLE_PRESS.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> DOUBLE_PRESS = ModRegistration.BLOCK_ITEMS.register("double_press",
             () -> new BlockItem(BlockInit.DOUBLE_PRESS.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
+    public static final RegistryObject<BlockItem> COMBUSTION_GENERATOR = ModRegistration.BLOCK_ITEMS.register("combustion_generator",
+            () -> new BlockItem(BlockInit.COMBUSTION_GENERATOR.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> MACHINE_FRAME = ModRegistration.BLOCK_ITEMS.register("machine_frame",
             () -> new BlockItem(BlockInit.MACHINE_FRAME.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
      public static void register() {}
