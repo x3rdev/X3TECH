@@ -1,4 +1,4 @@
-package com.github.x3rmination.data.loottable;
+package com.github.x3rmination.data.loot_table;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;

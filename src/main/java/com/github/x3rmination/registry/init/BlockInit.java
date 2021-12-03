@@ -1,5 +1,6 @@
 package com.github.x3rmination.registry.init;
 
+import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableBlock;
 import com.github.x3rmination.common.blocks.tile_entities.combustion_generator.CombustionGeneratorBlock;
 import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressBlock;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
@@ -43,6 +44,11 @@ public class BlockInit {
             () -> new Block(AbstractBlock.Properties.of(Material.HEAVY_METAL)
                     .strength(4, 20)
                     .sound(SoundType.METAL)));
+    public static final RegistryObject<Block> POWER_CABLE = ModRegistration.BLOCKS.register("power_cable",
+            () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.ICE)
+                    .strength(1, 20)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
     public static void register() {}
 
 }

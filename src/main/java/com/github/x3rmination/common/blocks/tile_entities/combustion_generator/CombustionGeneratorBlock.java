@@ -22,6 +22,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("deprecation")
 public class CombustionGeneratorBlock extends Block {
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;

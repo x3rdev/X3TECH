@@ -3,7 +3,7 @@ package com.github.x3rmination.data;
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.data.client.BlockModelProvider;
 import com.github.x3rmination.data.client.ItemModelProvider;
-import com.github.x3rmination.data.loottable.LootTableProvider;
+import com.github.x3rmination.data.loot_table.LootTableProvider;
 import com.github.x3rmination.data.recipes.RecipesProvider;
 import com.github.x3rmination.data.tags.BlockTagsProvider;
 import com.github.x3rmination.data.tags.ItemTagsProvider;

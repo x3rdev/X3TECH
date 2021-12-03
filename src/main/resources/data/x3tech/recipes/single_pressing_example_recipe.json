@@ -3,7 +3,7 @@
   "ingredient": {
     "item": "x3tech:copper_ingot"
   },
-  "result": "x3tech:copper_plate",
+  "result": "minecraft:dirt",
   "count": 2,
   "time": 15
 }

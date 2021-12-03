@@ -1,4 +1,4 @@
-package com.github.x3rmination.data.loottable;
+package com.github.x3rmination.data.loot_table;
 
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialutil.MaterialBase;

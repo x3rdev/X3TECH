@@ -15,6 +15,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.NonNullList;
@@ -24,6 +25,7 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
@@ -91,7 +93,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
             return;
         }
         int burnTime = ForgeHooks.getBurnTime(getItem(0), IRecipeType.SMELTING);
-        if(burnTime > 0 && !working && !(combustionGeneratorEnergyStorage.getEnergyStored() == combustionGeneratorEnergyStorage.getMaxEnergyStored())) {
+        if(burnTime > 0 && !working && (combustionGeneratorEnergyStorage.getEnergyStored() != combustionGeneratorEnergyStorage.getMaxEnergyStored())) {
             working = true;
             lastBurnTime = burnTime;
             doWork(burnTime);
@@ -103,15 +105,26 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
             stopWork();
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(CombustionGeneratorBlock.ACTIVE, Boolean.FALSE), 3);
         }
+        if(combustionGeneratorEnergyStorage.getEnergyStored() > 0) {
+            Direction direction = this.getBlockState().getValue(CombustionGeneratorBlock.FACING).getOpposite();
+            TileEntity tileEntity = this.level.getBlockEntity(getBlockPos().relative(direction, 1));
+            if(tileEntity != null && !tileEntity.isRemoved() && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+                LazyOptional<IEnergyStorage> capabilityEnergy = tileEntity.getCapability(CapabilityEnergy.ENERGY, Direction.SOUTH);
+
+                int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());
+                capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false);
+                combustionGeneratorEnergyStorage.extractEnergy(energyLoss, false);
+            }
+        }
     }
 
     private void doWork(int burnTime) {
         assert this.level != null;
-        processTime = burnTime / 10;
+        processTime = burnTime / 100;
 
         if(progress < processTime) {
             progress += 1;
-            combustionGeneratorEnergyStorage.receiveEnergy(10, false);
+            combustionGeneratorEnergyStorage.receiveEnergy(100, false);
         }
 
         if(progress >= processTime) {
@@ -119,17 +132,18 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
         }
     }
 
-    public int getProcessTime(){
+    public int getProcessTime() {
         return processTime;
-    }
-
-    private void finishWork(){
-        progress = 0;
-        working = false;
     }
 
     private void stopWork() {
         progress = 0;
+    }
+
+
+    private void finishWork(){
+        progress = 0;
+        working = false;
     }
 
     @Override
@@ -241,13 +255,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
         if (!this.remove) {
             if (side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                if (side == Direction.UP) {
-                    return this.itemHandler[0].cast();
-                } else if (side == Direction.DOWN) {
-                    return this.itemHandler[1].cast();
-                } else {
-                    return this.itemHandler[2].cast();
-                }
+                return this.itemHandler[0].cast();
             }
             if (cap == CapabilityEnergy.ENERGY) {
                 return energyHandler.cast();
