@@ -1,7 +1,7 @@
 {
   "type": "x3tech:single_pressing",
   "ingredient": {
-    "item": "x3tech:copper_ingot"
+    "item": "minecraft:red_wool"
   },
   "result": "minecraft:dirt",
   "count": 2,

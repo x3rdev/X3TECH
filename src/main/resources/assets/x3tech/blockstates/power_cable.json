@@ -1,0 +1,63 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "x3tech:block/power_cable_center"
+      }
+    },
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "x3tech:block/power_cable_connection_north",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "x3tech:block/power_cable_connection_east",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "x3tech:block/power_cable_connection_south",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "x3tech:block/power_cable_connection_west",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "up": "true"
+      },
+      "apply": {
+        "model": "x3tech:block/power_cable_connection_up",
+        "uvlock": true
+      }
+    },
+    {
+      "when": {
+        "down": "true"
+      },
+      "apply": {
+        "model": "x3tech:block/power_cable_connection_down",
+        "uvlock": true
+      }
+    }
+  ]
+}

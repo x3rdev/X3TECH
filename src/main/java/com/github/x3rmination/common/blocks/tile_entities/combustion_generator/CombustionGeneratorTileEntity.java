@@ -39,7 +39,6 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] itemHandler;
 
-
     private int progress = 0;
     private int energy = 0;
     private boolean working = false;
@@ -109,6 +108,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
             Direction direction = this.getBlockState().getValue(CombustionGeneratorBlock.FACING).getOpposite();
             TileEntity tileEntity = this.level.getBlockEntity(getBlockPos().relative(direction, 1));
             if(tileEntity != null && !tileEntity.isRemoved() && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+                // add all directions
                 LazyOptional<IEnergyStorage> capabilityEnergy = tileEntity.getCapability(CapabilityEnergy.ENERGY, Direction.SOUTH);
 
                 int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());

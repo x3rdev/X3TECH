@@ -19,6 +19,7 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.COMBUSTION_GENERATOR.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> MACHINE_FRAME = ModRegistration.BLOCK_ITEMS.register("machine_frame",
             () -> new BlockItem(BlockInit.MACHINE_FRAME.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
-
+    public static final RegistryObject<BlockItem> POWER_CABLE = ModRegistration.BLOCK_ITEMS.register("power_cable",
+            () -> new BlockItem(BlockInit.POWER_CABLE.get(), new Item.Properties().tab(ModRegistration.ModItemTab.instance)));
     public static void register() {}
 }

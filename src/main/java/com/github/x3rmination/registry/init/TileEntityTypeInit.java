@@ -1,5 +1,6 @@
 package com.github.x3rmination.registry.init;
 
+import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.combustion_generator.CombustionGeneratorTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceTileEntity;
@@ -35,6 +36,10 @@ public class TileEntityTypeInit {
             "combustion_generator",
             CombustionGeneratorTileEntity::new,
             BlockInit.COMBUSTION_GENERATOR);
+    public static final RegistryObject<TileEntityType<PowerCableTileEntity>> POWER_CABLE = register(
+            "power_cable",
+            PowerCableTileEntity::new,
+            BlockInit.POWER_CABLE);
 
     public static void register() {
     }

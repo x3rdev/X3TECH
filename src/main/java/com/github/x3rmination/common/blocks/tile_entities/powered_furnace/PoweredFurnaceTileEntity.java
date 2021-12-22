@@ -90,7 +90,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(this.level == null || this.level.isClientSide) {
             return;
         }
-
         FurnaceRecipe recipe = getRecipe();
         if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);

@@ -15,6 +15,9 @@ import net.minecraftforge.fml.RegistryObject;
 
 public class BlockInit {
 
+    private BlockInit() {
+    }
+
     public static final RegistryObject<PoweredFurnaceBlock> POWERED_FURNACE = ModRegistration.BLOCKS.register("powered_furnace",
             () -> new PoweredFurnaceBlock(AbstractBlock.Properties.of(Material.HEAVY_METAL)
                     .strength(4, 20)
@@ -45,10 +48,11 @@ public class BlockInit {
                     .strength(4, 20)
                     .sound(SoundType.METAL)));
     public static final RegistryObject<Block> POWER_CABLE = ModRegistration.BLOCKS.register("power_cable",
-            () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.ICE)
-                    .strength(1, 20)
+            () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(1, 10)
                     .sound(SoundType.METAL)
                     .noOcclusion()));
+
     public static void register() {}
 
 }
