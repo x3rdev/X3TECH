@@ -19,6 +19,7 @@ public class PipeDebugger extends Item {
         if(b.getBlock() == BlockInit.POWER_CABLE.get().getBlock()) {
             PowerCableNetwork p = ((PowerCableBlock)b).getPowerCableNetwork();
             if(p != null && !pContext.getLevel().isClientSide()) {
+                System.out.println(""+pContext.getClickedPos());
                 System.out.println(String.valueOf(p));
                 System.out.println("cableList: " +p.getCableList());
                 System.out.println("importConnections: " + p.getImportConnections());

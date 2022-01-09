@@ -20,12 +20,14 @@ import java.util.List;
 public class EnergyNetworkHelper {
 
     @SubscribeEvent
-    public void onWorldLoad(WorldEvent.Load event) {
+    public static void onWorldLoad(WorldEvent.Load event) {
+        System.out.println("Doing cable network setup");
         World world = (World) event.getWorld();
         syncEnergyNetwork(world, getTileEntityCables(world));
+        System.out.println("Finished network setup");
     }
 
-    private List<PowerCableTileEntity> getTileEntityCables(World world) {
+    private static List<PowerCableTileEntity> getTileEntityCables(World world) {
         List<TileEntity> blockEntityList = world.blockEntityList;
         List<PowerCableTileEntity> cableList = new ArrayList<>();
         for (TileEntity tileEntity : blockEntityList) {
@@ -36,13 +38,15 @@ public class EnergyNetworkHelper {
         return cableList;
     }
 
-    private void syncEnergyNetwork(World world, List<PowerCableTileEntity> cableList) {
+    private static void syncEnergyNetwork(World world, List<PowerCableTileEntity> cableList) {
         List<BlockPos> networkedCables = new ArrayList<>();
         for (PowerCableTileEntity powerCableTileEntity : cableList) {
             if(!networkedCables.contains(powerCableTileEntity.getBlockPos())) {
                 List<BlockPos> networkPosList = pathFind(world, powerCableTileEntity.getBlockPos(), null);
+                PowerCableNetwork net = new PowerCableNetwork();
                 for(BlockPos pos : networkPosList) {
-                    ((PowerCableBlock) world.getBlockState(pos).getBlock()).setPowerCableNetwork(new PowerCableNetwork());
+                    System.out.println("syncEnergyNetworks");
+                    ((PowerCableBlock) world.getBlockState(pos).getBlock()).setPowerCableNetwork(net);
                 }
                 networkedCables.addAll(networkPosList);
             }
@@ -50,7 +54,7 @@ public class EnergyNetworkHelper {
 //        return networkedCables;
     }
 
-    private List<BlockPos> pathFind(World world, BlockPos pos, Direction previousCableDirection) {
+    private static List<BlockPos> pathFind(World world, BlockPos pos, Direction previousCableDirection) {
         List<BlockPos> allCableList = new ArrayList<>();
         if(world.getBlockState(pos.north()).getBlock().is(BlockInit.POWER_CABLE.get())) {
             if(previousCableDirection != Direction.NORTH.getOpposite()) {

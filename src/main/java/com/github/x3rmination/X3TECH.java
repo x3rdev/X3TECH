@@ -4,6 +4,7 @@ import com.github.x3rmination.client.color.ColorLoader;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
+import com.github.x3rmination.core.util.cablenetworks.EnergyNetworkHelper;
 import com.github.x3rmination.data.tags.ModTags;
 import com.github.x3rmination.registry.ModRegistration;
 import net.minecraftforge.common.MinecraftForge;
@@ -47,6 +48,7 @@ public class X3TECH {
         new ModTags.Items().createItemTags();
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(EnergyNetworkHelper.class);
     }
 
     private void setup(final FMLCommonSetupEvent event) {

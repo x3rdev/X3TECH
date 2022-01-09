@@ -35,7 +35,7 @@ public class PowerCableBlock extends Block{
     //Doesn't necessarily have to be in minecraft's format
     public static final BooleanProperty HAS_BRAIN = CustomBlockProperties.HAS_BRAIN;
 
-    private static PowerCableNetwork powerCableNetwork = null;
+    private PowerCableNetwork powerCableNetwork = null;
 
     public PowerCableBlock(Properties properties) {
         super(properties);
@@ -47,10 +47,10 @@ public class PowerCableBlock extends Block{
         List<BlockPos> l = getCableConnections(pos, world);
         if(l.isEmpty()) {
             powerCableNetwork = new PowerCableNetwork();
-            powerCableNetwork.addCable(pos);
         } else {
             joinNetworks(l, world);
         }
+        powerCableNetwork.addCable(pos);
         if(canConnectTo(world.getBlockState(pos.north()), world, pos.north()) && world.getBlockState(pos.north()).getBlock() != this) {
             if(world.getBlockEntity(pos.north()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
                 powerCableNetwork.addOutputConnection(pos.north());
@@ -318,15 +318,18 @@ public class PowerCableBlock extends Block{
             p0 = ((PowerCableBlock) world.getBlockState(l.get(0)).getBlock());
             p1 = ((PowerCableBlock) world.getBlockState(l.get(1)).getBlock());
             if(p0.getPowerCableNetwork().getNetworkSize() > p1.getPowerCableNetwork().getNetworkSize()) {
+                p0.getPowerCableNetwork().mergeNetworks(p1.getPowerCableNetwork(), world);
                 l.remove(1);
             }
             if(p0.getPowerCableNetwork().getNetworkSize() < p1.getPowerCableNetwork().getNetworkSize()) {
+                p1.getPowerCableNetwork().mergeNetworks(p0.getPowerCableNetwork(), world);
                 l.remove(0);
             } else {
                 p0.getPowerCableNetwork().mergeNetworks(p1.getPowerCableNetwork(), world);
                 l.remove(1);
             }
         }
+
     }
 
     @Override

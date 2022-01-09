@@ -12,7 +12,6 @@ import java.util.Objects;
 
 public class PowerCableNetwork {
 
-
     private final ArrayList<BlockPos> cableList;
     //import into cable network
     private final ArrayList<BlockPos> importConnections;
@@ -81,8 +80,11 @@ public class PowerCableNetwork {
 
     public void mergeNetworks(PowerCableNetwork network, World world) {
         for(int i = 0; i < network.getCableList().size(); i++) {
-            ((PowerCableBlock)world.getBlockState(network.getCableList().get(i)).getBlock()).setPowerCableNetwork(this);
-            this.addCable(network.getCableList().get(i));
+            System.out.println("merging networks");
+            ((PowerCableBlock) world.getBlockState(network.getCableList().get(i)).getBlock()).setPowerCableNetwork(this);
+            if (!this.cableList.contains(network.getCableList().get(i))) {
+                this.addCable(network.getCableList().get(i));
+            }
         }
         for(int i = 0; i < network.getOutputConnections().size(); i++) {
             this.addOutputConnection(network.getOutputConnections().get(i));
