@@ -26,11 +26,9 @@ public class ModEnergyStorage implements IEnergyStorage, INBTSerializable<Compou
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
         int energyReceived = Math.min(capacity - energy, Math.min(this.maxThrough, maxReceive));
-
         if (!simulate) {
             energy += energyReceived;
         }
-
         return energyReceived;
     }
 

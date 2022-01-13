@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,8 +36,6 @@ public class PowerCableBlock extends Block{
     //Doesn't necessarily have to be in minecraft's format
     public static final BooleanProperty HAS_BRAIN = CustomBlockProperties.HAS_BRAIN;
 
-    private PowerCableNetwork powerCableNetwork = null;
-
     public PowerCableBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(UP, false).setValue(DOWN, false).setValue(HAS_BRAIN, false));
@@ -44,83 +43,16 @@ public class PowerCableBlock extends Block{
 
     @Override
     public void onPlace(BlockState state, World world, BlockPos pos, BlockState pOldState, boolean pIsMoving) {
-        List<BlockPos> l = getCableConnections(pos, world);
-        if(l.isEmpty()) {
-            powerCableNetwork = new PowerCableNetwork();
-        } else {
-            joinNetworks(l, world);
-        }
-        powerCableNetwork.addCable(pos);
-        if(canConnectTo(world.getBlockState(pos.north()), world, pos.north()) && world.getBlockState(pos.north()).getBlock() != this) {
-            if(world.getBlockEntity(pos.north()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                powerCableNetwork.addOutputConnection(pos.north());
-            }
-            if(world.getBlockEntity(pos.north()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract()) {
-                powerCableNetwork.addImportConnection(pos.north());
-            }
-        }
-        if(canConnectTo(world.getBlockState(pos.east()), world, pos.east()) && world.getBlockState(pos.east()).getBlock() != this) {
-            if(world.getBlockEntity(pos.east()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                powerCableNetwork.addOutputConnection(pos.east());
-            }
-            if(world.getBlockEntity(pos.east()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract()) {
-                powerCableNetwork.addImportConnection(pos.east());
-            }
-        }
-        if(canConnectTo(world.getBlockState(pos.south()), world, pos.south()) && world.getBlockState(pos.south()).getBlock() != this) {
-            if(world.getBlockEntity(pos.south()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                powerCableNetwork.addOutputConnection(pos.south());
-            }
-            if(world.getBlockEntity(pos.south()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract()) {
-                powerCableNetwork.addImportConnection(pos.south());
-            }
-        }
-        if(canConnectTo(world.getBlockState(pos.west()), world, pos.west()) && world.getBlockState(pos.west()).getBlock() != this) {
-            if(world.getBlockEntity(pos.west()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                powerCableNetwork.addOutputConnection(pos.west());
-            }
-            if(world.getBlockEntity(pos.west()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract()) {
-                powerCableNetwork.addImportConnection(pos.west());
-            }
-        }
-        if(canConnectTo(world.getBlockState(pos.above()), world, pos.above()) && world.getBlockState(pos.above()).getBlock() != this) {
-            if(world.getBlockEntity(pos.above()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                powerCableNetwork.addOutputConnection(pos.above());
-            }
-            if(world.getBlockEntity(pos.above()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract()) {
-                powerCableNetwork.addImportConnection(pos.above());
-            }
-        }
-        if(canConnectTo(world.getBlockState(pos.below()), world, pos.below()) && world.getBlockState(pos.below()).getBlock() != this) {
-            if(world.getBlockEntity(pos.below()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                powerCableNetwork.addOutputConnection(pos.below());
-            }
-            if(world.getBlockEntity(pos.below()).getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract()) {
-                powerCableNetwork.addImportConnection(pos.below());
-            }
-        }
     }
 
     @Override
     public void onRemove(BlockState pState, World pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
-        powerCableNetwork = null;
     }
 
     @Override
     public void onNeighborChange(BlockState state, IWorldReader level, BlockPos pos, BlockPos neighborPos) {
-        World world = (World) level;
-        BlockState neighborState = world.getBlockState(neighborPos);
-        if(neighborState.hasTileEntity() && neighborState.getBlock() != this.getBlock() && Objects.requireNonNull(world.getBlockEntity(neighborPos)).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-            TileEntity neighborTile = world.getBlockEntity(neighborPos);
-            if(neighborTile.getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract() && !this.getPowerCableNetwork().getImportConnections().contains(neighborPos)) {
-                this.getPowerCableNetwork().addImportConnection(neighborPos);
-            }
-            if(neighborTile.getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive() && !this.getPowerCableNetwork().getOutputConnections().contains(neighborPos)) {
-                this.getPowerCableNetwork().addOutputConnection(neighborPos);
-            }
-        }
+        hasTileEntity(state);
     }
-
 
     @Nullable
     @Override
@@ -214,35 +146,14 @@ public class PowerCableBlock extends Block{
             return false;
         }
         TileEntity tileEntity = world.getBlockEntity(pos);
-        assert tileEntity != null;
-        return tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent();
+        if(tileEntity != null) {
+            return tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent();
+        }
+        return false;
     }
 
-    private List<BlockPos> getConnections(BlockPos wirePos, BlockState wireState) {
-        List<BlockPos> connections = new java.util.ArrayList<>();
-        if(Boolean.TRUE.equals(wireState.getValue(NORTH))) {
-            connections.add(wirePos.north());
-        }
-        if(Boolean.TRUE.equals(wireState.getValue(EAST))) {
-            connections.add(wirePos.east());
-        }
-        if(Boolean.TRUE.equals(wireState.getValue(SOUTH))) {
-            connections.add(wirePos.south());
-        }
-        if(Boolean.TRUE.equals(wireState.getValue(WEST))) {
-            connections.add(wirePos.west());
-        }
-        if(Boolean.TRUE.equals(wireState.getValue(UP))) {
-            connections.add(wirePos.above());
-        }
-        if(Boolean.TRUE.equals(wireState.getValue(DOWN))) {
-            connections.add(wirePos.below());
-        }
-        return connections;
-    }
-
-    private List<BlockPos> getCableConnections(BlockPos wirePos, World world) {
-        List<BlockPos> cableConnections = new java.util.ArrayList<>();
+    public List<BlockPos> getCableConnections(BlockPos wirePos, World world) {
+        List<BlockPos> cableConnections = new java.util.ArrayList<>(Collections.emptyList());
         TileEntity n = world.getBlockEntity(wirePos.north());
         TileEntity e = world.getBlockEntity(wirePos.east());
         TileEntity s = world.getBlockEntity(wirePos.south());
@@ -271,8 +182,8 @@ public class PowerCableBlock extends Block{
         return cableConnections;
     }
 
-    private List<BlockPos> getNonCableConnections(BlockPos wirePos, World world) {
-        List<BlockPos> nonCableConnections = new java.util.ArrayList<>();
+    public List<BlockPos> getNonCableConnections(BlockPos wirePos, World world) {
+        List<BlockPos> nonCableConnections = new java.util.ArrayList<>(Collections.emptyList());
         TileEntity n = world.getBlockEntity(wirePos.north());
         TileEntity e = world.getBlockEntity(wirePos.east());
         TileEntity s = world.getBlockEntity(wirePos.south());
@@ -300,36 +211,6 @@ public class PowerCableBlock extends Block{
         }
 
         return nonCableConnections;
-    }
-
-    public PowerCableNetwork getPowerCableNetwork() {
-        return powerCableNetwork;
-    }
-
-    public void setPowerCableNetwork(PowerCableNetwork network) {
-        powerCableNetwork = network;
-    }
-
-    private void joinNetworks(List<BlockPos> cableConnectionsList, World world) {
-        List<BlockPos> l = cableConnectionsList;
-        PowerCableBlock p0;
-        PowerCableBlock p1;
-        while(l.size() > 1) {
-            p0 = ((PowerCableBlock) world.getBlockState(l.get(0)).getBlock());
-            p1 = ((PowerCableBlock) world.getBlockState(l.get(1)).getBlock());
-            if(p0.getPowerCableNetwork().getNetworkSize() > p1.getPowerCableNetwork().getNetworkSize()) {
-                p0.getPowerCableNetwork().mergeNetworks(p1.getPowerCableNetwork(), world);
-                l.remove(1);
-            }
-            if(p0.getPowerCableNetwork().getNetworkSize() < p1.getPowerCableNetwork().getNetworkSize()) {
-                p1.getPowerCableNetwork().mergeNetworks(p0.getPowerCableNetwork(), world);
-                l.remove(0);
-            } else {
-                p0.getPowerCableNetwork().mergeNetworks(p1.getPowerCableNetwork(), world);
-                l.remove(1);
-            }
-        }
-
     }
 
     @Override

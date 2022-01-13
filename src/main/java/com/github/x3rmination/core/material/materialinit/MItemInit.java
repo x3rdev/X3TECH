@@ -4,7 +4,7 @@ import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.items.MItemBase;
 import com.github.x3rmination.core.material.materialutil.MaterialBase;
 import com.github.x3rmination.core.material.materialutil.MaterialRegistry;
-import com.github.x3rmination.registry.ModRegistration;
+import com.github.x3rmination.registry.ItemInit;
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -20,10 +20,10 @@ public class MItemInit {
 
     public void registerMItems() {
         for (MaterialBase materialBase : MaterialRegistry.materialList) {
-            MItemBase mIngotItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
-            MItemBase mNuggetItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
-            MItemBase mDustItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
-            MItemBase mPlateItemBase = new MItemBase(new Item.Properties().tab(ModRegistration.ModItemTab.instance), materialBase.getColor());
+            MItemBase mIngotItemBase = new MItemBase(new Item.Properties().tab(ItemInit.ModItemTab.instance), materialBase.getColor());
+            MItemBase mNuggetItemBase = new MItemBase(new Item.Properties().tab(ItemInit.ModItemTab.instance), materialBase.getColor());
+            MItemBase mDustItemBase = new MItemBase(new Item.Properties().tab(ItemInit.ModItemTab.instance), materialBase.getColor());
+            MItemBase mPlateItemBase = new MItemBase(new Item.Properties().tab(ItemInit.ModItemTab.instance), materialBase.getColor());
             itemLibrary.put(materialBase.getName().concat("_ingot"), mIngotItemBase);
             MITEMS.register(materialBase.getName().concat("_ingot"),
                     () -> mIngotItemBase);

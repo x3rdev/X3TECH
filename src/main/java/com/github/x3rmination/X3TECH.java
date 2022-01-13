@@ -4,9 +4,8 @@ import com.github.x3rmination.client.color.ColorLoader;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
-import com.github.x3rmination.core.util.cablenetworks.EnergyNetworkHelper;
 import com.github.x3rmination.data.tags.ModTags;
-import com.github.x3rmination.registry.ModRegistration;
+import com.github.x3rmination.registry.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,30 +24,39 @@ public class X3TECH {
     public static final String MINECRAFT_ID = "minecraft";
 
     public X3TECH() {
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        eventBus.addListener(this::setup);
-        eventBus.addListener(this::doClientStuff);
-        eventBus.addListener(MBlockInit::renderTypeSet);
-        eventBus.addListener(ColorLoader::loadColors);
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::doClientStuff);
+        modEventBus.addListener(MBlockInit::renderTypeSet);
+        modEventBus.addListener(ColorLoader::loadColors);
 
-        ModRegistration.register();
         // Generic Items
-        MItemInit.MITEMS.register(eventBus);
+        ItemInit.ITEMS.register(modEventBus);
+        MItemInit.MITEMS.register(modEventBus);
         new MItemInit().registerMItems();
         // Blocks
-        MBlockInit.MBLOCKS.register(eventBus);
-        MBlockInit.MOREBLOCKS.register(eventBus);
+        BlockInit.BLOCKS.register(modEventBus);
+        MBlockInit.MBLOCKS.register(modEventBus);
+        MBlockInit.MOREBLOCKS.register(modEventBus);
         new MBlockInit().registerMItems();
         // Block Items
-        MBlockItemInit.MBLOCKITEMS.register(eventBus);
-        MBlockItemInit.MBLOCKOREITEMS.register(eventBus);
+        BlockItemInit.BLOCK_ITEMS.register(modEventBus);
+        MBlockItemInit.MBLOCKITEMS.register(modEventBus);
+        MBlockItemInit.MBLOCKOREITEMS.register(modEventBus);
         new MBlockItemInit().registerMItems();
         // Tags
         new ModTags.Blocks().createBlockTags();
         new ModTags.Items().createItemTags();
+        // Tile Entities
+        TileEntityTypeInit.TILE_ENTITIES.register(modEventBus);
+        // Containers
+        ContainerTypeInit.CONTAINERS.register(modEventBus);
+        // Recipes
+        RecipesInit.RECIPE_SERIALIZERS.register(modEventBus);
+        RecipesInit.register();
 
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(EnergyNetworkHelper.class);
+
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -61,7 +69,7 @@ public class X3TECH {
 
     @SubscribeEvent
     public void setupClient(final FMLClientSetupEvent event) {
-
+        ContainerTypeInit.registerScreens(event);
     }
 
     @SubscribeEvent

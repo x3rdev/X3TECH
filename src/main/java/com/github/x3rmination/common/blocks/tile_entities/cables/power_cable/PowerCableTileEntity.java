@@ -1,7 +1,7 @@
 package com.github.x3rmination.common.blocks.tile_entities.cables.power_cable;
 
 import com.github.x3rmination.core.util.energy.ModEnergyStorage;
-import com.github.x3rmination.registry.init.TileEntityTypeInit;
+import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -15,7 +15,10 @@ import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class PowerCableTileEntity extends TileEntity implements ITickableTileEntity {
 
@@ -26,6 +29,9 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     private static final int MAX_THROUGH = 1000;
     private int energy = 0;
 
+    private boolean foundCable = false;
+    private Set<BlockPos> iteratedCables = Collections.EMPTY_SET;
+
     public PowerCableTileEntity() {
         super(TileEntityTypeInit.POWER_CABLE.get());
         this.cableEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, MAX_THROUGH, true, true);
@@ -34,20 +40,93 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
 
     @Override
     public void tick() {
-        this.getBlockState().getBlock();
-        PowerCableBlock cableBlock = (PowerCableBlock) this.getBlockState().getBlock();
-        if (cableBlock.getPowerCableNetwork() != null) {
-            List<BlockPos> outputConnections = cableBlock.getPowerCableNetwork().getOutputConnections();
-            for (BlockPos receiverBlock : outputConnections) {
-                if (this.getLevel().getBlockEntity(receiverBlock) == null) {
-                    ((PowerCableBlock) this.getBlockState().getBlock()).getPowerCableNetwork().pruneImportConnections(this.getLevel());
-                    ((PowerCableBlock) this.getBlockState().getBlock()).getPowerCableNetwork().pruneOutputConnections(this.getLevel());
-                } else {
-                    this.cableEnergyStorage.extractEnergy(this.getLevel().getBlockEntity(receiverBlock).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(this.cableEnergyStorage.getEnergyStored()/outputConnections.size(), false), false);
+//        new Thread(() -> {
+//            //try threading later
+//        }).start();
+        if(this.level == null || this.level.isClientSide) {
+            return;
+        }
+        if(this.cableEnergyStorage.getEnergyStored() > 0) {
+            PowerCableBlock powerCableBlock = (PowerCableBlock) this.getBlockState().getBlock();
+            List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnections(this.getBlockPos(), this.level);
+            List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
+            if(!nonCableConnectionList.isEmpty()) {
+                for (BlockPos blockPos : nonCableConnectionList) {
+                    if (this.cableEnergyStorage.getEnergyStored() > 0 && Objects.requireNonNull(level.getBlockEntity(blockPos)).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
+                        extractEnergy(blockPos);
+                    }
+                }
+
+            } else if(!cableConnectionList.isEmpty()) {
+                foundCable = false;
+                BlockPos nextDest = getNextDestination(this.getBlockPos(), null).get(0);
+                iteratedCables.add(this.getBlockPos());
+                if(nextDest != null) {
+                    if(level.getBlockEntity(nextDest).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
+                        extractEnergy(nextDest);
+                    }
+                    foundCable = true;
+                    iteratedCables.clear();
                 }
             }
         }
     }
+
+    private List<BlockPos> getNextDestination(BlockPos previousPos, Direction direction) {
+        if(iteratedCables.contains(previousPos) || foundCable) {
+            iteratedCables.clear();
+            return null;
+        }
+        assert this.level != null;
+        PowerCableBlock thisBlock = (PowerCableBlock) this.level.getBlockState(previousPos).getBlock();
+        List<BlockPos> nonCableConnectionList = thisBlock.getNonCableConnections(previousPos, this.level);
+        List<BlockPos> cableConnectionList = thisBlock.getCableConnections(previousPos, this.level);
+        if(!nonCableConnectionList.isEmpty()) {
+            return nonCableConnectionList;
+        } else if(!cableConnectionList.isEmpty()) {
+            for (BlockPos nextPos : cableConnectionList) {
+                System.out.println(""+cableConnectionList);
+                Direction relativeDirection = relativeDirection(previousPos, nextPos);
+                if (direction == null || direction != (relativeDirection != null ? relativeDirection.getOpposite() : null)) {
+                    getNextDestination(nextPos, relativeDirection);
+                }
+            }
+        } else {
+            return cableConnectionList;
+        }
+        iteratedCables.clear();
+        return null;
+    }
+
+    private Direction relativeDirection(BlockPos pos1, BlockPos pos2) {
+        if(pos1.north() == pos2) {
+            return Direction.NORTH;
+        }
+        if(pos1.east() == pos2) {
+            return Direction.EAST;
+        }
+        if(pos1.south() == pos2) {
+            return Direction.SOUTH;
+        }
+        if(pos1.west() == pos2) {
+            return Direction.WEST;
+        }
+        if(pos1.above() == pos2) {
+            return Direction.UP;
+        }
+        if(pos1.below() == pos2) {
+            return Direction.DOWN;
+        }
+        return null;
+    }
+
+    private void extractEnergy(BlockPos pos) {
+        if(this.level!=null && this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+            this.cableEnergyStorage.extractEnergy(this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(MAX_THROUGH, false), false);
+        }
+    }
+
+
 
     @Override
     public void load(BlockState state, CompoundNBT tags) {
@@ -87,6 +166,7 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
 
     @Override
     public void setRemoved() {
+        super.setRemoved();
         energyHandler.invalidate();
     }
 }

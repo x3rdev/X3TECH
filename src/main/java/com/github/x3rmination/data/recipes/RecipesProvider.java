@@ -5,7 +5,7 @@ import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
 import com.github.x3rmination.core.material.materialutil.MaterialBase;
 import com.github.x3rmination.core.material.materialutil.MaterialRegistry;
-import com.github.x3rmination.registry.init.RecipesInit;
+import com.github.x3rmination.registry.RecipesInit;
 import net.minecraft.data.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;

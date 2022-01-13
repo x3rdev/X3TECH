@@ -1,6 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.single_press;
 
-import com.github.x3rmination.registry.init.ContainerTypeInit;
+import com.github.x3rmination.registry.ContainerTypeInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;

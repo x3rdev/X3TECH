@@ -1,7 +1,7 @@
 package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
 
 import com.github.x3rmination.core.util.energy.ModEnergyStorage;
-import com.github.x3rmination.registry.init.TileEntityTypeInit;
+import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

@@ -1,6 +1,6 @@
 package com.github.x3rmination.common.crafting.recipe;
 
-import com.github.x3rmination.registry.init.RecipesInit;
+import com.github.x3rmination.registry.RecipesInit;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

@@ -1,7 +1,7 @@
 package com.github.x3rmination.common.blocks.tile_entities.combustion_generator;
 
 import com.github.x3rmination.core.util.energy.ModEnergyStorage;
-import com.github.x3rmination.registry.init.TileEntityTypeInit;
+import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -109,11 +109,13 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
             TileEntity tileEntity = this.level.getBlockEntity(getBlockPos().relative(direction, 1));
             if(tileEntity != null && !tileEntity.isRemoved() && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
                 // add all directions
-                LazyOptional<IEnergyStorage> capabilityEnergy = tileEntity.getCapability(CapabilityEnergy.ENERGY, Direction.SOUTH);
+                LazyOptional<IEnergyStorage> capabilityEnergy = tileEntity.getCapability(CapabilityEnergy.ENERGY);
 
-                int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());
-                capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false);
-                combustionGeneratorEnergyStorage.extractEnergy(energyLoss, false);
+                if(capabilityEnergy.orElse(null).canReceive()) {
+                    int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());
+                    capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false);
+                    combustionGeneratorEnergyStorage.extractEnergy(energyLoss, false);
+                }
             }
         }
     }
@@ -268,8 +270,8 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     public void setRemoved() {
         super.setRemoved();
         for (LazyOptional<? extends IItemHandler> handler : this.itemHandler) {
-            energyHandler.invalidate();
             handler.invalidate();
         }
+        energyHandler.invalidate();
     }
 }
