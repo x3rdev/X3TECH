@@ -6,6 +6,7 @@ import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
 import com.github.x3rmination.data.tags.ModTags;
 import com.github.x3rmination.registry.*;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -59,17 +60,24 @@ public class X3TECH {
 
     }
 
-    private void setup(final FMLCommonSetupEvent event) {
+    private void setup(FMLCommonSetupEvent event) {
 
     }
 
-    private void doClientStuff(final FMLClientSetupEvent event) {
+    private void doClientStuff(FMLClientSetupEvent event) {
 
     }
 
     @SubscribeEvent
-    public void setupClient(final FMLClientSetupEvent event) {
-        ContainerTypeInit.registerScreens(event);
+    public void setupClient(FMLClientSetupEvent event) {
+    }
+
+    @Mod.EventBusSubscriber(modid = X3TECH.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class Client {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            ContainerTypeInit.registerScreens(event);
+        }
     }
 
     @SubscribeEvent

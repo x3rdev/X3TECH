@@ -43,32 +43,35 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
 //        new Thread(() -> {
 //            //try threading later
 //        }).start();
-        if(this.level == null || this.level.isClientSide) {
+        if(level == null || level.isClientSide) {
             return;
         }
+
         if(this.cableEnergyStorage.getEnergyStored() > 0) {
             PowerCableBlock powerCableBlock = (PowerCableBlock) this.getBlockState().getBlock();
-            List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnections(this.getBlockPos(), this.level);
+            List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
             List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
             if(!nonCableConnectionList.isEmpty()) {
                 for (BlockPos blockPos : nonCableConnectionList) {
-                    if (this.cableEnergyStorage.getEnergyStored() > 0 && Objects.requireNonNull(level.getBlockEntity(blockPos)).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                        extractEnergy(blockPos);
-                    }
-                }
-
-            } else if(!cableConnectionList.isEmpty()) {
-                foundCable = false;
-                BlockPos nextDest = getNextDestination(this.getBlockPos(), null).get(0);
-                iteratedCables.add(this.getBlockPos());
-                if(nextDest != null) {
-                    if(level.getBlockEntity(nextDest).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                        extractEnergy(nextDest);
-                    }
-                    foundCable = true;
+                    extractEnergy(blockPos);
                     iteratedCables.clear();
+                    return;
                 }
             }
+//            if(!cableConnectionList.isEmpty()) {
+//                System.out.println("connections");
+//                foundCable = false;
+//                BlockPos nextDest = getNextDestination(this.getBlockPos(), null).get(0);
+//                iteratedCables.add(this.getBlockPos());
+//                if(nextDest != null) {
+//                    if(level.getBlockEntity(nextDest).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
+//                        extractEnergy(nextDest);
+//                    }
+//                    foundCable = true;
+//                    iteratedCables.clear();
+//                    return;
+//                }
+//            }
         }
     }
 
@@ -82,13 +85,15 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
         List<BlockPos> nonCableConnectionList = thisBlock.getNonCableConnections(previousPos, this.level);
         List<BlockPos> cableConnectionList = thisBlock.getCableConnections(previousPos, this.level);
         if(!nonCableConnectionList.isEmpty()) {
+
             return nonCableConnectionList;
         } else if(!cableConnectionList.isEmpty()) {
             for (BlockPos nextPos : cableConnectionList) {
-                System.out.println(""+cableConnectionList);
                 Direction relativeDirection = relativeDirection(previousPos, nextPos);
                 if (direction == null || direction != (relativeDirection != null ? relativeDirection.getOpposite() : null)) {
-                    getNextDestination(nextPos, relativeDirection);
+                    List<BlockPos> l = Objects.requireNonNull(getNextDestination(nextPos, relativeDirection));
+//                    iteratedCables.addAll(l);
+                    cableConnectionList.addAll(l);
                 }
             }
         } else {
@@ -121,12 +126,11 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     }
 
     private void extractEnergy(BlockPos pos) {
-        if(this.level!=null && this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-            this.cableEnergyStorage.extractEnergy(this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(MAX_THROUGH, false), false);
+        if(this.level!=null && this.level.getBlockEntity(pos) != null && Objects.requireNonNull(this.level.getBlockEntity(pos)).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+            int energyLoss = Math.min(this.cableEnergyStorage.getEnergyStored(), this.cableEnergyStorage.getMaxThrough());
+            this.cableEnergyStorage.extractEnergy( this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(energyLoss, false), false);
         }
     }
-
-
 
     @Override
     public void load(BlockState state, CompoundNBT tags) {
@@ -167,6 +171,7 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     @Override
     public void setRemoved() {
         super.setRemoved();
+
         energyHandler.invalidate();
     }
 }

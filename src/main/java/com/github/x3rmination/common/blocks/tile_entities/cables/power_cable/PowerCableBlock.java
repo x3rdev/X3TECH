@@ -16,12 +16,13 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("deprecation")
 public class PowerCableBlock extends Block{
@@ -39,14 +40,6 @@ public class PowerCableBlock extends Block{
     public PowerCableBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(UP, false).setValue(DOWN, false).setValue(HAS_BRAIN, false));
-    }
-
-    @Override
-    public void onPlace(BlockState state, World world, BlockPos pos, BlockState pOldState, boolean pIsMoving) {
-    }
-
-    @Override
-    public void onRemove(BlockState pState, World pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
     }
 
     @Override
@@ -77,7 +70,7 @@ public class PowerCableBlock extends Block{
         BlockState westBlockState = world.getBlockState(westBlockPos);
         BlockState upBlockState = world.getBlockState(upBlockPos);
         BlockState downBlockState = world.getBlockState(downBlockPos);
-        return (Objects.requireNonNull(super.getStateForPlacement(context))).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, getCableConnections(context.getClickedPos(), context.getLevel()).isEmpty() && !getNonCableConnections(context.getClickedPos(), context.getLevel()).isEmpty());
+        return (super.getStateForPlacement(context)).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, getCableConnections(context.getClickedPos(), context.getLevel()).isEmpty() && !getNonCableConnections(context.getClickedPos(), context.getLevel()).isEmpty());
     }
 
     @Override
@@ -210,6 +203,53 @@ public class PowerCableBlock extends Block{
             nonCableConnections.add(wirePos.below());
         }
 
+        return nonCableConnections;
+    }
+
+    public List<BlockPos> getNonCableConnectionsCanInput(BlockPos wirePos, World world) {
+        List<BlockPos> nonCableConnections = new java.util.ArrayList<>(Collections.emptyList());
+        TileEntity n = world.getBlockEntity(wirePos.north());
+        TileEntity e = world.getBlockEntity(wirePos.east());
+        TileEntity s = world.getBlockEntity(wirePos.south());
+        TileEntity w = world.getBlockEntity(wirePos.west());
+        TileEntity u = world.getBlockEntity(wirePos.above());
+        TileEntity d = world.getBlockEntity(wirePos.below());
+        if(n != null) {
+            LazyOptional<IEnergyStorage> nCap = n.getCapability(CapabilityEnergy.ENERGY);
+            if (nCap.isPresent() && world.getBlockState(wirePos.north()).getBlock() != this.getBlock() && nCap.orElse(null).canReceive() && nCap.orElse(null).getMaxEnergyStored() != nCap.orElse(null).getEnergyStored()) {
+                nonCableConnections.add(wirePos.north());
+            }
+        }
+        if(e != null) {
+            LazyOptional<IEnergyStorage> eCap = e.getCapability(CapabilityEnergy.ENERGY);
+            if (eCap.isPresent() && world.getBlockState(wirePos.east()).getBlock() != this.getBlock() && eCap.orElse(null).canReceive() && eCap.orElse(null).getMaxEnergyStored() != eCap.orElse(null).getEnergyStored()) {
+                nonCableConnections.add(wirePos.east());
+            }
+        }
+        if(s != null) {
+            LazyOptional<IEnergyStorage> sCap = s.getCapability(CapabilityEnergy.ENERGY);
+            if (sCap.isPresent() && world.getBlockState(wirePos.south()).getBlock() != this.getBlock() && sCap.orElse(null).canReceive() && sCap.orElse(null).getMaxEnergyStored() != sCap.orElse(null).getEnergyStored()) {
+                nonCableConnections.add(wirePos.south());
+            }
+        }
+        if(w != null) {
+            LazyOptional<IEnergyStorage> wCap = w.getCapability(CapabilityEnergy.ENERGY);
+            if (wCap.isPresent() && world.getBlockState(wirePos.west()).getBlock() != this.getBlock() && wCap.orElse(null).canReceive() && wCap.orElse(null).getMaxEnergyStored() != wCap.orElse(null).getEnergyStored()) {
+                nonCableConnections.add(wirePos.west());
+            }
+        }
+        if(u != null) {
+            LazyOptional<IEnergyStorage> uCap = u.getCapability(CapabilityEnergy.ENERGY);
+            if (uCap.isPresent() && world.getBlockState(wirePos.above()).getBlock() != this.getBlock() && uCap.orElse(null).canReceive() && uCap.orElse(null).getMaxEnergyStored() != uCap.orElse(null).getEnergyStored()) {
+                nonCableConnections.add(wirePos.above());
+            }
+        }
+        if(d != null) {
+            LazyOptional<IEnergyStorage> dCap = d.getCapability(CapabilityEnergy.ENERGY);
+            if (dCap.isPresent() && world.getBlockState(wirePos.below()).getBlock() != this.getBlock() && dCap.orElse(null).canReceive() && dCap.orElse(null).getMaxEnergyStored() != dCap.orElse(null).getEnergyStored()) {
+                nonCableConnections.add(wirePos.below());
+            }
+        }
         return nonCableConnections;
     }
 

@@ -113,8 +113,8 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
                 if(capabilityEnergy.orElse(null).canReceive()) {
                     int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());
-                    capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false);
-                    combustionGeneratorEnergyStorage.extractEnergy(energyLoss, false);
+
+                    combustionGeneratorEnergyStorage.extractEnergy(capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false), false);
                 }
             }
         }
