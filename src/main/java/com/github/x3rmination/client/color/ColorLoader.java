@@ -20,8 +20,6 @@ public class ColorLoader {
 
     }
 
-
-
     @SubscribeEvent
     public static void loadColors(ColorHandlerEvent.Item event) {
         ItemColors itemColors = event.getItemColors();

@@ -15,10 +15,9 @@ import net.minecraftforge.energy.CapabilityEnergy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class PowerCableTileEntity extends TileEntity implements ITickableTileEntity {
 
@@ -30,7 +29,7 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     private int energy = 0;
 
     private boolean foundCable = false;
-    private Set<BlockPos> iteratedCables = Collections.EMPTY_SET;
+    private List<BlockPos> iteratedCables = new ArrayList<>();
 
     public PowerCableTileEntity() {
         super(TileEntityTypeInit.POWER_CABLE.get());
@@ -52,56 +51,42 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
             List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
             List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
             if(!nonCableConnectionList.isEmpty()) {
-                for (BlockPos blockPos : nonCableConnectionList) {
-                    extractEnergy(blockPos);
-                    iteratedCables.clear();
-                    return;
-                }
+                extractEnergy(nonCableConnectionList.get(0));
+                iteratedCables.clear();
+            } else if(!cableConnectionList.isEmpty()) {
+                extractEnergy(getNextTargetBlock(this.getBlockPos(), powerCableBlock));
+                iteratedCables.clear();
             }
-//            if(!cableConnectionList.isEmpty()) {
-//                System.out.println("connections");
-//                foundCable = false;
-//                BlockPos nextDest = getNextDestination(this.getBlockPos(), null).get(0);
-//                iteratedCables.add(this.getBlockPos());
-//                if(nextDest != null) {
-//                    if(level.getBlockEntity(nextDest).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-//                        extractEnergy(nextDest);
-//                    }
-//                    foundCable = true;
-//                    iteratedCables.clear();
-//                    return;
-//                }
-//            }
         }
     }
 
-    private List<BlockPos> getNextDestination(BlockPos previousPos, Direction direction) {
-        if(iteratedCables.contains(previousPos) || foundCable) {
-            iteratedCables.clear();
-            return null;
-        }
-        assert this.level != null;
-        PowerCableBlock thisBlock = (PowerCableBlock) this.level.getBlockState(previousPos).getBlock();
-        List<BlockPos> nonCableConnectionList = thisBlock.getNonCableConnections(previousPos, this.level);
-        List<BlockPos> cableConnectionList = thisBlock.getCableConnections(previousPos, this.level);
-        if(!nonCableConnectionList.isEmpty()) {
-
-            return nonCableConnectionList;
-        } else if(!cableConnectionList.isEmpty()) {
-            for (BlockPos nextPos : cableConnectionList) {
-                Direction relativeDirection = relativeDirection(previousPos, nextPos);
-                if (direction == null || direction != (relativeDirection != null ? relativeDirection.getOpposite() : null)) {
-                    List<BlockPos> l = Objects.requireNonNull(getNextDestination(nextPos, relativeDirection));
-//                    iteratedCables.addAll(l);
-                    cableConnectionList.addAll(l);
-                }
-            }
-        } else {
-            return cableConnectionList;
-        }
+    private BlockPos getNextTargetBlock(BlockPos currentCable, PowerCableBlock powerCableBlock) {
+        assert level != null;
         iteratedCables.clear();
-        return null;
+        iteratedCables.add(currentCable);
+        List<BlockPos> possibleTargets = new ArrayList<>();
+        while(possibleTargets.isEmpty()) {
+            getAdjacent(iteratedCables.get(iteratedCables.size()));
+        }
+        //Check Contents of possibleTargets before returning 1 value
+        return possibleTargets.get(0);
     }
+
+    private List<BlockPos> getAdjacent(BlockPos initialCable) {
+        assert level != null;
+        level.getBlockState(initialCable).getBlock();
+
+    }
+
+    public class CableConnectionDataHolder {
+        private final BlockPos pos;
+        private final boolean isCable;
+        public CableConnectionDataHolder(BlockPos pos, boolean isCable) {
+            this.pos = pos;
+            this.isCable = isCable;
+        }
+    }
+
 
     private Direction relativeDirection(BlockPos pos1, BlockPos pos2) {
         if(pos1.north() == pos2) {
