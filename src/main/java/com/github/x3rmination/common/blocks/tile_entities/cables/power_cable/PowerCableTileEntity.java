@@ -9,6 +9,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -66,24 +67,56 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
         iteratedCables.add(currentCable);
         List<BlockPos> possibleTargets = new ArrayList<>();
         while(possibleTargets.isEmpty()) {
-            getAdjacent(iteratedCables.get(iteratedCables.size()));
+            System.out.println(""+getAdjacent(iteratedCables.get(iteratedCables.size()-1)).get(0).getPos());
+            System.out.println(""+getAdjacent(iteratedCables.get(iteratedCables.size()-1)).get(0).getIsCable());
         }
         //Check Contents of possibleTargets before returning 1 value
         return possibleTargets.get(0);
     }
 
-    private List<BlockPos> getAdjacent(BlockPos initialCable) {
+    private List<CableConnectionDataHolder> getAdjacent(BlockPos initialCable) {
         assert level != null;
         level.getBlockState(initialCable).getBlock();
-
+        List<BlockPos> neighborList = getNeighbours(initialCable, this.level);
+        List<CableConnectionDataHolder> outputList= new ArrayList<>();
+        for(BlockPos blockPos : neighborList) {
+            if (!iteratedCables.contains(blockPos)) {
+                if (level.getBlockState(blockPos).getBlock() instanceof PowerCableBlock) {
+                    outputList.add(new CableConnectionDataHolder(blockPos, true));
+                } else {
+                    outputList.add(new CableConnectionDataHolder(blockPos, false));
+                }
+            }
+        }
+        return outputList;
     }
 
-    public class CableConnectionDataHolder {
+    private List<BlockPos> getNeighbours(BlockPos pos, World level) {
+        List<Direction> directionList = new PowerCableHelper().getDirectionList();
+        List<BlockPos> outputList = new ArrayList<>();
+        for (Direction direction : directionList) {
+            BlockState selectedBlock = level.getBlockState(pos.relative(direction));
+            if (selectedBlock.hasTileEntity() && level.getBlockEntity(pos.relative(direction)).getCapability(CapabilityEnergy.ENERGY).isPresent() && level.getBlockEntity(pos.relative(direction)).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
+                outputList.add(pos.relative(direction));
+            }
+        }
+        return outputList;
+    }
+
+    public final class CableConnectionDataHolder {
         private final BlockPos pos;
         private final boolean isCable;
         public CableConnectionDataHolder(BlockPos pos, boolean isCable) {
             this.pos = pos;
             this.isCable = isCable;
+        }
+
+        public BlockPos getPos() {
+            return pos;
+        }
+
+        public boolean getIsCable() {
+            return isCable;
         }
     }
 
