@@ -55,26 +55,41 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
                 extractEnergy(nonCableConnectionList.get(0));
                 iteratedCables.clear();
             } else if(!cableConnectionList.isEmpty()) {
-                extractEnergy(getNextTargetBlock(this.getBlockPos(), powerCableBlock));
+//                extractEnergy();
+                new Thread(() -> {
+                System.out.println(""+getNextTargetBlock(this.getBlockPos(), powerCableBlock));
                 iteratedCables.clear();
+                }).start();
             }
         }
     }
 
-    private BlockPos getNextTargetBlock(BlockPos currentCable, PowerCableBlock powerCableBlock) {
+    private List<BlockPos> getNextTargetBlock(BlockPos currentCable, PowerCableBlock powerCableBlock) {
         assert level != null;
         iteratedCables.clear();
         iteratedCables.add(currentCable);
         List<BlockPos> possibleTargets = new ArrayList<>();
         while(possibleTargets.isEmpty()) {
-            System.out.println(""+getAdjacent(iteratedCables.get(iteratedCables.size()-1)).get(0).getPos());
-            System.out.println(""+getAdjacent(iteratedCables.get(iteratedCables.size()-1)).get(0).getIsCable());
+            List<CableConnectionDataHolder> cableList = getAdjacent(iteratedCables.get(iteratedCables.size()-1));
+            if(cableList.isEmpty()) {
+                break;
+            }
+            for(CableConnectionDataHolder cableConnectionDataHolder : cableList) {
+                if (!cableConnectionDataHolder.isCable) {
+                    possibleTargets.add(cableConnectionDataHolder.getPos());
+                }
+                if (cableConnectionDataHolder.isCable) {
+                    iteratedCables.add(cableConnectionDataHolder.getPos());
+                }
+            }
         }
         //Check Contents of possibleTargets before returning 1 value
-        return possibleTargets.get(0);
+
+        return possibleTargets;
     }
 
     private List<CableConnectionDataHolder> getAdjacent(BlockPos initialCable) {
+        iteratedCables.add(initialCable);
         assert level != null;
         level.getBlockState(initialCable).getBlock();
         List<BlockPos> neighborList = getNeighbours(initialCable, this.level);
@@ -95,8 +110,8 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
         List<Direction> directionList = new PowerCableHelper().getDirectionList();
         List<BlockPos> outputList = new ArrayList<>();
         for (Direction direction : directionList) {
-            BlockState selectedBlock = level.getBlockState(pos.relative(direction));
-            if (selectedBlock.hasTileEntity() && level.getBlockEntity(pos.relative(direction)).getCapability(CapabilityEnergy.ENERGY).isPresent() && level.getBlockEntity(pos.relative(direction)).getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
+            TileEntity tileEntity = level.getBlockEntity(pos.relative(direction));
+            if (tileEntity != null && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent() && tileEntity.getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
                 outputList.add(pos.relative(direction));
             }
         }
