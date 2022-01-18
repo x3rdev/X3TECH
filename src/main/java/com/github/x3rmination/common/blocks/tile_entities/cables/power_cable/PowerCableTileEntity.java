@@ -2,6 +2,7 @@ package com.github.x3rmination.common.blocks.tile_entities.cables.power_cable;
 
 import com.github.x3rmination.core.util.energy.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -13,12 +14,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PowerCableTileEntity extends TileEntity implements ITickableTileEntity {
 
@@ -29,8 +30,7 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     private static final int MAX_THROUGH = 1000;
     private int energy = 0;
 
-    private boolean foundCable = false;
-    private List<BlockPos> iteratedCables = new ArrayList<>();
+    private boolean foundDest = false;
 
     public PowerCableTileEntity() {
         super(TileEntityTypeInit.POWER_CABLE.get());
@@ -40,101 +40,78 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
 
     @Override
     public void tick() {
-//        new Thread(() -> {
-//            //try threading later
-//        }).start();
         if(level == null || level.isClientSide) {
             return;
         }
-
-        if(this.cableEnergyStorage.getEnergyStored() > 0) {
+//        new Thread(() -> {
+            if(this.cableEnergyStorage.getEnergyStored() > 0) {
+            List<BlockPos> iteratedCables = Collections.synchronizedList(new LinkedList<>());
+            List<BlockPos> workingList = Collections.synchronizedList(new LinkedList<>());
             PowerCableBlock powerCableBlock = (PowerCableBlock) this.getBlockState().getBlock();
             List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
             List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
             if(!nonCableConnectionList.isEmpty()) {
                 extractEnergy(nonCableConnectionList.get(0));
                 iteratedCables.clear();
+                workingList.clear();
             } else if(!cableConnectionList.isEmpty()) {
-//                extractEnergy();
-                new Thread(() -> {
-                System.out.println(""+getNextTargetBlock(this.getBlockPos(), powerCableBlock));
-                iteratedCables.clear();
-                }).start();
-            }
-        }
-    }
+                workingList.add(this.getBlockPos());
+                    while(!foundDest) {
+                        if(workingList.isEmpty()) {
+                            break;
+                        }
+                        for(BlockPos blockPos : workingList) {
+                            if(!iteratedCables.contains(blockPos)) {
+                                iteratedCables.add(blockPos);
+                            }
+                            List<BlockPos> possibleNeighbors = getNeighbors(blockPos);
+                            for(BlockPos pos : possibleNeighbors) {
+                                if (isValidEndpoint(pos, this.level)) {
+                                    extractEnergy(pos);
+                                    foundDest = true;
+                                    iteratedCables.clear();
+                                    break;
+                                }
+                                if(isValidCable(pos, this.level, iteratedCables) && !workingList.contains(pos)) {
+                                    workingList.add(pos);
 
-    private List<BlockPos> getNextTargetBlock(BlockPos currentCable, PowerCableBlock powerCableBlock) {
-        assert level != null;
-        iteratedCables.clear();
-        iteratedCables.add(currentCable);
-        List<BlockPos> possibleTargets = new ArrayList<>();
-        while(possibleTargets.isEmpty()) {
-            List<CableConnectionDataHolder> cableList = getAdjacent(iteratedCables.get(iteratedCables.size()-1));
-            if(cableList.isEmpty()) {
-                break;
-            }
-            for(CableConnectionDataHolder cableConnectionDataHolder : cableList) {
-                if (!cableConnectionDataHolder.isCable) {
-                    possibleTargets.add(cableConnectionDataHolder.getPos());
-                }
-                if (cableConnectionDataHolder.isCable) {
-                    iteratedCables.add(cableConnectionDataHolder.getPos());
-                }
-            }
-        }
-        //Check Contents of possibleTargets before returning 1 value
-
-        return possibleTargets;
-    }
-
-    private List<CableConnectionDataHolder> getAdjacent(BlockPos initialCable) {
-        iteratedCables.add(initialCable);
-        assert level != null;
-        level.getBlockState(initialCable).getBlock();
-        List<BlockPos> neighborList = getNeighbours(initialCable, this.level);
-        List<CableConnectionDataHolder> outputList= new ArrayList<>();
-        for(BlockPos blockPos : neighborList) {
-            if (!iteratedCables.contains(blockPos)) {
-                if (level.getBlockState(blockPos).getBlock() instanceof PowerCableBlock) {
-                    outputList.add(new CableConnectionDataHolder(blockPos, true));
-                } else {
-                    outputList.add(new CableConnectionDataHolder(blockPos, false));
+                                }
+                                workingList.removeAll(iteratedCables);
+                                iteratedCables.addAll(workingList);
+                            }
+                        }
+                    }
+//                    Thread.currentThread().interrupt();
                 }
             }
-        }
-        return outputList;
+//        }).start();
     }
 
-    private List<BlockPos> getNeighbours(BlockPos pos, World level) {
-        List<Direction> directionList = new PowerCableHelper().getDirectionList();
-        List<BlockPos> outputList = new ArrayList<>();
-        for (Direction direction : directionList) {
-            TileEntity tileEntity = level.getBlockEntity(pos.relative(direction));
-            if (tileEntity != null && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent() && tileEntity.getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive()) {
-                outputList.add(pos.relative(direction));
+    private boolean isValidEndpoint(BlockPos pos, World level) {
+        System.out.println(pos);
+        Block block = level.getBlockState(pos).getBlock();
+        TileEntity tileEntity = level.getBlockEntity(pos);
+        if(tileEntity != null && !tileEntity.isRemoved() && !(block instanceof PowerCableBlock)) {
+            LazyOptional<IEnergyStorage> cap = tileEntity.getCapability(CapabilityEnergy.ENERGY);
+            if(cap.isPresent() && cap.orElse(null).canReceive()) {
+                return true;
             }
         }
-        return outputList;
+        return false;
     }
 
-    public final class CableConnectionDataHolder {
-        private final BlockPos pos;
-        private final boolean isCable;
-        public CableConnectionDataHolder(BlockPos pos, boolean isCable) {
-            this.pos = pos;
-            this.isCable = isCable;
-        }
-
-        public BlockPos getPos() {
-            return pos;
-        }
-
-        public boolean getIsCable() {
-            return isCable;
-        }
+    private boolean isValidCable(BlockPos pos, World level, List<BlockPos> iteratedCables) {
+        Block block = level.getBlockState(pos).getBlock();
+        return block instanceof PowerCableBlock && !iteratedCables.contains(pos);
     }
 
+    private List<BlockPos> getNeighbors(BlockPos pos) {
+        List<BlockPos> resultList = new ArrayList<>();
+        for(Direction direction : PowerCableHelper.getDirectionList()) {
+            resultList.add(pos.relative(direction));
+        }
+        return resultList;
+    }
 
     private Direction relativeDirection(BlockPos pos1, BlockPos pos2) {
         if(pos1.north() == pos2) {

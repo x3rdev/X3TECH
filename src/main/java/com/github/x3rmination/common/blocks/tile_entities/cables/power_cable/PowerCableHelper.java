@@ -9,9 +9,9 @@ public final class PowerCableHelper {
 
     public static final List<Direction> directionList = new ArrayList<>();
 
-    public PowerCableHelper(){}
+    PowerCableHelper(){}
 
-    public List<Direction> getDirectionList() {
+    public static List<Direction> getDirectionList() {
         if(directionList.isEmpty()) {
             directionList.add(Direction.NORTH);
             directionList.add(Direction.EAST);
