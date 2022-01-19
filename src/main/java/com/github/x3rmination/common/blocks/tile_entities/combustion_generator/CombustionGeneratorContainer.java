@@ -89,17 +89,21 @@ public class CombustionGeneratorContainer extends Container {
             final int playerInventoryEnd = inventorySize + 27;
             final int playerHotbarEnd = playerInventoryEnd + 9;
 
-            if (index == 1) {
+            if (index == 0) {
                 if (!this.moveItemStackTo(itemstack1, inventorySize, playerHotbarEnd, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onQuickCraft(itemstack1, itemstack);
-            } else if (index != 0) {
-                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+            } else if (index < 28) {
+                if (!this.moveItemStackTo(itemstack1, 28, 37, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, inventorySize, playerHotbarEnd, false)) {
+            } else if (index < 37) {
+                if (!this.moveItemStackTo(itemstack1, 1, 28, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(itemstack1, 1, 37, false)) {
                 return ItemStack.EMPTY;
             }
 

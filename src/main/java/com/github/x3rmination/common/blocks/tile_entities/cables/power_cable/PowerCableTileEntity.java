@@ -19,7 +19,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PowerCableTileEntity extends TileEntity implements ITickableTileEntity {
 
@@ -50,37 +49,33 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
             PowerCableBlock powerCableBlock = (PowerCableBlock) this.getBlockState().getBlock();
             List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
             List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
+            iteratedCables.clear();
             if(!nonCableConnectionList.isEmpty()) {
                 extractEnergy(nonCableConnectionList.get(0));
-                iteratedCables.clear();
                 workingList.clear();
             } else if(!cableConnectionList.isEmpty()) {
                 workingList.add(this.getBlockPos());
-                    while(!foundDest) {
-                        if(workingList.isEmpty()) {
-                            break;
-                        }
-                        for(BlockPos blockPos : workingList) {
-                            if(!iteratedCables.contains(blockPos)) {
-                                iteratedCables.add(blockPos);
+                while (!workingList.isEmpty()) {
+                    for (BlockPos blockPos : workingList) {
+                        System.out.println(blockPos);
+                        List<BlockPos> possibleNeighbors = getNeighbors(blockPos);
+                        for (BlockPos pos : possibleNeighbors) {
+                            if (isValidEndpoint(pos, this.level)) {
+                                extractEnergy(pos);
+                                iteratedCables.clear();
+                                break;
                             }
-                            List<BlockPos> possibleNeighbors = getNeighbors(blockPos);
-                            for(BlockPos pos : possibleNeighbors) {
-                                if (isValidEndpoint(pos, this.level)) {
-                                    extractEnergy(pos);
-                                    foundDest = true;
-                                    iteratedCables.clear();
-                                    break;
-                                }
-                                if(isValidCable(pos, this.level, iteratedCables) && !workingList.contains(pos)) {
-                                    workingList.add(pos);
-
-                                }
-                                workingList.removeAll(iteratedCables);
-                                iteratedCables.addAll(workingList);
+                            if (isValidCable(pos, this.level, iteratedCables) && !workingList.contains(pos)) {
+                                workingList.add(pos);
                             }
                         }
+                        if (!iteratedCables.contains(blockPos)) {
+                            iteratedCables.add(blockPos);
+                        }
+                        workingList.removeAll(iteratedCables);
+                        iteratedCables.addAll(workingList);
                     }
+                }
 //                    Thread.currentThread().interrupt();
                 }
             }
@@ -88,12 +83,11 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     }
 
     private boolean isValidEndpoint(BlockPos pos, World level) {
-        System.out.println(pos);
         Block block = level.getBlockState(pos).getBlock();
         TileEntity tileEntity = level.getBlockEntity(pos);
         if(tileEntity != null && !tileEntity.isRemoved() && !(block instanceof PowerCableBlock)) {
             LazyOptional<IEnergyStorage> cap = tileEntity.getCapability(CapabilityEnergy.ENERGY);
-            if(cap.isPresent() && cap.orElse(null).canReceive()) {
+            if(cap.isPresent() && cap.orElse(null).canReceive() && cap.orElse(null).getMaxEnergyStored() != cap.orElse(null).getEnergyStored()) {
                 return true;
             }
         }
