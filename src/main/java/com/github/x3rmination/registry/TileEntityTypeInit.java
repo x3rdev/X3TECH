@@ -35,7 +35,7 @@ public class TileEntityTypeInit {
     public static final RegistryObject<TileEntityType<PowerCableTileEntity>> POWER_CABLE = TILE_ENTITIES.register("power_cable",
             () -> TileEntityType.Builder.of(PowerCableTileEntity::new,
                     BlockInit.POWER_CABLE.get()).build(null));
-    public static final RegistryObject<TileEntityType<EnergyStorageTileEntity>> ENERGY_STORAGE = TILE_ENTITIES.register("power_cable",
+    public static final RegistryObject<TileEntityType<EnergyStorageTileEntity>> ENERGY_STORAGE = TILE_ENTITIES.register("energy_storage",
             () -> TileEntityType.Builder.of(EnergyStorageTileEntity::new,
                     BlockInit.POWER_CABLE.get()).build(null));
 

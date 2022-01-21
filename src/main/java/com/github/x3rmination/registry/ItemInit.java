@@ -18,6 +18,8 @@ public class ItemInit {
     //Items
     public static final RegistryObject<Item> TEST_INGOT = ITEMS.register("test_ingot",
             () -> new MItemBase(new Item.Properties().tab(ModItemTab.instance), new Color(255, 255, 255)));
+    public static final RegistryObject<Item> ENGINE_PISTON = ITEMS.register("engine_piston",
+            () -> new Item(new Item.Properties().tab(ModItemTab.instance)));
 
     public static class ModItemTab extends ItemGroup {
         public static final ModItemTab instance = new ModItemTab(ItemGroup.TABS.length, X3TECH.MOD_ID);

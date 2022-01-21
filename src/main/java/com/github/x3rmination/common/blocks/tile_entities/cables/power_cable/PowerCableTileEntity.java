@@ -29,8 +29,6 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     private static final int MAX_THROUGH = 1000;
     private int energy = 0;
 
-    private boolean foundDest = false;
-
     public PowerCableTileEntity() {
         super(TileEntityTypeInit.POWER_CABLE.get());
         this.cableEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, MAX_THROUGH, true, true);
@@ -57,7 +55,6 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
                 workingList.add(this.getBlockPos());
                 while (!workingList.isEmpty()) {
                     for (BlockPos blockPos : workingList) {
-                        System.out.println(blockPos);
                         List<BlockPos> possibleNeighbors = getNeighbors(blockPos);
                         for (BlockPos pos : possibleNeighbors) {
                             if (isValidEndpoint(pos, this.level)) {
