@@ -33,8 +33,6 @@ public class PowerCableBlock extends Block{
     public static final BooleanProperty WEST = CustomBlockProperties.WEST;
     public static final BooleanProperty UP = CustomBlockProperties.UP;
     public static final BooleanProperty DOWN = CustomBlockProperties.DOWN;
-
-    //Doesn't necessarily have to be in minecraft's format
     public static final BooleanProperty HAS_BRAIN = CustomBlockProperties.HAS_BRAIN;
 
     public PowerCableBlock(Properties properties) {
@@ -70,7 +68,7 @@ public class PowerCableBlock extends Block{
         BlockState westBlockState = world.getBlockState(westBlockPos);
         BlockState upBlockState = world.getBlockState(upBlockPos);
         BlockState downBlockState = world.getBlockState(downBlockPos);
-        return (super.getStateForPlacement(context)).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, getCableConnections(context.getClickedPos(), context.getLevel()).isEmpty() && !getNonCableConnections(context.getClickedPos(), context.getLevel()).isEmpty());
+        return (super.getStateForPlacement(context)).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, !getNonCableConnections(context.getClickedPos(), context.getLevel()).isEmpty());
     }
 
     @Override
@@ -88,7 +86,7 @@ public class PowerCableBlock extends Block{
         BlockState westBlockState = world.getBlockState(westBlockPos);
         BlockState upBlockState = world.getBlockState(upBlockPos);
         BlockState downBlockState = world.getBlockState(downBlockPos);
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, getCableConnections(pCurrentPos, world).isEmpty() && !getNonCableConnections(pCurrentPos, world).isEmpty());
+        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, !getNonCableConnections(pCurrentPos, world).isEmpty());
     }
 
     @Override
@@ -146,30 +144,23 @@ public class PowerCableBlock extends Block{
     }
 
     public List<BlockPos> getCableConnections(BlockPos wirePos, World world) {
-        List<BlockPos> cableConnections = new java.util.ArrayList<>(Collections.emptyList());
-        TileEntity n = world.getBlockEntity(wirePos.north());
-        TileEntity e = world.getBlockEntity(wirePos.east());
-        TileEntity s = world.getBlockEntity(wirePos.south());
-        TileEntity w = world.getBlockEntity(wirePos.west());
-        TileEntity u = world.getBlockEntity(wirePos.above());
-        TileEntity d = world.getBlockEntity(wirePos.below());
-
-        if(n != null && n.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.north()).getBlock() == this.getBlock()) {
+        List<BlockPos> cableConnections = new java.util.ArrayList<>();
+        if(world.getBlockState(wirePos.north()).getBlock() == this.getBlock()) {
             cableConnections.add(wirePos.north());
         }
-        if(e != null && e.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.east()).getBlock() == this.getBlock()) {
+        if(world.getBlockState(wirePos.east()).getBlock() == this.getBlock()) {
             cableConnections.add(wirePos.east());
         }
-        if(s != null && s.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.south()).getBlock() == this.getBlock()) {
+        if(world.getBlockState(wirePos.south()).getBlock() == this.getBlock()) {
             cableConnections.add(wirePos.south());
         }
-        if(w != null && w.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.west()).getBlock() == this.getBlock()) {
+        if(world.getBlockState(wirePos.west()).getBlock() == this.getBlock()) {
             cableConnections.add(wirePos.west());
         }
-        if(u != null && u.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.above()).getBlock() == this.getBlock()) {
+        if(world.getBlockState(wirePos.above()).getBlock() == this.getBlock()) {
             cableConnections.add(wirePos.above());
         }
-        if(d != null && d.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.below()).getBlock() == this.getBlock()) {
+        if(world.getBlockState(wirePos.below()).getBlock() == this.getBlock()) {
             cableConnections.add(wirePos.below());
         }
         return cableConnections;

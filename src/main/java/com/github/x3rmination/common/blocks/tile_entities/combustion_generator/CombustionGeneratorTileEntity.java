@@ -65,7 +65,6 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
         @Override
         public void set(int index, int value) {
-            // Nah
         }
 
         @Override
@@ -77,7 +76,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     public CombustionGeneratorTileEntity() {
         super(TileEntityTypeInit.COMBUSTION_GENERATOR.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
-        this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.items = NonNullList.withSize(1, ItemStack.EMPTY);
         this.combustionGeneratorEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, true, false);
         this.energyHandler = LazyOptional.of(() -> this.combustionGeneratorEnergyStorage);
     }
@@ -142,7 +141,6 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
         progress = 0;
     }
 
-
     private void finishWork(){
         progress = 0;
         working = false;
@@ -150,7 +148,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
     @Override
     public int[] getSlotsForFace(Direction direction) {
-        return new int[]{0, 1};
+        return new int[]{0};
     }
 
     @Override
@@ -164,7 +162,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
     @Override
     public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        return index == 1;
+        return index == 0;
     }
 
     @Override
@@ -179,7 +177,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
     @Override
     public int getContainerSize() {
-        return 1;
+        return this.items.size();
     }
 
     @Override
@@ -189,7 +187,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
     @Override
     public ItemStack getItem(int index) {
-        return items.get(index);
+        return this.items.get(index);
     }
 
     @Override
