@@ -1,6 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
 
-import com.github.x3rmination.core.util.energy.ModEnergyStorage;
+import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,7 +37,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] itemHandler;
 
-
     private int progress = 0;
     private int energy = 0;
     private static final int MAX_REDSTONE_FLUX = 10000;
@@ -64,7 +63,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
         @Override
         public void set(int index, int value) {
-            // Nah
         }
 
         @Override

@@ -1,5 +1,7 @@
 {
   "itemGroup.x3tech": "X3TECH Items",
 
-  "item.x3tech.test_ingot": "Test Ingot"
+  "item.x3tech.test_ingot": "Test Ingot",
+
+  "tooltip.ingredient_item_base.default": "Used in Crafting"
 }

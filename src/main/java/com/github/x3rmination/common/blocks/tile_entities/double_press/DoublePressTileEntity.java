@@ -1,7 +1,7 @@
 package com.github.x3rmination.common.blocks.tile_entities.double_press;
 
 import com.github.x3rmination.common.crafting.recipe.DoublePressRecipe;
-import com.github.x3rmination.core.util.energy.ModEnergyStorage;
+import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.RecipesInit;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;

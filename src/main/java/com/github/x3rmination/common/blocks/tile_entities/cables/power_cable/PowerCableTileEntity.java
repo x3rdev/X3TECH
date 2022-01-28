@@ -1,6 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.cables.power_cable;
 
-import com.github.x3rmination.core.util.energy.ModEnergyStorage;
+import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -102,28 +102,6 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
             resultList.add(pos.relative(direction));
         }
         return resultList;
-    }
-
-    private Direction relativeDirection(BlockPos pos1, BlockPos pos2) {
-        if(pos1.north() == pos2) {
-            return Direction.NORTH;
-        }
-        if(pos1.east() == pos2) {
-            return Direction.EAST;
-        }
-        if(pos1.south() == pos2) {
-            return Direction.SOUTH;
-        }
-        if(pos1.west() == pos2) {
-            return Direction.WEST;
-        }
-        if(pos1.above() == pos2) {
-            return Direction.UP;
-        }
-        if(pos1.below() == pos2) {
-            return Direction.DOWN;
-        }
-        return null;
     }
 
     private void extractEnergy(BlockPos pos) {

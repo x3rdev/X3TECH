@@ -1,4 +1,4 @@
-package com.github.x3rmination.core.util.block;
+package com.github.x3rmination.core.util;
 
 import net.minecraft.state.BooleanProperty;
 

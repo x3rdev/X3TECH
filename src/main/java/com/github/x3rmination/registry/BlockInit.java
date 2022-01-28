@@ -44,13 +44,24 @@ public class BlockInit {
                     .strength(4, 20)
                     .sound(SoundType.METAL)
                     .noOcclusion()));
-    public static final RegistryObject<Block> MACHINE_FRAME = BLOCKS.register("machine_frame",
-            () -> new Block(AbstractBlock.Properties.of(Material.HEAVY_METAL)
-                    .strength(4, 20)
-                    .sound(SoundType.METAL)));
     public static final RegistryObject<Block> POWER_CABLE = BLOCKS.register("power_cable",
             () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(1, 10)
                     .sound(SoundType.METAL)
                     .noOcclusion()));
+
+    public static final RegistryObject<Block> GRAPHITE_CRUCIBLE_HEATER = BLOCKS.register("graphite_crucible_heater",
+            () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(1, 10)
+                    .sound(SoundType.METAL)));
+
+    //Generic Blocks
+    public static final RegistryObject<Block> MACHINE_FRAME = BLOCKS.register("machine_frame",
+            () -> new Block(AbstractBlock.Properties.of(Material.HEAVY_METAL)
+                    .strength(4, 20)
+                    .sound(SoundType.METAL)));
+    public static final RegistryObject<Block> CRUDE_GRAPHITE_BLOCK = BLOCKS.register("crude_graphite_block",
+            () -> new Block(AbstractBlock.Properties.of(Material.STONE)
+                    .strength(4, 20)
+                    .sound(SoundType.STONE)));
 }

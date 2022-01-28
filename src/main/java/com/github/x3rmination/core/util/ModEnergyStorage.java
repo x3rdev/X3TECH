@@ -1,4 +1,4 @@
-package com.github.x3rmination.core.util.energy;
+package com.github.x3rmination.core.util;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;

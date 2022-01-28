@@ -1,6 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer;
 
-import com.github.x3rmination.core.util.block.CustomBlockProperties;
+import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;

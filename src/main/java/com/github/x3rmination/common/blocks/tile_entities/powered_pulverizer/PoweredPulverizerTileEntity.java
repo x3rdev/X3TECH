@@ -2,7 +2,7 @@ package com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer;
 
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
 import com.github.x3rmination.common.crafting.recipe.PoweredPulverizerRecipe;
-import com.github.x3rmination.core.util.energy.ModEnergyStorage;
+import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.RecipesInit;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
