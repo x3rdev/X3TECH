@@ -49,8 +49,8 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         this.renderBackground(matrixStack);
-        this.renderTooltip(matrixStack, x, y);
         super.render(matrixStack, x, y, partialTicks);
+        this.renderTooltip(matrixStack, x, y);
     }
 
     @Override

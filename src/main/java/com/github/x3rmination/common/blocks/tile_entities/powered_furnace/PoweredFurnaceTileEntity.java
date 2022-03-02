@@ -17,6 +17,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.NonNullList;
@@ -41,7 +42,8 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     private int progress = 0;
     private int energy = 0;
     private static final int MAX_REDSTONE_FLUX = 10000;
-    private static final int MAX_STACK_SIZE = 32;
+    private static final int INPUT_SLOT_INDEX = 0;
+    private static final int OUTPUT_SLOT_INDEX = 1;
 
     int defaultUse = 100;
 
@@ -91,7 +93,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
             return;
         }
         FurnaceRecipe recipe = getRecipe();
-        if(!getItem(1).isEmpty()) {
+        if(!getItem(OUTPUT_SLOT_INDEX).isEmpty()) {
             autoEject();
         }
         if(recipe != null && useEnergy(defaultUse)) {
@@ -105,7 +107,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Nullable
     public FurnaceRecipe getRecipe() {
-        if (this.level == null || getItem(0).isEmpty()) {
+        if (this.level == null || getItem(INPUT_SLOT_INDEX).isEmpty()) {
             return null;
         }
         return this.level.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, this, this.level).orElse(null);
@@ -120,7 +122,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     private void doWork(FurnaceRecipe recipe) {
         assert this.level != null;
-        ItemStack current = getItem(1);
+        ItemStack current = getItem(OUTPUT_SLOT_INDEX);
         ItemStack output = getWorkOutput(recipe);
         processTime = recipe.getCookingTime()/10 + 5;
         if(!current.isEmpty()) {
@@ -142,55 +144,63 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     private void autoEject(){
         if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_NORTH).equals(1)) {
-            eject(Direction.NORTH);
-            return;
+            if(eject(Direction.NORTH) == ActionResultType.SUCCESS) {
+                return;
+            }
         }
         if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_EAST).equals(1)) {
-            eject(Direction.EAST);
-            return;
+            if(eject(Direction.EAST) == ActionResultType.SUCCESS) {
+                return;
+            }
         }
         if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_SOUTH).equals(1)) {
-            eject(Direction.SOUTH);
-            return;
+            if(eject(Direction.SOUTH) == ActionResultType.SUCCESS) {
+                return;
+            }
         }
         if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_WEST).equals(1)) {
-            eject(Direction.WEST);
-            return;
+            if(eject(Direction.WEST) == ActionResultType.SUCCESS) {
+                return;
+            }
         }
         if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_UP).equals(1)) {
-            eject(Direction.UP);
-            return;
+            if(eject(Direction.UP) == ActionResultType.SUCCESS) {
+                return;
+            }
         }
         if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_DOWN).equals(1)) {
-            eject(Direction.DOWN);
-            return;
+            if(eject(Direction.DOWN) == ActionResultType.SUCCESS) {
+                return;
+            }
         }
     }
 
-    private void eject(Direction dir){
-        IInventory iInventory = checkForContainer(dir);
-        if(iInventory != null) {
-            for (int i = 0; i < iInventory.getContainerSize(); i++) {
-                ItemStack targetedItemStack = iInventory.getItem(i);
-                if(iInventory.canPlaceItem(i, getItem(1).getStack())) {
-                    if(targetedItemStack.isEmpty()) {
-                        iInventory.setItem(i, new ItemStack(getItem(1).getItem(), getItem(1).getCount()));
-                        setItem(1, ItemStack.EMPTY);
-                        return;
+    private ActionResultType eject(Direction dir){
+        IInventory inventory = checkForContainer(dir);
+        if(inventory != null) {
+            for (int i = 0; i < inventory.getContainerSize(); i++) {
+                ItemStack targetedItemStack = inventory.getItem(i);
+                ItemStack currentItemStack = this.getItem(OUTPUT_SLOT_INDEX);
+                if(targetedItemStack.isEmpty()) {
+                    inventory.setItem(i, currentItemStack.copy());
+                    setItem(OUTPUT_SLOT_INDEX, ItemStack.EMPTY);
+                    return ActionResultType.SUCCESS;
+                } else if (targetedItemStack.getItem().equals(currentItemStack.getItem()) && targetedItemStack.getMaxStackSize() > targetedItemStack.getCount()) {
+                    if(targetedItemStack.getCount() + currentItemStack.getCount() <= targetedItemStack.getMaxStackSize()) {
+                        inventory.getItem(i).setCount(targetedItemStack.getCount() + currentItemStack.getCount());
+                        setItem(OUTPUT_SLOT_INDEX, ItemStack.EMPTY);
+                        return ActionResultType.SUCCESS;
                     }
-                    if (!targetedItemStack.isEmpty()) {
-                        if(targetedItemStack.getCount() + getItem(1).getCount() > targetedItemStack.getMaxStackSize()) {
-                            setItem(1, new ItemStack(getItem(1).getItem(), getItem(1).getCount() - (targetedItemStack.getMaxStackSize() - targetedItemStack.getCount())));
-                            iInventory.setItem(i, new ItemStack(getItem(1).getItem(), targetedItemStack.getMaxStackSize()));
-                        } else {
-                            setItem(1, ItemStack.EMPTY);
-                            iInventory.setItem(i, new ItemStack(getItem(1).getItem(), targetedItemStack.getCount() + getItem(1).getCount()));
-                        }
-                        return;
+                    if(targetedItemStack.getCount() + currentItemStack.getCount() > targetedItemStack.getMaxStackSize()) {
+                        int diff = Math.abs(targetedItemStack.getMaxStackSize() - (targetedItemStack.getCount() + currentItemStack.getCount()));
+                        inventory.getItem(i).setCount(targetedItemStack.getMaxStackSize());
+                        currentItemStack.setCount(currentItemStack.getCount() - diff);
+                        return ActionResultType.SUCCESS;
                     }
                 }
             }
         }
+        return ActionResultType.FAIL;
     }
 
     private IInventory checkForContainer(Direction side){
@@ -213,10 +223,10 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(!current.isEmpty()){
             current.grow(output.getCount());
         } else {
-            setItem(1, output);
+            setItem(OUTPUT_SLOT_INDEX, output);
         }
         progress = 0;
-        this.removeItem(0, 1);
+        this.removeItem(INPUT_SLOT_INDEX, 1);
     }
 
     private boolean useEnergy(int amount) {
@@ -235,7 +245,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack itemStack, @Nullable Direction direction) {
-        if(index == 0) {
+        if(index == INPUT_SLOT_INDEX) {
             return this.canPlaceItem(index, itemStack);
         } else {
             return false;
@@ -244,7 +254,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Override
     public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        return index == 1;
+        return index == OUTPUT_SLOT_INDEX;
     }
 
     @Override
@@ -264,7 +274,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     @Override
     public boolean isEmpty() {
-        return getItem(0).isEmpty() && getItem(1).isEmpty();
+        return getItem(INPUT_SLOT_INDEX).isEmpty() && getItem(OUTPUT_SLOT_INDEX).isEmpty();
     }
 
     @Override

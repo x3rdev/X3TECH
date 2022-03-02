@@ -40,12 +40,12 @@ public class PoweredFurnaceBlock extends Block {
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(ACTIVE, Boolean.FALSE)
-                .setValue(ITEM_NORTH, 1)
-                .setValue(ITEM_EAST, 1)
-                .setValue(ITEM_SOUTH, 1)
-                .setValue(ITEM_WEST, 1)
-                .setValue(ITEM_UP, 1)
-                .setValue(ITEM_DOWN, 1));
+                .setValue(ITEM_NORTH, 3)
+                .setValue(ITEM_EAST, 3)
+                .setValue(ITEM_SOUTH, 3)
+                .setValue(ITEM_WEST, 3)
+                .setValue(ITEM_UP, 3)
+                .setValue(ITEM_DOWN, 3));
     }
 
     @Override
