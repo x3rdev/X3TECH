@@ -1,12 +1,12 @@
 package com.github.x3rmination.registry;
 
 import com.github.x3rmination.X3TECH;
+import com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator.CombustionGeneratorBlock;
+import com.github.x3rmination.common.blocks.tile_entities.archive.double_press.DoublePressBlock;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer.PoweredPulverizerBlock;
+import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressBlock;
 import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableBlock;
-import com.github.x3rmination.common.blocks.tile_entities.combustion_generator.CombustionGeneratorBlock;
-import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressBlock;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
-import com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer.PoweredPulverizerBlock;
-import com.github.x3rmination.common.blocks.tile_entities.single_press.SinglePressBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;

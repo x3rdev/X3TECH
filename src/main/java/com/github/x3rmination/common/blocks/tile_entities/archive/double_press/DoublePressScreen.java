@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.single_press;
+package com.github.x3rmination.common.blocks.tile_entities.archive.double_press;
 
 import com.github.x3rmination.X3TECH;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -9,10 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class SinglePressScreen extends ContainerScreen<SinglePressContainer> {
+public class DoublePressScreen extends ContainerScreen<DoublePressContainer> {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/single_press.png");
-    public SinglePressScreen(SinglePressContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/double_press.png");
+    public DoublePressScreen(DoublePressContainer container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
     }
 

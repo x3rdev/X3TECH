@@ -1,6 +1,5 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "minecraft:item",
 	"textures": {
 		"0": "x3tech:item/engine_piston",
 		"particle": "x3tech:item/engine_piston"

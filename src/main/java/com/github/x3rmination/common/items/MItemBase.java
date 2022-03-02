@@ -1,12 +1,11 @@
 package com.github.x3rmination.common.items;
 
-import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.awt.*;
 
-public class MItemBase extends Item implements IItemColor {
+public class MItemBase extends Item {
 
     Color color;
 
@@ -15,7 +14,6 @@ public class MItemBase extends Item implements IItemColor {
         this.color = ingotColor;
     }
 
-    @Override
     public int getColor(ItemStack stack, int index) {
         return color.getRGB();
     }

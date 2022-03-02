@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.combustion_generator;
+package com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator;
 
 import com.github.x3rmination.registry.ContainerTypeInit;
 import net.minecraft.entity.player.PlayerEntity;

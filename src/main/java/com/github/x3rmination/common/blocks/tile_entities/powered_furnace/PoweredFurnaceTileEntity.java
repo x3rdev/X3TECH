@@ -5,6 +5,7 @@ import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
@@ -40,8 +41,9 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     private int progress = 0;
     private int energy = 0;
     private static final int MAX_REDSTONE_FLUX = 10000;
+    private static final int MAX_STACK_SIZE = 32;
 
-    int defaultUse = 250;
+    int defaultUse = 100;
 
     private final ModEnergyStorage poweredFurnaceEnergyStorage;
     private final LazyOptional<ModEnergyStorage> energyHandler;
@@ -89,15 +91,15 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
             return;
         }
         FurnaceRecipe recipe = getRecipe();
+        if(!getItem(1).isEmpty()) {
+            autoEject();
+        }
         if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
             stopWork();
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.FALSE), 3);
-        }
-        if(energy > MAX_REDSTONE_FLUX){
-            energy = MAX_REDSTONE_FLUX;
         }
     }
 
@@ -136,6 +138,67 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(progress >= processTime) {
             finishWork(recipe, current, output);
         }
+    }
+
+    private void autoEject(){
+        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_NORTH).equals(1)) {
+            eject(Direction.NORTH);
+            return;
+        }
+        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_EAST).equals(1)) {
+            eject(Direction.EAST);
+            return;
+        }
+        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_SOUTH).equals(1)) {
+            eject(Direction.SOUTH);
+            return;
+        }
+        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_WEST).equals(1)) {
+            eject(Direction.WEST);
+            return;
+        }
+        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_UP).equals(1)) {
+            eject(Direction.UP);
+            return;
+        }
+        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_DOWN).equals(1)) {
+            eject(Direction.DOWN);
+            return;
+        }
+    }
+
+    private void eject(Direction dir){
+        IInventory iInventory = checkForContainer(dir);
+        if(iInventory != null) {
+            for (int i = 0; i < iInventory.getContainerSize(); i++) {
+                ItemStack targetedItemStack = iInventory.getItem(i);
+                if(iInventory.canPlaceItem(i, getItem(1).getStack())) {
+                    if(targetedItemStack.isEmpty()) {
+                        iInventory.setItem(i, new ItemStack(getItem(1).getItem(), getItem(1).getCount()));
+                        setItem(1, ItemStack.EMPTY);
+                        return;
+                    }
+                    if (!targetedItemStack.isEmpty()) {
+                        if(targetedItemStack.getCount() + getItem(1).getCount() > targetedItemStack.getMaxStackSize()) {
+                            setItem(1, new ItemStack(getItem(1).getItem(), getItem(1).getCount() - (targetedItemStack.getMaxStackSize() - targetedItemStack.getCount())));
+                            iInventory.setItem(i, new ItemStack(getItem(1).getItem(), targetedItemStack.getMaxStackSize()));
+                        } else {
+                            setItem(1, ItemStack.EMPTY);
+                            iInventory.setItem(i, new ItemStack(getItem(1).getItem(), targetedItemStack.getCount() + getItem(1).getCount()));
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private IInventory checkForContainer(Direction side){
+        assert this.level != null;
+        if(this.level.getBlockEntity(this.getBlockPos().relative(side, 1)) instanceof IInventory) {
+            return ((IInventory) this.level.getBlockEntity(this.getBlockPos().relative(side, 1)));
+        }
+        return null;
     }
 
     public int getProcessTime(){

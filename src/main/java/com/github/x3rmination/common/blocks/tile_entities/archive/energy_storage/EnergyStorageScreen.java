@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.energy_storage;
+package com.github.x3rmination.common.blocks.tile_entities.archive.energy_storage;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

@@ -1,6 +1,7 @@
 package com.github.x3rmination;
 
 import com.github.x3rmination.client.color.ColorLoader;
+import com.github.x3rmination.common.network.ModPacketHandler;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
@@ -60,8 +61,8 @@ public class X3TECH {
 
     }
 
-    private void setup(FMLCommonSetupEvent event) {
-
+    private void setup(final FMLCommonSetupEvent event) {
+        ModPacketHandler.register();
     }
 
     private void doClientStuff(FMLClientSetupEvent event) {

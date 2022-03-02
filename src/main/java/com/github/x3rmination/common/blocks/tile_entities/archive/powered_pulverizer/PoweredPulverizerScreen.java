@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.combustion_generator;
+package com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer;
 
 import com.github.x3rmination.X3TECH;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -9,10 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class CombustionGeneratorScreen extends ContainerScreen<CombustionGeneratorContainer> {
+public class PoweredPulverizerScreen extends ContainerScreen<PoweredPulverizerContainer> {
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/combustion_generator.png");
-    public CombustionGeneratorScreen(CombustionGeneratorContainer container, PlayerInventory playerInventory, ITextComponent title) {
+    public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/powered_pulverizer.png");
+    public PoweredPulverizerScreen(PoweredPulverizerContainer container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
     }
 
@@ -26,7 +26,7 @@ public class CombustionGeneratorScreen extends ContainerScreen<CombustionGenerat
     @Override
     protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         assert minecraft != null;
-        RenderSystem.blendColor(1, 1, 1, 1);
+        RenderSystem.color4f(1, 1, 1, 1);
         minecraft.getTextureManager().bind(TEXTURE);
 
         int posX = (this.width - this.imageWidth)/2;
@@ -36,7 +36,7 @@ public class CombustionGeneratorScreen extends ContainerScreen<CombustionGenerat
 
         // Arrow
         blit(matrixStack, posX + 67, posY + 35, 176, 14, menu.getProgressArrowScale() + 1, 16);
-        // RF meter
+
         if(menu.getRFMeterScale() != 0) {
             blit(matrixStack, posX + 10, posY + 19, 176, 32, 11, menu.getRFMeterScale() + 1);
         }

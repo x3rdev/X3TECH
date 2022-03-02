@@ -15,6 +15,7 @@ public class PoweredFurnaceContainer extends Container {
 
     private final IInventory inventory;
     private IIntArray fields;
+
     protected int energy;
     protected int capacity;
     protected int maxReceive;
@@ -27,13 +28,11 @@ public class PoweredFurnaceContainer extends Container {
     public PoweredFurnaceContainer(int id, PlayerInventory playerInventory, IInventory inventory, IIntArray fields) {
         super(ContainerTypeInit.POWERED_FURNACE.get(), id);
         this.inventory = inventory;
-        this.fields = fields;
-
         this.energy = 0;
         this.capacity = 10000;
         this.maxReceive = 10000;
         this.maxExtract = 0;
-
+        this.fields = fields;
         this.addSlot(new Slot(this.inventory, 0, 44, 36));
         this.addSlot(new Slot(this.inventory, 1, 104, 36) {
             @Override
@@ -68,7 +67,7 @@ public class PoweredFurnaceContainer extends Container {
         return 0;
     }
     public int getRFMeterScale(){
-        float s = this.getRf()*49/this.getMaxRf();
+        float s = (this.getRf()*49)/this.getMaxRf();
         return (49 - (Math.round(s)));
     }
     public int getRf(){
@@ -124,4 +123,6 @@ public class PoweredFurnaceContainer extends Container {
 
         return itemstack;
     }
+
+
 }

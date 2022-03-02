@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.double_press;
+package com.github.x3rmination.common.blocks.tile_entities.archive.double_press;
 
 
 

@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.energy_storage;
+package com.github.x3rmination.common.blocks.tile_entities.archive.energy_storage;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.HorizontalBlock;

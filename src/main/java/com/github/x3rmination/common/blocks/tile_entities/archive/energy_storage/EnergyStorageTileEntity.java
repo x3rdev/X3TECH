@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.energy_storage;
+package com.github.x3rmination.common.blocks.tile_entities.archive.energy_storage;
 
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.entity.player.PlayerEntity;

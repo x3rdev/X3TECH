@@ -11,6 +11,7 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -27,10 +28,24 @@ public class PoweredFurnaceBlock extends Block {
 
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
+    public static final IntegerProperty ITEM_NORTH = CustomBlockProperties.ITEM_NORTH;
+    public static final IntegerProperty ITEM_EAST = CustomBlockProperties.ITEM_EAST;
+    public static final IntegerProperty ITEM_SOUTH = CustomBlockProperties.ITEM_SOUTH;
+    public static final IntegerProperty ITEM_WEST = CustomBlockProperties.ITEM_WEST;
+    public static final IntegerProperty ITEM_UP = CustomBlockProperties.ITEM_UP;
+    public static final IntegerProperty ITEM_DOWN = CustomBlockProperties.ITEM_DOWN;
 
     public PoweredFurnaceBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(ACTIVE, Boolean.FALSE)
+                .setValue(ITEM_NORTH, 1)
+                .setValue(ITEM_EAST, 1)
+                .setValue(ITEM_SOUTH, 1)
+                .setValue(ITEM_WEST, 1)
+                .setValue(ITEM_UP, 1)
+                .setValue(ITEM_DOWN, 1));
     }
 
     @Override
@@ -93,5 +108,11 @@ public class PoweredFurnaceBlock extends Block {
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
         stateBuilder.add(FACING);
         stateBuilder.add(ACTIVE);
+        stateBuilder.add(ITEM_NORTH);
+        stateBuilder.add(ITEM_EAST);
+        stateBuilder.add(ITEM_SOUTH);
+        stateBuilder.add(ITEM_WEST);
+        stateBuilder.add(ITEM_UP);
+        stateBuilder.add(ITEM_DOWN);
     }
 }

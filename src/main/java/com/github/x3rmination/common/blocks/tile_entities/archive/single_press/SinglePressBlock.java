@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer;
+package com.github.x3rmination.common.blocks.tile_entities.archive.single_press;
 
 import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
@@ -23,12 +23,12 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class PoweredPulverizerBlock extends Block {
+public class SinglePressBlock extends Block {
 
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
 
-    public PoweredPulverizerBlock(Properties properties) {
+    public SinglePressBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, Boolean.FALSE));
     }
@@ -41,9 +41,8 @@ public class PoweredPulverizerBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
-        return new PoweredPulverizerTileEntity();
+        return new SinglePressTileEntity();
     }
-
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
@@ -56,8 +55,8 @@ public class PoweredPulverizerBlock extends Block {
 
     private void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity){
         TileEntity tileEntity = world.getBlockEntity(blockPos);
-        if(tileEntity instanceof PoweredPulverizerTileEntity && playerEntity instanceof ServerPlayerEntity) {
-            PoweredPulverizerTileEntity pfe = (PoweredPulverizerTileEntity) tileEntity;
+        if(tileEntity instanceof SinglePressTileEntity && playerEntity instanceof ServerPlayerEntity) {
+            SinglePressTileEntity pfe = (SinglePressTileEntity) tileEntity;
             NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
         }
     }
@@ -87,7 +86,7 @@ public class PoweredPulverizerBlock extends Block {
 
     @Override
     public BlockState mirror(BlockState blockState, Mirror mirror) {
-        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
+        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(ACTIVE, false);
     }
 
     @Override

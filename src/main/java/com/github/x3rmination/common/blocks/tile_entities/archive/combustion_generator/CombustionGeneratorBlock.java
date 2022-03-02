@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.single_press;
+package com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator;
 
 import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
@@ -23,12 +23,11 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class SinglePressBlock extends Block {
-
+public class CombustionGeneratorBlock extends Block {
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
 
-    public SinglePressBlock(Properties properties) {
+    public CombustionGeneratorBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, Boolean.FALSE));
     }
@@ -41,7 +40,7 @@ public class SinglePressBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
-        return new SinglePressTileEntity();
+        return new CombustionGeneratorTileEntity();
     }
 
     @Override
@@ -55,8 +54,8 @@ public class SinglePressBlock extends Block {
 
     private void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity){
         TileEntity tileEntity = world.getBlockEntity(blockPos);
-        if(tileEntity instanceof SinglePressTileEntity && playerEntity instanceof ServerPlayerEntity) {
-            SinglePressTileEntity pfe = (SinglePressTileEntity) tileEntity;
+        if(tileEntity instanceof CombustionGeneratorTileEntity && playerEntity instanceof ServerPlayerEntity) {
+            CombustionGeneratorTileEntity pfe = (CombustionGeneratorTileEntity) tileEntity;
             NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
         }
     }

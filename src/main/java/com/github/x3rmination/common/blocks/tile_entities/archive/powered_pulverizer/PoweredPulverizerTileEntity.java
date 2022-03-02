@@ -1,6 +1,7 @@
-package com.github.x3rmination.common.blocks.tile_entities.single_press;
+package com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer;
 
-import com.github.x3rmination.common.crafting.recipe.SinglePressRecipe;
+import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.crafting.recipe.PoweredPulverizerRecipe;
 import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.RecipesInit;
 import com.github.x3rmination.registry.TileEntityTypeInit;
@@ -30,12 +31,12 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 
-public class SinglePressTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
+public class PoweredPulverizerTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
+
     static int processTime;
 
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] itemHandler;
-
 
     private int progress = 0;
     private int energy = 0;
@@ -43,7 +44,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
 
     int defaultUse = 250;
 
-    private final ModEnergyStorage singlePressEnergyStorage;
+    private final ModEnergyStorage poweredPulverizerEnergyStorage;
     private final LazyOptional<ModEnergyStorage> energyHandler;
 
     private final IIntArray fields = new IIntArray() {
@@ -53,9 +54,9 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
                 case 0:
                     return progress;
                 case 1:
-                    return singlePressEnergyStorage.getEnergyStored();
+                    return poweredPulverizerEnergyStorage.getEnergyStored();
                 case 2:
-                    return singlePressEnergyStorage.getMaxEnergyStored();
+                    return poweredPulverizerEnergyStorage.getMaxEnergyStored();
                 default:
                     return 0;
             }
@@ -63,7 +64,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
 
         @Override
         public void set(int index, int value) {
-            // Nah
+
         }
 
         @Override
@@ -72,12 +73,12 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
         }
     };
 
-    public SinglePressTileEntity() {
-        super(TileEntityTypeInit.SINGLE_PRESS.get());
+    public PoweredPulverizerTileEntity() {
+        super(TileEntityTypeInit.POWERED_PULVERIZER.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        this.singlePressEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, false, true);
-        this.energyHandler = LazyOptional.of(() -> this.singlePressEnergyStorage);
+        this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.poweredPulverizerEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, false, true);
+        this.energyHandler = LazyOptional.of(() -> this.poweredPulverizerEnergyStorage);
     }
 
     void encodeExtraData(PacketBuffer buffer) {
@@ -89,36 +90,37 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
         if(this.level == null || this.level.isClientSide) {
             return;
         }
-        SinglePressRecipe recipe = getRecipe();
+
+        PoweredPulverizerRecipe recipe = getRecipe();
         if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
-            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(SinglePressBlock.ACTIVE, Boolean.TRUE), 3);
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
             stopWork();
-            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(SinglePressBlock.ACTIVE, Boolean.FALSE), 3);
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.FALSE), 3);
         }
     }
 
     @Nullable
-    public SinglePressRecipe getRecipe() {
+    public PoweredPulverizerRecipe getRecipe() {
         if (this.level == null || getItem(0).isEmpty()) {
             return null;
         }
-        return this.level.getRecipeManager().getRecipeFor(RecipesInit.SINGLE_PRESSING, this, this.level).orElse(null);
+        return this.level.getRecipeManager().getRecipeFor(RecipesInit.PULVERIZING, this, this.level).orElse(null);
     }
 
-    private ItemStack getWorkOutput(@Nullable SinglePressRecipe recipe) {
+    private ItemStack getWorkOutput(@Nullable PoweredPulverizerRecipe recipe) {
         if (recipe != null) {
             return recipe.assemble(this);
         }
         return ItemStack.EMPTY;
     }
 
-    private void doWork(SinglePressRecipe recipe) {
+    private void doWork(PoweredPulverizerRecipe recipe) {
         assert this.level != null;
         ItemStack current = getItem(1);
-        ItemStack output = recipe.getResultItem();
-        processTime = recipe.getProcessTime()/10 + 5;
+        ItemStack output = getWorkOutput(recipe);
+        processTime = recipe.getProcessTime();
         if(!current.isEmpty()) {
             int newCount = current.getCount() + output.getCount();
             if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
@@ -135,7 +137,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
         }
 
         if(progress >= processTime) {
-            finishWork(current, output);
+            finishWork(recipe, current, output);
         }
     }
 
@@ -147,7 +149,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
         progress = 0;
     }
 
-    private void finishWork(ItemStack current, ItemStack output) {
+    private void finishWork(PoweredPulverizerRecipe recipe, ItemStack current, ItemStack output) {
         if(!current.isEmpty()){
             current.grow(output.getCount());
         } else {
@@ -158,13 +160,14 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
     }
 
     private boolean useEnergy(int amount) {
-        if(singlePressEnergyStorage.getEnergyStored() < amount){
+        if(poweredPulverizerEnergyStorage.getEnergyStored() < amount){
             return false;
         } else {
-            singlePressEnergyStorage.setEnergy(singlePressEnergyStorage.getEnergyStored() - amount);
+            poweredPulverizerEnergyStorage.setEnergy(poweredPulverizerEnergyStorage.getEnergyStored() - amount);
             return true;
         }
     }
+
 
     @Override
     public int[] getSlotsForFace(Direction direction) {
@@ -187,12 +190,12 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
 
     @Override
     protected ITextComponent getDefaultName() {
-        return new TranslationTextComponent("container.x3tech.single_press");
+        return new TranslationTextComponent("container.x3tech.powered_pulverizer");
     }
 
     @Override
     protected Container createMenu(int id, PlayerInventory inventory) {
-        return new SinglePressContainer(id, inventory, this, this.fields);
+        return new PoweredPulverizerContainer(id, inventory, this, this.fields);
     }
 
     @Override
@@ -202,12 +205,7 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
 
     @Override
     public boolean isEmpty() {
-        for(int i = 0; i <= this.getContainerSize(); i++) {
-            if(getItem(i).isEmpty()){
-                return false;
-            }
-        }
-        return true;
+        return getItem(0).isEmpty() && getItem(1).isEmpty();
     }
 
     @Override
@@ -243,12 +241,11 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
     @Override
     public void load(BlockState state, CompoundNBT tags) {
         super.load(state, tags);
-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        this.items = NonNullList.withSize(2, ItemStack.EMPTY);
         this.progress = tags.getInt("progress");
         ItemStackHelper.loadAllItems(tags, this.items);
         energyHandler.ifPresent(modEnergyStorage -> modEnergyStorage.deserializeNBT(tags.getCompound("energy")));
     }
-
 
     @Override
     public CompoundNBT save(CompoundNBT tags) {
@@ -278,19 +275,18 @@ public class SinglePressTileEntity extends LockableTileEntity implements ISidedI
     @Nullable
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (!this.remove) {
-            if (side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                if (side == Direction.UP) {
-                    return this.itemHandler[0].cast();
-                } else if (side == Direction.DOWN) {
-                    return this.itemHandler[1].cast();
-                } else {
-                    return this.itemHandler[2].cast();
-                }
+        if(!this.remove && side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if(side == Direction.UP){
+                return this.itemHandler[0].cast();
+            } else if(side == Direction.DOWN) {
+                return this.itemHandler[1].cast();
+            } else {
+                return this.itemHandler[2].cast();
             }
-            if (cap == CapabilityEnergy.ENERGY) {
-                return energyHandler.cast();
-            }
+
+        }
+        if (cap == CapabilityEnergy.ENERGY) {
+            return energyHandler.cast();
         }
         return super.getCapability(cap, side);
     }

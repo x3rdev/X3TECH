@@ -1,13 +1,13 @@
 package com.github.x3rmination.registry;
 
 import com.github.x3rmination.X3TECH;
+import com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator.CombustionGeneratorTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.archive.double_press.DoublePressTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.archive.energy_storage.EnergyStorageTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer.PoweredPulverizerTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.combustion_generator.CombustionGeneratorTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.double_press.DoublePressTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.energy_storage.EnergyStorageTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.powered_pulverizer.PoweredPulverizerTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.single_press.SinglePressTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

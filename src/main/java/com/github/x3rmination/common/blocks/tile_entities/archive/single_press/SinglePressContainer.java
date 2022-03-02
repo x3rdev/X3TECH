@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.single_press;
+package com.github.x3rmination.common.blocks.tile_entities.archive.single_press;
 
 import com.github.x3rmination.registry.ContainerTypeInit;
 import net.minecraft.entity.player.PlayerEntity;

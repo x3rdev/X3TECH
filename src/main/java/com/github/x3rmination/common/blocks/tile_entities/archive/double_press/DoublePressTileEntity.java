@@ -1,6 +1,8 @@
-package com.github.x3rmination.common.blocks.tile_entities.combustion_generator;
+package com.github.x3rmination.common.blocks.tile_entities.archive.double_press;
 
+import com.github.x3rmination.common.crafting.recipe.DoublePressRecipe;
 import com.github.x3rmination.core.util.ModEnergyStorage;
+import com.github.x3rmination.registry.RecipesInit;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,43 +11,40 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 
-public class CombustionGeneratorTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
+public class DoublePressTileEntity extends LockableTileEntity implements ISidedInventory, ITickableTileEntity {
 
     static int processTime;
 
     private NonNullList<ItemStack> items;
     private final LazyOptional<? extends IItemHandler>[] itemHandler;
 
+
     private int progress = 0;
     private int energy = 0;
-    private boolean working = false;
-    private int lastBurnTime;
     private static final int MAX_REDSTONE_FLUX = 10000;
 
-    private final ModEnergyStorage combustionGeneratorEnergyStorage;
+    int defaultUse = 250;
+
+    private final ModEnergyStorage doublePressEnergyStorage;
     private final LazyOptional<ModEnergyStorage> energyHandler;
 
     private final IIntArray fields = new IIntArray() {
@@ -55,9 +54,9 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
                 case 0:
                     return progress;
                 case 1:
-                    return combustionGeneratorEnergyStorage.getEnergyStored();
+                    return doublePressEnergyStorage.getEnergyStored();
                 case 2:
-                    return combustionGeneratorEnergyStorage.getMaxEnergyStored();
+                    return doublePressEnergyStorage.getMaxEnergyStored();
                 default:
                     return 0;
             }
@@ -65,6 +64,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
         @Override
         public void set(int index, int value) {
+            // Nah
         }
 
         @Override
@@ -73,12 +73,12 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
         }
     };
 
-    public CombustionGeneratorTileEntity() {
-        super(TileEntityTypeInit.COMBUSTION_GENERATOR.get());
+    public DoublePressTileEntity() {
+        super(TileEntityTypeInit.DOUBLE_PRESS.get());
         this.itemHandler = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
-        this.items = NonNullList.withSize(1, ItemStack.EMPTY);
-        this.combustionGeneratorEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, true, false);
-        this.energyHandler = LazyOptional.of(() -> this.combustionGeneratorEnergyStorage);
+        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        this.doublePressEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, 100000, false, true);
+        this.energyHandler = LazyOptional.of(() -> this.doublePressEnergyStorage);
     }
 
     void encodeExtraData(PacketBuffer buffer) {
@@ -90,50 +90,56 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
         if(this.level == null || this.level.isClientSide) {
             return;
         }
-        int burnTime = ForgeHooks.getBurnTime(getItem(0), IRecipeType.SMELTING);
-        if(burnTime > 0 && !working && (combustionGeneratorEnergyStorage.getEnergyStored() != combustionGeneratorEnergyStorage.getMaxEnergyStored())) {
-            working = true;
-            lastBurnTime = burnTime;
-            doWork(burnTime);
-            removeItem(0, 1);
-            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(CombustionGeneratorBlock.ACTIVE, Boolean.TRUE), 3);
-        } else if(working) {
-            doWork(lastBurnTime);
+        DoublePressRecipe recipe = getRecipe();
+        if(recipe != null && useEnergy(defaultUse)) {
+            doWork(recipe);
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
             stopWork();
-            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(CombustionGeneratorBlock.ACTIVE, Boolean.FALSE), 3);
-        }
-        if(combustionGeneratorEnergyStorage.getEnergyStored() > 0) {
-            Direction direction = this.getBlockState().getValue(CombustionGeneratorBlock.FACING).getOpposite();
-            TileEntity tileEntity = this.level.getBlockEntity(getBlockPos().relative(direction, 1));
-            if(tileEntity != null && !tileEntity.isRemoved() && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-                // add all directions
-                LazyOptional<IEnergyStorage> capabilityEnergy = tileEntity.getCapability(CapabilityEnergy.ENERGY);
-
-                if(capabilityEnergy.orElse(null).canReceive()) {
-                    int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());
-
-                    combustionGeneratorEnergyStorage.extractEnergy(capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false), false);
-                }
-            }
+            this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(DoublePressBlock.ACTIVE, Boolean.FALSE), 3);
         }
     }
 
-    private void doWork(int burnTime) {
+    @Nullable
+    public DoublePressRecipe getRecipe() {
+        if (this.level == null || getItem(0).isEmpty() || getItem(1).isEmpty()) {
+            return null;
+        }
+        return this.level.getRecipeManager().getRecipeFor(RecipesInit.DOUBLE_PRESSING, this, this.level).orElse(null);
+    }
+
+    private ItemStack getWorkOutput(@Nullable DoublePressRecipe recipe) {
+        if (recipe != null) {
+            return recipe.assemble(this);
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private void doWork(DoublePressRecipe recipe) {
         assert this.level != null;
-        processTime = burnTime / 100;
+        ItemStack input0 = getItem(0);
+        ItemStack input1 = getItem(1);
+        ItemStack current = getItem(2);
+        ItemStack output = recipe.getResultItem();
+        processTime = recipe.getProcessTime()/10 + 5;
+        if(!current.isEmpty()) {
+            int newCount = current.getCount() + output.getCount();
+            if(!ItemStack.isSame(current, output) || newCount > output.getMaxStackSize()){
+                stopWork();
+                return;
+            }
+        }
 
         if(progress < processTime) {
             progress += 1;
-            combustionGeneratorEnergyStorage.receiveEnergy(100, false);
         }
 
         if(progress >= processTime) {
-            finishWork();
+            finishWork(recipe, input0, input1, current, output);
         }
     }
 
-    public int getProcessTime() {
+    public int getProcessTime(){
         return processTime;
     }
 
@@ -141,14 +147,29 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
         progress = 0;
     }
 
-    private void finishWork(){
+    private void finishWork(DoublePressRecipe recipe, ItemStack input0, ItemStack input1, ItemStack current, ItemStack output) {
+        if(!current.isEmpty()){
+            current.grow(output.getCount());
+        } else {
+            setItem(2, output);
+        }
         progress = 0;
-        working = false;
+        this.removeItem(0, 1);
+        this.removeItem(1, 1);
+    }
+
+    private boolean useEnergy(int amount) {
+        if(doublePressEnergyStorage.getEnergyStored() < amount){
+            return false;
+        } else {
+            doublePressEnergyStorage.setEnergy(doublePressEnergyStorage.getEnergyStored() - amount);
+            return true;
+        }
     }
 
     @Override
     public int[] getSlotsForFace(Direction direction) {
-        return new int[]{0};
+        return new int[]{0, 1, 2};
     }
 
     @Override
@@ -162,32 +183,37 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
 
     @Override
     public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
-        return index == 0;
+        return index == 1;
     }
 
     @Override
     protected ITextComponent getDefaultName() {
-        return new TranslationTextComponent("container.x3tech.combustion_generator");
+        return new TranslationTextComponent("container.x3tech.double_press");
     }
 
     @Override
     protected Container createMenu(int id, PlayerInventory inventory) {
-        return new CombustionGeneratorContainer(id, inventory, this, this.fields);
+        return new DoublePressContainer(id, inventory, this, this.fields);
     }
 
     @Override
     public int getContainerSize() {
-        return this.items.size();
+        return 3;
     }
 
     @Override
     public boolean isEmpty() {
-        return getItem(0).isEmpty();
+        for(int i = 0; i <= this.getContainerSize(); i++) {
+            if(getItem(i).isEmpty()){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public ItemStack getItem(int index) {
-        return this.items.get(index);
+        return items.get(index);
     }
 
     @Override
@@ -218,7 +244,7 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     @Override
     public void load(BlockState state, CompoundNBT tags) {
         super.load(state, tags);
-        this.items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
+        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         this.progress = tags.getInt("progress");
         ItemStackHelper.loadAllItems(tags, this.items);
         energyHandler.ifPresent(modEnergyStorage -> modEnergyStorage.deserializeNBT(tags.getCompound("energy")));
@@ -255,7 +281,13 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
         if (!this.remove) {
             if (side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                return this.itemHandler[0].cast();
+                if (side == Direction.UP) {
+                    return this.itemHandler[0].cast();
+                } else if (side == Direction.DOWN) {
+                    return this.itemHandler[1].cast();
+                } else {
+                    return this.itemHandler[2].cast();
+                }
             }
             if (cap == CapabilityEnergy.ENERGY) {
                 return energyHandler.cast();
@@ -268,8 +300,8 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
     public void setRemoved() {
         super.setRemoved();
         for (LazyOptional<? extends IItemHandler> handler : this.itemHandler) {
+            energyHandler.invalidate();
             handler.invalidate();
         }
-        energyHandler.invalidate();
     }
 }

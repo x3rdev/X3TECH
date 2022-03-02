@@ -33,5 +33,4 @@ public class ColorLoader {
         MBlockInit.MOREBLOCKS.getEntries().forEach(blockObj -> blockColors.register(new BlockColor(), blockObj.get()));
 
     }
-
 }

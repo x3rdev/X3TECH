@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.combustion_generator;
+package com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer;
 
 import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
@@ -23,11 +23,12 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class CombustionGeneratorBlock extends Block {
+public class PoweredPulverizerBlock extends Block {
+
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
 
-    public CombustionGeneratorBlock(Properties properties) {
+    public PoweredPulverizerBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(ACTIVE, Boolean.FALSE));
     }
@@ -40,8 +41,9 @@ public class CombustionGeneratorBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
-        return new CombustionGeneratorTileEntity();
+        return new PoweredPulverizerTileEntity();
     }
+
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
@@ -54,8 +56,8 @@ public class CombustionGeneratorBlock extends Block {
 
     private void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity){
         TileEntity tileEntity = world.getBlockEntity(blockPos);
-        if(tileEntity instanceof CombustionGeneratorTileEntity && playerEntity instanceof ServerPlayerEntity) {
-            CombustionGeneratorTileEntity pfe = (CombustionGeneratorTileEntity) tileEntity;
+        if(tileEntity instanceof PoweredPulverizerTileEntity && playerEntity instanceof ServerPlayerEntity) {
+            PoweredPulverizerTileEntity pfe = (PoweredPulverizerTileEntity) tileEntity;
             NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
         }
     }
@@ -85,7 +87,7 @@ public class CombustionGeneratorBlock extends Block {
 
     @Override
     public BlockState mirror(BlockState blockState, Mirror mirror) {
-        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(ACTIVE, false);
+        return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
     }
 
     @Override

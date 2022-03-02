@@ -1,16 +1,20 @@
 package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
 
 import com.github.x3rmination.X3TECH;
+import com.github.x3rmination.common.network.MachineMessage;
+import com.github.x3rmination.common.network.ModPacketHandler;
 import com.github.x3rmination.core.util.ScreenHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -18,24 +22,35 @@ import net.minecraft.util.text.TranslationTextComponent;
 public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContainer> {
 
     public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/powered_furnace.png");
-    private Button settingsButton;
-    private Boolean settingsMenuOpen = false;
-    private char north;
-    private char east;
-    private char south;
-    private char west;
-    private char up;
-    private char down;
+    public static Boolean settingsMenuOpen = false;
+    private int north;
+    private int east;
+    private int south;
+    private int west;
+    private int up;
+    private int down;
 
     public PoweredFurnaceScreen(PoweredFurnaceContainer container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
+        PlayerEntity player = playerInventory.player;
+        BlockState state = player.level.getBlockState(((BlockRayTraceResult)player.pick(10.0D, 0.0F, false)).getBlockPos());
+        if(!(state.getBlock() instanceof PoweredFurnaceBlock)) {
+            this.onClose();
+        }
+        this.north = state.getValue(PoweredFurnaceBlock.ITEM_NORTH);
+        this.east = state.getValue(PoweredFurnaceBlock.ITEM_EAST);
+        this.south = state.getValue(PoweredFurnaceBlock.ITEM_SOUTH);
+        this.west = state.getValue(PoweredFurnaceBlock.ITEM_WEST);
+        this.up = state.getValue(PoweredFurnaceBlock.ITEM_UP);
+        this.down = state.getValue(PoweredFurnaceBlock.ITEM_DOWN);
+
     }
 
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         this.renderBackground(matrixStack);
-        super.render(matrixStack, x, y, partialTicks);
         this.renderTooltip(matrixStack, x, y);
+        super.render(matrixStack, x, y, partialTicks);
     }
 
     @Override
@@ -81,42 +96,51 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
             settingsMenuOpen = Boolean.FALSE.equals(this.settingsMenuOpen);
             playButtonSound();
         }
-        if(Boolean.TRUE.equals(settingsMenuOpen)) {
-            if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 60, 194 + 9, 60 + 9)) {
-                north = toggleDirectionStates(north);
-                Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            }
-            if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 206, 60, 206 + 9, 60 + 9)) {
-                east = toggleDirectionStates(east);
-                Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            }
-            if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 182, 72, 182 + 9, 72 + 9)) {
-                south = toggleDirectionStates(south);
-                Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            }
-            if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 182, 60, 182 + 9, 60 + 9)) {
-                west = toggleDirectionStates(west);
-                Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            }
-            if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 48, 194 + 9, 48 + 9)) {
-                up = toggleDirectionStates(up);
-                Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            }
-            if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 72, 194 + 9, 72 + 9)) {
-                down = toggleDirectionStates(down);
-                Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            }
-
-
+        if(Boolean.TRUE.equals(settingsMenuOpen) && directionButtons(mouseX, mouseY, posX, posY)) {
+            playButtonSound();
         }
         return super.mouseClicked(mouseX, mouseY, pButton);
+    }
+
+    private boolean directionButtons(double mouseX, double mouseY, int posX, int posY) {
+        if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 60, 194 + 9, 60 + 9)) {
+            north = toggleDirectionStates(north);
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(1, north));
+            return true;
+        }
+        if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 206, 60, 206 + 9, 60 + 9)) {
+            east = toggleDirectionStates(east);
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(2, east));
+            return true;
+        }
+        if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 182, 72, 182 + 9, 72 + 9)) {
+            south = toggleDirectionStates(south);
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(3, south));
+            return true;
+        }
+        if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 182, 60, 182 + 9, 60 + 9)) {
+            west = toggleDirectionStates(west);
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(4, west));
+            return true;
+        }
+        if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 48, 194 + 9, 48 + 9)) {
+            up = toggleDirectionStates(up);
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(5, up));
+            return true;
+        }
+        if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 72, 194 + 9, 72 + 9)) {
+            down = toggleDirectionStates(down);
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(6, down));
+            return true;
+        }
+        return false;
     }
 
     private void playButtonSound(){
         Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
-    private char toggleDirectionStates(char dir) {
+    private Integer toggleDirectionStates(Integer dir) {
         switch (dir) {
             case 1:
                 return 2;
