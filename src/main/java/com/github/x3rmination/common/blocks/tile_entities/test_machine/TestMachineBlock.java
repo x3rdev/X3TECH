@@ -1,5 +1,6 @@
-package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.test_machine;
 
+import com.github.x3rmination.common.blocks.tile_entities.MachineBlockBase;
 import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -8,15 +9,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -24,7 +25,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class PoweredFurnaceBlock extends Block {
+public class TestMachineBlock extends MachineBlockBase {
 
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
@@ -35,7 +36,7 @@ public class PoweredFurnaceBlock extends Block {
     public static final IntegerProperty ITEM_UP = CustomBlockProperties.ITEM_UP;
     public static final IntegerProperty ITEM_DOWN = CustomBlockProperties.ITEM_DOWN;
 
-    public PoweredFurnaceBlock(Properties properties) {
+    public TestMachineBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
@@ -46,6 +47,7 @@ public class PoweredFurnaceBlock extends Block {
                 .setValue(ITEM_WEST, 3)
                 .setValue(ITEM_UP, 3)
                 .setValue(ITEM_DOWN, 3));
+
     }
 
     @Override
@@ -55,31 +57,8 @@ public class PoweredFurnaceBlock extends Block {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
-        return new PoweredFurnaceTileEntity();
-    }
-
-    @Override
-    public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
-        if(world.isClientSide){
-            return ActionResultType.SUCCESS;
-        }
-        this.interactWith(world, blockPos, playerEntity);
-        return ActionResultType.CONSUME;
-    }
-
-    private void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-        TileEntity tileEntity = world.getBlockEntity(blockPos);
-        if(tileEntity instanceof PoweredFurnaceTileEntity && playerEntity instanceof ServerPlayerEntity) {
-            PoweredFurnaceTileEntity pfe = (PoweredFurnaceTileEntity) tileEntity;
-            NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
-        }
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return new TestMachineTileEntity();
     }
 
     @Override
@@ -91,6 +70,14 @@ public class PoweredFurnaceBlock extends Block {
                 world.updateNeighbourForOutputSignal(blockPos, this);
             }
             super.onRemove(blockState, world, blockPos, newState, isMoving);
+        }
+    }
+
+    public void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+    TileEntity tile = world.getBlockEntity(blockPos);
+        if(tile instanceof TestMachineTileEntity && playerEntity instanceof ServerPlayerEntity) {
+            TestMachineTileEntity pfe = (TestMachineTileEntity) tile;
+            NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
         }
     }
 

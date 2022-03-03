@@ -346,13 +346,24 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
         if (!this.remove) {
-            if (side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-                if (side == Direction.UP) {
+            if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+                if(side == Direction.NORTH) {
                     return this.itemHandler[0].cast();
-                } else if (side == Direction.DOWN) {
+                }
+                if(side == Direction.EAST) {
                     return this.itemHandler[1].cast();
-                } else {
+                }
+                if(side == Direction.SOUTH) {
                     return this.itemHandler[2].cast();
+                }
+                if(side == Direction.WEST) {
+                    return this.itemHandler[3].cast();
+                }
+                if(side == Direction.UP) {
+                    return this.itemHandler[4].cast();
+                }
+                if(side == Direction.DOWN) {
+                    return this.itemHandler[5].cast();
                 }
             }
             if (cap == CapabilityEnergy.ENERGY) {

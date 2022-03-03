@@ -1,4 +1,4 @@
-package com.github.x3rmination.client.color;
+package com.github.x3rmination.core.util.color;
 
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.items.MBlockItemBase;

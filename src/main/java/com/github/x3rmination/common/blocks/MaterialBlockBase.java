@@ -9,11 +9,11 @@ import net.minecraft.world.IBlockDisplayReader;
 import javax.annotation.Nullable;
 import java.awt.*;
 
-public class MBlockBase extends Block {
+public class MaterialBlockBase extends Block {
 
     Color color;
 
-    public MBlockBase(AbstractBlock.Properties properties, Color ingotColor) {
+    public MaterialBlockBase(AbstractBlock.Properties properties, Color ingotColor) {
         super(properties);
         this.color = ingotColor;
     }

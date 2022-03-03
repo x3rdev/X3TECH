@@ -1,11 +1,11 @@
-package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities;
 
 import com.github.x3rmination.core.util.CustomBlockProperties;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.BlockItemUseContext;
@@ -17,15 +17,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class PoweredFurnaceBlock extends Block {
-
+public abstract class MachineBlockBase extends Block {
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
     public static final IntegerProperty ITEM_NORTH = CustomBlockProperties.ITEM_NORTH;
@@ -35,7 +32,7 @@ public class PoweredFurnaceBlock extends Block {
     public static final IntegerProperty ITEM_UP = CustomBlockProperties.ITEM_UP;
     public static final IntegerProperty ITEM_DOWN = CustomBlockProperties.ITEM_DOWN;
 
-    public PoweredFurnaceBlock(Properties properties) {
+    protected MachineBlockBase(AbstractBlock.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
@@ -55,29 +52,6 @@ public class PoweredFurnaceBlock extends Block {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
-        return new PoweredFurnaceTileEntity();
-    }
-
-    @Override
-    public ActionResultType use(BlockState state, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult blockRayTraceResult) {
-        if(world.isClientSide){
-            return ActionResultType.SUCCESS;
-        }
-        this.interactWith(world, blockPos, playerEntity);
-        return ActionResultType.CONSUME;
-    }
-
-    private void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-        TileEntity tileEntity = world.getBlockEntity(blockPos);
-        if(tileEntity instanceof PoweredFurnaceTileEntity && playerEntity instanceof ServerPlayerEntity) {
-            PoweredFurnaceTileEntity pfe = (PoweredFurnaceTileEntity) tileEntity;
-            NetworkHooks.openGui((ServerPlayerEntity) playerEntity, pfe, pfe::encodeExtraData);
-        }
-    }
-
-    @Nullable
-    @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
@@ -85,14 +59,25 @@ public class PoweredFurnaceBlock extends Block {
     @Override
     public void onRemove(BlockState blockState, World world, BlockPos blockPos, BlockState newState, boolean isMoving) {
         if(!blockState.is(newState.getBlock())){
-            TileEntity tileEntity = world.getBlockEntity(blockPos);
-            if(tileEntity instanceof IInventory){
-                InventoryHelper.dropContents(world, blockPos, (IInventory) tileEntity);
+            TileEntity tile = world.getBlockEntity(blockPos);
+            if(tile instanceof IInventory){
+                InventoryHelper.dropContents(world, blockPos, (IInventory) tile);
                 world.updateNeighbourForOutputSignal(blockPos, this);
             }
             super.onRemove(blockState, world, blockPos, newState, isMoving);
         }
     }
+
+    @Override
+    public ActionResultType use(BlockState pState, World pLevel, BlockPos pPos, PlayerEntity pPlayer, Hand pHand, BlockRayTraceResult pHit) {
+        if(pLevel.isClientSide){
+            return ActionResultType.SUCCESS;
+        }
+        this.interactWith(pLevel, pPos, pPlayer);
+        return ActionResultType.CONSUME;
+    }
+
+    public abstract void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity);
 
     @Override
     public BlockState rotate(BlockState blockState, Rotation rotation) {

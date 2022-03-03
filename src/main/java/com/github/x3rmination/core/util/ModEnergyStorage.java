@@ -36,6 +36,10 @@ public class ModEnergyStorage implements IEnergyStorage, INBTSerializable<Compou
         this.energy = energy;
     }
 
+    public TileEntity getTile() {
+        return this.tile;
+    }
+
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
         int energyExtracted = Math.min(energy, Math.min(this.maxThrough, maxExtract));

@@ -7,6 +7,7 @@ import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulver
 import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressBlock;
 import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableBlock;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.blocks.tile_entities.test_machine.TestMachineBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -50,8 +51,8 @@ public class BlockInit {
                     .sound(SoundType.METAL)
                     .noOcclusion()));
 
-    public static final RegistryObject<Block> GRAPHITE_CRUCIBLE_HEATER = BLOCKS.register("graphite_crucible_heater",
-            () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.METAL)
+    public static final RegistryObject<Block> TEST_MACHINE = BLOCKS.register("test_block",
+            () -> new TestMachineBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(1, 10)
                     .sound(SoundType.METAL)));
 

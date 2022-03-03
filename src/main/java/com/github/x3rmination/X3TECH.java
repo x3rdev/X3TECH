@@ -1,10 +1,10 @@
 package com.github.x3rmination;
 
-import com.github.x3rmination.client.color.ColorLoader;
 import com.github.x3rmination.common.network.ModPacketHandler;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;
+import com.github.x3rmination.core.util.color.ColorLoader;
 import com.github.x3rmination.data.tags.ModTags;
 import com.github.x3rmination.registry.*;
 import net.minecraftforge.api.distmarker.Dist;

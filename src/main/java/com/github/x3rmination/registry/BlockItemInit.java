@@ -25,4 +25,7 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.MACHINE_FRAME.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> POWER_CABLE = BLOCK_ITEMS.register("power_cable",
             () -> new BlockItem(BlockInit.POWER_CABLE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
+    public static final RegistryObject<BlockItem> TEST_MACHINE = BLOCK_ITEMS.register("test_machine",
+            () -> new BlockItem(BlockInit.TEST_MACHINE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
+
 }
