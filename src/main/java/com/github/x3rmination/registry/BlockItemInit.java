@@ -27,5 +27,6 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.POWER_CABLE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> TEST_MACHINE = BLOCK_ITEMS.register("test_machine",
             () -> new BlockItem(BlockInit.TEST_MACHINE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
-
+    public static final RegistryObject<BlockItem> ZINC_COPPER_POWER_CELL = BLOCK_ITEMS.register("zinc_copper_power_cell",
+            () -> new BlockItem(BlockInit.ZINC_COPPER_POWER_CELL.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
 }

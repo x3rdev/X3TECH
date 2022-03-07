@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "x3tech:item/coal_tar_creosote_bucket"
+  }
+}

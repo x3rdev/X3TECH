@@ -23,13 +23,14 @@ import org.apache.logging.log4j.Logger;
 public class X3TECH {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "x3tech";
-    public static final String MINECRAFT_ID = "minecraft";
+    public static final String MINECRAFT_ID = "data/minecraft";
 
     public X3TECH() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
         modEventBus.addListener(MBlockInit::renderTypeSet);
+        modEventBus.addListener(BlockInit::renderTypeSet);
         modEventBus.addListener(ColorLoader::loadColors);
 
         // Generic Items
@@ -56,6 +57,8 @@ public class X3TECH {
         // Recipes
         RecipesInit.RECIPE_SERIALIZERS.register(modEventBus);
         RecipesInit.register();
+        // Fluids
+        FluidInit.FLUIDS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 

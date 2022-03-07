@@ -12,7 +12,10 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -61,8 +64,19 @@ public class BlockInit {
             () -> new Block(AbstractBlock.Properties.of(Material.HEAVY_METAL)
                     .strength(4, 20)
                     .sound(SoundType.METAL)));
-    public static final RegistryObject<Block> CRUDE_GRAPHITE_BLOCK = BLOCKS.register("crude_graphite_block",
-            () -> new Block(AbstractBlock.Properties.of(Material.STONE)
+    public static final RegistryObject<Block> ZINC_COPPER_POWER_CELL = BLOCKS.register("zinc_copper_power_cell",
+            () -> new Block(AbstractBlock.Properties.of(Material.WOOD)
+                    .noOcclusion()
                     .strength(4, 20)
-                    .sound(SoundType.STONE)));
+                    .lightLevel(value -> 1)
+                    .sound(SoundType.WOOD)));
+
+    public static void renderTypeSet(final FMLClientSetupEvent event) {
+        RenderTypeLookup.setRenderLayer(ZINC_COPPER_POWER_CELL.get(), RenderType.cutout());
+
+        // Fluids
+        RenderTypeLookup.setRenderLayer(FluidInit.COAL_TAR_CREOSOTE_FLUID.get(), RenderType.solid());
+        RenderTypeLookup.setRenderLayer(FluidInit.COAL_TAR_CREOSOTE_BLOCK.get(), RenderType.solid());
+        RenderTypeLookup.setRenderLayer(FluidInit.COAL_TAR_CREOSOTE_FLOWING.get(), RenderType.solid());
+    }
 }

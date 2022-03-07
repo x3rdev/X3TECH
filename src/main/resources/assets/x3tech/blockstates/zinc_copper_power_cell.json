@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "x3tech:block/zinc_copper_power_cell" }
+  }
+}

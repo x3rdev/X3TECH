@@ -120,9 +120,6 @@ public class PoweredFurnaceContainer extends Container {
 
             slot.onTake(player, itemstack1);
         }
-
         return itemstack;
     }
-
-
 }
