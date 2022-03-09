@@ -1,6 +1,7 @@
 package com.github.x3rmination.core.material.materialutil;
 
-import java.awt.*;
+import com.github.x3rmination.core.util.color.Color;
+
 
 public class MaterialBase {
 
@@ -11,13 +12,17 @@ public class MaterialBase {
     private final int miningLevel;
     private final boolean hasOre;
     // Info storage class
-    public MaterialBase(String name, Color color, int miningTime, int explosionResistance, int miningLevel, boolean hasOre){
+    public MaterialBase(String name, Color color, int miningTime, int explosionResistance, boolean hasOre, int miningLevel) {
         this.color = color;
         this.name = name;
         this.explosionResistance = explosionResistance;
         this.miningTime = miningTime;
         this.miningLevel = miningLevel;
         this.hasOre = hasOre;
+    }
+
+    public MaterialBase(String name, Color color, int miningTime, int explosionResistance) {
+        this(name, color, miningTime, explosionResistance, false, 0);
     }
 
     public Color getColor() {

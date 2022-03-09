@@ -1,9 +1,8 @@
 package com.github.x3rmination.common.items;
 
+import com.github.x3rmination.core.util.color.Color;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-
-import java.awt.*;
 
 public class MBlockItemBase extends net.minecraft.item.BlockItem{
 

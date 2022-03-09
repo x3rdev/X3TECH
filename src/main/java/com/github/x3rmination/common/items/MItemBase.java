@@ -1,9 +1,8 @@
 package com.github.x3rmination.common.items;
 
+import com.github.x3rmination.core.util.color.Color;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import java.awt.*;
 
 public class MItemBase extends Item {
 

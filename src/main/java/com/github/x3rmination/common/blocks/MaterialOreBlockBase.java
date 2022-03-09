@@ -1,6 +1,7 @@
 package com.github.x3rmination.common.blocks;
 
-import java.awt.*;
+
+import com.github.x3rmination.core.util.color.Color;
 
 public class MaterialOreBlockBase extends MaterialBlockBase {
 

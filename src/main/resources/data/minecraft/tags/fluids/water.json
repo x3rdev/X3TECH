@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "x3tech:coal_tar_creosote_flowing",
-    "x3tech:coal_tar_creosote_fluid"
+    "x3tech:creosote_flowing",
+    "x3tech:creosote_fluid"
   ]
 }

@@ -75,8 +75,8 @@ public class BlockInit {
         RenderTypeLookup.setRenderLayer(ZINC_COPPER_POWER_CELL.get(), RenderType.cutout());
 
         // Fluids
-        RenderTypeLookup.setRenderLayer(FluidInit.COAL_TAR_CREOSOTE_FLUID.get(), RenderType.solid());
-        RenderTypeLookup.setRenderLayer(FluidInit.COAL_TAR_CREOSOTE_BLOCK.get(), RenderType.solid());
-        RenderTypeLookup.setRenderLayer(FluidInit.COAL_TAR_CREOSOTE_FLOWING.get(), RenderType.solid());
+        RenderTypeLookup.setRenderLayer(FluidInit.CREOSOTE_FLUID.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(FluidInit.CREOSOTE_BLOCK.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(FluidInit.CREOSOTE_FLOWING.get(), RenderType.translucent());
     }
 }
