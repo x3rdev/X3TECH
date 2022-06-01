@@ -1,9 +1,11 @@
 package com.github.x3rmination.common.network;
 
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
@@ -14,11 +16,11 @@ import java.util.function.Supplier;
 public class MachineMessage {
 
     public int key;
-    public int value;
+    public byte value;
 
     public MachineMessage(int key, int state) {
         this.key = key;
-        this.value = state;
+        this.value = (byte) state;
     }
 
     public static void encode(MachineMessage message, PacketBuffer buffer) {
@@ -38,28 +40,29 @@ public class MachineMessage {
             World level = player.getCommandSenderWorld();
             BlockPos pos = ((BlockRayTraceResult)player.pick(10.0D, 0.0F, false)).getBlockPos();
             BlockState state = level.getBlockState(pos);
-            if(!(state.getBlock() instanceof PoweredFurnaceBlock)) {
+            TileEntity tileEntity = level.getBlockEntity(pos);
+            if(!(state.getBlock() instanceof PoweredFurnaceBlock) || tileEntity == null) {
                 return;
             }
 
             switch (message.key) {
                 case 1:
-                    level.setBlock(pos, level.getBlockState(pos).setValue(PoweredFurnaceBlock.ITEM_NORTH, message.value), 3);
+                    ((PoweredFurnaceTileEntity)tileEntity).setItemNorth(message.value);
                     return;
                 case 2:
-                    level.setBlock(pos, level.getBlockState(pos).setValue(PoweredFurnaceBlock.ITEM_EAST, message.value), 3);
+                    ((PoweredFurnaceTileEntity)tileEntity).setItemEast(message.value);
                     return;
                 case 3:
-                    level.setBlock(pos, level.getBlockState(pos).setValue(PoweredFurnaceBlock.ITEM_SOUTH, message.value), 3);
+                    ((PoweredFurnaceTileEntity)tileEntity).setItemSouth(message.value);
                     return;
                 case 4:
-                    level.setBlock(pos, level.getBlockState(pos).setValue(PoweredFurnaceBlock.ITEM_WEST, message.value), 3);
+                    ((PoweredFurnaceTileEntity)tileEntity).setItemWest(message.value);
                     return;
                 case 5:
-                    level.setBlock(pos, level.getBlockState(pos).setValue(PoweredFurnaceBlock.ITEM_UP, message.value), 3);
+                    ((PoweredFurnaceTileEntity)tileEntity).setItemUp(message.value);
                     return;
                 case 6:
-                    level.setBlock(pos, level.getBlockState(pos).setValue(PoweredFurnaceBlock.ITEM_DOWN, message.value), 3);
+                    ((PoweredFurnaceTileEntity)tileEntity).setItemDown(message.value);
                     return;
                 default:
             }

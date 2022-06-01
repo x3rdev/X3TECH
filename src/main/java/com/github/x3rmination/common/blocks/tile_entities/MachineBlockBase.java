@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
 public abstract class MachineBlockBase extends Block {
+
     public static final DirectionProperty FACING = HorizontalBlock.FACING;
     public static final BooleanProperty ACTIVE = CustomBlockProperties.ACTIVE;
     public static final IntegerProperty ITEM_NORTH = CustomBlockProperties.ITEM_NORTH;
@@ -79,25 +80,18 @@ public abstract class MachineBlockBase extends Block {
 
     public abstract void interactWith(World world, BlockPos blockPos, PlayerEntity playerEntity);
 
-    @Override
-    public BlockState rotate(BlockState blockState, Rotation rotation) {
-        return blockState.setValue(FACING, rotation.rotate(blockState.getValue(FACING)));
+    public BlockState rotate(BlockState pState, Rotation pRotation) {
+        return pState.setValue(FACING, pRotation.rotate(pState.getValue(FACING)));
     }
 
-    @Override
     public BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.rotate(mirror.getRotation(blockState.getValue(FACING))).setValue(ACTIVE, false);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
-        stateBuilder.add(FACING);
-        stateBuilder.add(ACTIVE);
-        stateBuilder.add(ITEM_NORTH);
-        stateBuilder.add(ITEM_EAST);
-        stateBuilder.add(ITEM_SOUTH);
-        stateBuilder.add(ITEM_WEST);
-        stateBuilder.add(ITEM_UP);
-        stateBuilder.add(ITEM_DOWN);
+    public void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> stateBuilder) {
+        stateBuilder.add(FACING, ACTIVE, ITEM_NORTH, ITEM_EAST, ITEM_SOUTH, ITEM_WEST, ITEM_UP, ITEM_DOWN);
     }
+
+
 }

@@ -1,5 +1,27 @@
 {
   "variants": {
-    "": { "model": "x3tech:block/zinc_copper_power_cell" }
+    "facing=up": {
+      "model": "x3tech:block/zinc_copper_power_cell"
+    },
+    "facing=down": {
+      "model": "x3tech:block/zinc_copper_power_cell",
+      "y": 180
+    },
+    "facing=north": {
+      "model": "x3tech:block/zinc_copper_power_cell",
+      "x": 270
+    },
+    "facing=east": {
+      "model": "x3tech:block/zinc_copper_power_cell",
+      "z": 90
+    },
+    "facing=south": {
+      "model": "x3tech:block/zinc_copper_power_cell",
+      "x": 90
+    },
+    "facing=west": {
+      "model": "x3tech:block/zinc_copper_power_cell",
+      "z": 270
+    }
   }
 }

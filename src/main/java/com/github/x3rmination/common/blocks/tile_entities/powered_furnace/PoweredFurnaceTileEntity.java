@@ -41,6 +41,12 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
     private int progress = 0;
     private int energy = 0;
+    private int item_north = 3;
+    private int item_east = 3;
+    private int item_south = 3;
+    private int item_west = 3;
+    private int item_up = 3;
+    private int item_down = 3;
     private static final int MAX_REDSTONE_FLUX = 10000;
     private static final int INPUT_SLOT_INDEX = 0;
     private static final int OUTPUT_SLOT_INDEX = 1;
@@ -60,6 +66,18 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
                     return poweredFurnaceEnergyStorage.getEnergyStored();
                 case 2:
                     return poweredFurnaceEnergyStorage.getMaxEnergyStored();
+                case 3:
+                    return item_north;
+                case 4:
+                    return item_east;
+                case 5:
+                    return item_south;
+                case 6:
+                    return item_west;
+                case 7:
+                    return item_up;
+                case 8:
+                    return item_down;
                 default:
                     return 0;
             }
@@ -71,7 +89,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
 
         @Override
         public int getCount() {
-            return 3;
+            return 9;
         }
     };
 
@@ -96,7 +114,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(!getItem(OUTPUT_SLOT_INDEX).isEmpty()) {
             autoEject();
         }
-        if(recipe != null && useEnergy(defaultUse)) {
+        if(recipe != null && useEnergy(defaultUse * (recipe.getCookingTime()/10 + 5))) {
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
@@ -143,35 +161,23 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     }
 
     private void autoEject(){
-        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_NORTH).equals(1)) {
-            if(eject(Direction.NORTH) == ActionResultType.SUCCESS) {
-                return;
-            }
+        if(item_north == 1 && eject(Direction.NORTH) == ActionResultType.SUCCESS) {
+            return;
         }
-        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_EAST).equals(1)) {
-            if(eject(Direction.EAST) == ActionResultType.SUCCESS) {
-                return;
-            }
+        if(item_east == 1 && eject(Direction.EAST) == ActionResultType.SUCCESS) {
+            return;
         }
-        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_SOUTH).equals(1)) {
-            if(eject(Direction.SOUTH) == ActionResultType.SUCCESS) {
-                return;
-            }
+        if(item_south == 1 && eject(Direction.SOUTH) == ActionResultType.SUCCESS) {
+            return;
         }
-        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_WEST).equals(1)) {
-            if(eject(Direction.WEST) == ActionResultType.SUCCESS) {
-                return;
-            }
+        if(item_west == 1 && eject(Direction.WEST) == ActionResultType.SUCCESS) {
+            return;
         }
-        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_UP).equals(1)) {
-            if(eject(Direction.UP) == ActionResultType.SUCCESS) {
-                return;
-            }
+        if(item_up == 1 && eject(Direction.UP) == ActionResultType.SUCCESS) {
+            return;
         }
-        if(getBlockState().getValue(PoweredFurnaceBlock.ITEM_DOWN).equals(1)) {
-            if(eject(Direction.DOWN) == ActionResultType.SUCCESS) {
-                return;
-            }
+        if(item_down == 1 && eject(Direction.DOWN) == ActionResultType.SUCCESS) {
+            return;
         }
     }
 
@@ -220,6 +226,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     }
 
     private void finishWork(FurnaceRecipe recipe, ItemStack current, ItemStack output) {
+        energy -= 10;
         if(!current.isEmpty()){
             current.grow(output.getCount());
         } else {
@@ -292,6 +299,30 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         return ItemStackHelper.takeItem(items, index);
     }
 
+    public void setItemNorth(byte b){
+        item_north = b;
+    }
+
+    public void setItemEast(byte b){
+        item_east = b;
+    }
+
+    public void setItemSouth(byte b){
+        item_south = b;
+    }
+
+    public void setItemWest(byte b){
+        item_west = b;
+    }
+
+    public void setItemUp(byte b){
+        item_up = b;
+    }
+
+    public void setItemDown(byte b){
+        item_down = b;
+    }
+
     @Override
     public void setItem(int index, ItemStack itemStack) {
         items.set(index, itemStack);
@@ -311,6 +342,12 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     public void load(BlockState state, CompoundNBT tags) {
         super.load(state, tags);
         this.items = NonNullList.withSize(2, ItemStack.EMPTY);
+        this.item_north = tags.getByte("item_north");
+        this.item_east = tags.getByte("item_east");
+        this.item_south = tags.getByte("item_south");
+        this.item_west = tags.getByte("item_west");
+        this.item_up = tags.getByte("item_up");
+        this.item_down = tags.getByte("item_down");
         this.progress = tags.getInt("progress");
         ItemStackHelper.loadAllItems(tags, this.items);
         energyHandler.ifPresent(modEnergyStorage -> modEnergyStorage.deserializeNBT(tags.getCompound("energy")));
@@ -322,9 +359,17 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         super.save(tags);
         ItemStackHelper.saveAllItems(tags, this.items);
         tags.putInt("progress", this.progress);
+        tags.putInt("item_north", this.item_north);
+        tags.putInt("item_east", this.item_east);
+        tags.putInt("item_south", this.item_south);
+        tags.putInt("item_west", this.item_west);
+        tags.putInt("item_up", this.item_up);
+        tags.putInt("item_down", this.item_down);
         energyHandler.ifPresent(modEnergyStorage -> tags.put("energy", modEnergyStorage.serializeNBT()));
         return tags;
     }
+
+
 
     @Nullable
     @Override
@@ -339,6 +384,12 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         CompoundNBT tags = super.getUpdateTag();
         tags.putInt("progress", this.progress);
         tags.putInt("energy", this.energy);
+        tags.putInt("item_north", this.item_north);
+        tags.putInt("item_east", this.item_east);
+        tags.putInt("item_south", this.item_south);
+        tags.putInt("item_west", this.item_west);
+        tags.putInt("item_up", this.item_up);
+        tags.putInt("item_down", this.item_down);
         return tags;
     }
 

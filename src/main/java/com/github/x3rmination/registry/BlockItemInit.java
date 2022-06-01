@@ -11,6 +11,9 @@ public class BlockItemInit {
 
     public static final DeferredRegister<Item> BLOCK_ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, X3TECH.MOD_ID);
 
+    public static final RegistryObject<BlockItem> MACHINE_FRAME = BLOCK_ITEMS.register("machine_frame",
+            () -> new BlockItem(BlockInit.MACHINE_FRAME.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
+
     public static final RegistryObject<BlockItem> POWERED_FURNACE = BLOCK_ITEMS.register("powered_furnace",
             () -> new BlockItem(BlockInit.POWERED_FURNACE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> POWERED_PULVERIZER = BLOCK_ITEMS.register("powered_pulverizer",
@@ -21,12 +24,8 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.DOUBLE_PRESS.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> COMBUSTION_GENERATOR = BLOCK_ITEMS.register("combustion_generator",
             () -> new BlockItem(BlockInit.COMBUSTION_GENERATOR.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
-    public static final RegistryObject<BlockItem> MACHINE_FRAME = BLOCK_ITEMS.register("machine_frame",
-            () -> new BlockItem(BlockInit.MACHINE_FRAME.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> POWER_CABLE = BLOCK_ITEMS.register("power_cable",
             () -> new BlockItem(BlockInit.POWER_CABLE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
-    public static final RegistryObject<BlockItem> TEST_MACHINE = BLOCK_ITEMS.register("test_machine",
-            () -> new BlockItem(BlockInit.TEST_MACHINE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> ZINC_COPPER_POWER_CELL = BLOCK_ITEMS.register("zinc_copper_power_cell",
             () -> new BlockItem(BlockInit.ZINC_COPPER_POWER_CELL.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
 }

@@ -7,7 +7,7 @@ import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulver
 import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressBlock;
 import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableBlock;
 import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
-import com.github.x3rmination.common.blocks.tile_entities.test_machine.TestMachineBlock;
+import com.github.x3rmination.common.blocks.tile_entities.zinc_copper_power_cell.ZCPCBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -23,6 +23,13 @@ public class BlockInit {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, X3TECH.MOD_ID);
 
+    //Generic Blocks
+    public static final RegistryObject<Block> MACHINE_FRAME = BLOCKS.register("machine_frame",
+            () -> new Block(AbstractBlock.Properties.of(Material.HEAVY_METAL)
+                    .strength(4, 20)
+                    .sound(SoundType.METAL)));
+
+    //Tile Entities
     public static final RegistryObject<PoweredFurnaceBlock> POWERED_FURNACE = BLOCKS.register("powered_furnace",
             () -> new PoweredFurnaceBlock(AbstractBlock.Properties.of(Material.HEAVY_METAL)
                     .strength(4, 20)
@@ -53,30 +60,20 @@ public class BlockInit {
                     .strength(1, 10)
                     .sound(SoundType.METAL)
                     .noOcclusion()));
-
-    public static final RegistryObject<Block> TEST_MACHINE = BLOCKS.register("test_block",
-            () -> new TestMachineBlock(AbstractBlock.Properties.of(Material.METAL)
-                    .strength(1, 10)
-                    .sound(SoundType.METAL)));
-
-    //Generic Blocks
-    public static final RegistryObject<Block> MACHINE_FRAME = BLOCKS.register("machine_frame",
-            () -> new Block(AbstractBlock.Properties.of(Material.HEAVY_METAL)
-                    .strength(4, 20)
-                    .sound(SoundType.METAL)));
     public static final RegistryObject<Block> ZINC_COPPER_POWER_CELL = BLOCKS.register("zinc_copper_power_cell",
-            () -> new Block(AbstractBlock.Properties.of(Material.WOOD)
-                    .noOcclusion()
+            () -> new ZCPCBlock(AbstractBlock.Properties.of(Material.WOOD)
                     .strength(4, 20)
-                    .lightLevel(value -> 1)
-                    .sound(SoundType.WOOD)));
+                    .sound(SoundType.WOOD)
+                    .noOcclusion()));
+
 
     public static void renderTypeSet(final FMLClientSetupEvent event) {
-        RenderTypeLookup.setRenderLayer(ZINC_COPPER_POWER_CELL.get(), RenderType.cutout());
 
         // Fluids
         RenderTypeLookup.setRenderLayer(FluidInit.CREOSOTE_FLUID.get(), RenderType.translucent());
         RenderTypeLookup.setRenderLayer(FluidInit.CREOSOTE_BLOCK.get(), RenderType.translucent());
         RenderTypeLookup.setRenderLayer(FluidInit.CREOSOTE_FLOWING.get(), RenderType.translucent());
+
+        RenderTypeLookup.setRenderLayer(ZINC_COPPER_POWER_CELL.get(), RenderType.translucent());
     }
 }

@@ -16,11 +16,6 @@ public class PoweredFurnaceContainer extends Container {
     private final IInventory inventory;
     private IIntArray fields;
 
-    protected int energy;
-    protected int capacity;
-    protected int maxReceive;
-    protected int maxExtract;
-
     public PoweredFurnaceContainer(int id, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(id, playerInventory, new PoweredFurnaceTileEntity(), new IntArray(buffer.readByte()));
     }
@@ -28,10 +23,6 @@ public class PoweredFurnaceContainer extends Container {
     public PoweredFurnaceContainer(int id, PlayerInventory playerInventory, IInventory inventory, IIntArray fields) {
         super(ContainerTypeInit.POWERED_FURNACE.get(), id);
         this.inventory = inventory;
-        this.energy = 0;
-        this.capacity = 10000;
-        this.maxReceive = 10000;
-        this.maxExtract = 0;
         this.fields = fields;
         this.addSlot(new Slot(this.inventory, 0, 44, 36));
         this.addSlot(new Slot(this.inventory, 1, 104, 36) {
@@ -75,6 +66,24 @@ public class PoweredFurnaceContainer extends Container {
     }
     public int getMaxRf(){
         return fields.get(2);
+    }
+    public int getNorth(){
+        return fields.get(3);
+    }
+    public int getEast(){
+        return fields.get(4);
+    }
+    public int getSouth(){
+        return fields.get(5);
+    }
+    public int getWest(){
+        return fields.get(6);
+    }
+    public int getUp(){
+        return fields.get(7);
+    }
+    public int getDown(){
+        return fields.get(8);
     }
 
     @Override

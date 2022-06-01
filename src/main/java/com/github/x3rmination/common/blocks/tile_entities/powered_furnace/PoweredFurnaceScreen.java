@@ -12,8 +12,10 @@ import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -23,27 +25,18 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
 
     public static final ResourceLocation TEXTURE = new ResourceLocation(X3TECH.MOD_ID, "textures/gui/powered_furnace.png");
     public static Boolean settingsMenuOpen = false;
-    private int north;
-    private int east;
-    private int south;
-    private int west;
-    private int up;
-    private int down;
+    private final BlockPos pos;
+
 
     public PoweredFurnaceScreen(PoweredFurnaceContainer container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
         PlayerEntity player = playerInventory.player;
-        BlockState state = player.level.getBlockState(((BlockRayTraceResult)player.pick(10.0D, 0.0F, false)).getBlockPos());
+        pos = ((BlockRayTraceResult)player.pick(10.0D, 0.0F, false)).getBlockPos();
+        BlockState state = player.level.getBlockState(pos);
+        TileEntity tileEntity = player.level.getBlockEntity(pos);
         if(!(state.getBlock() instanceof PoweredFurnaceBlock)) {
             this.onClose();
         }
-        this.north = state.getValue(PoweredFurnaceBlock.ITEM_NORTH);
-        this.east = state.getValue(PoweredFurnaceBlock.ITEM_EAST);
-        this.south = state.getValue(PoweredFurnaceBlock.ITEM_SOUTH);
-        this.west = state.getValue(PoweredFurnaceBlock.ITEM_WEST);
-        this.up = state.getValue(PoweredFurnaceBlock.ITEM_UP);
-        this.down = state.getValue(PoweredFurnaceBlock.ITEM_DOWN);
-
     }
 
     @Override
@@ -104,33 +97,33 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
 
     private boolean directionButtons(double mouseX, double mouseY, int posX, int posY) {
         if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 60, 194 + 9, 60 + 9)) {
-            north = toggleDirectionStates(north);
-            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(1, north));
+            int n = menu.getNorth();
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(1, toggleDirectionStates(n)));
             return true;
         }
         if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 206, 60, 206 + 9, 60 + 9)) {
-            east = toggleDirectionStates(east);
-            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(2, east));
+            int e = menu.getEast();
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(2, toggleDirectionStates(e)));
             return true;
         }
         if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 182, 72, 182 + 9, 72 + 9)) {
-            south = toggleDirectionStates(south);
-            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(3, south));
+            int s = menu.getSouth();
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(3, toggleDirectionStates(s)));
             return true;
         }
         if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 182, 60, 182 + 9, 60 + 9)) {
-            west = toggleDirectionStates(west);
-            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(4, west));
+            int w = menu.getWest();
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(4, toggleDirectionStates(w)));
             return true;
         }
         if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 48, 194 + 9, 48 + 9)) {
-            up = toggleDirectionStates(up);
-            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(5, up));
+            int u = menu.getUp();
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(5, toggleDirectionStates(u)));
             return true;
         }
         if(ScreenHelper.isBetween(mouseX, mouseY, posX, posY, 194, 72, 194 + 9, 72 + 9)) {
-            down = toggleDirectionStates(down);
-            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(6, down));
+            int d = menu.getDown();
+            ModPacketHandler.CHANNEL.sendToServer(new MachineMessage(6, d));
             return true;
         }
         return false;
@@ -154,7 +147,7 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
     private void renderInterfacingSquares(MatrixStack matrixStack) {
         int posX = (this.width - this.imageWidth)/2;
         int posY = (this.height - this.imageHeight)/2;
-        switch (north) {
+        switch (menu.getNorth()) {
             case 1:
                 blit(matrixStack, posX + 194, posY + 60, 189, 47, 9, 9);
                 break;
@@ -165,7 +158,7 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
                 blit(matrixStack, posX + 194, posY + 60, 189, 67, 9, 9);
                 break;
         }
-        switch (east) {
+        switch (menu.getEast()) {
             case 1:
                 blit(matrixStack, posX + 206, posY + 60, 189, 47, 9, 9);
                 break;
@@ -176,7 +169,7 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
                 blit(matrixStack, posX + 206, posY + 60, 189, 67, 9, 9);
                 break;
         }
-        switch (south) {
+        switch (menu.getSouth()) {
             case 1:
                 blit(matrixStack, posX + 182, posY + 72, 189, 47, 9, 9);
                 break;
@@ -187,7 +180,7 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
                 blit(matrixStack, posX + 182, posY + 72, 189, 67, 9, 9);
                 break;
         }
-        switch (west) {
+        switch (menu.getWest()) {
             case 1:
                 blit(matrixStack, posX + 182, posY + 60, 189, 47, 9, 9);
                 break;
@@ -198,7 +191,7 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
                 blit(matrixStack, posX + 182, posY + 60, 189, 67, 9, 9);
                 break;
         }
-        switch (up) {
+        switch (menu.getUp()) {
             case 1:
                 blit(matrixStack, posX + 194, posY + 48, 189, 47, 9, 9);
                 break;
@@ -209,7 +202,7 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
                 blit(matrixStack, posX + 194, posY + 48, 189, 67, 9, 9);
                 break;
         }
-        switch (down) {
+        switch (menu.getDown()) {
             case 1:
                 blit(matrixStack, posX + 194, posY + 72, 189, 47, 9, 9);
                 break;
