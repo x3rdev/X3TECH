@@ -1,5 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.cables.power_cable;
 
+import com.github.x3rmination.core.util.EnergyHelper;
 import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.Block;
@@ -18,7 +19,10 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PowerCableTileEntity extends TileEntity implements ITickableTileEntity {
 
@@ -105,9 +109,9 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     }
 
     private void extractEnergy(BlockPos pos) {
-        if(this.level!=null && this.level.getBlockEntity(pos) != null && Objects.requireNonNull(this.level.getBlockEntity(pos)).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+        if(EnergyHelper.isValidEnergyReceiver(this.level, pos)) {
             int energyLoss = Math.min(this.cableEnergyStorage.getEnergyStored(), this.cableEnergyStorage.getMaxThrough());
-            this.cableEnergyStorage.extractEnergy( this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(energyLoss, false), false);
+            this.cableEnergyStorage.extractEnergy(this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(energyLoss, false), false);
         }
     }
 
@@ -150,7 +154,6 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
     @Override
     public void setRemoved() {
         super.setRemoved();
-
         energyHandler.invalidate();
     }
 }

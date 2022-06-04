@@ -2,6 +2,7 @@ package com.github.x3rmination.registry;
 
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.items.MItemBase;
+import com.github.x3rmination.common.items.MachineMonitorItem;
 import com.github.x3rmination.core.item.IngredientItemBase;
 import com.github.x3rmination.core.util.color.Color;
 import net.minecraft.item.BucketItem;
@@ -24,7 +25,9 @@ public class ItemInit {
     public static final RegistryObject<Item> CRUDE_GRAPHITE = ITEMS.register("crude_graphite",
             () -> new IngredientItemBase(new Item.Properties().tab(ModItemTab.instance)));
     public static final RegistryObject<Item> CREOSOTE_BUCKET = ITEMS.register("creosote_bucket",
-            () -> new BucketItem(() -> FluidInit.CREOSOTE_FLUID.get(), new Item.Properties().tab(ModItemTab.instance).stacksTo(1)));
+            () -> new BucketItem(FluidInit.CREOSOTE_FLUID, new Item.Properties().tab(ModItemTab.instance).stacksTo(1)));
+    public static final RegistryObject<Item> MACHINE_MONITOR = ITEMS.register("machine_monitor",
+            () -> new MachineMonitorItem(new Item.Properties().tab(ModItemTab.instance)));
 
     public static class ModItemTab extends ItemGroup {
         public static final ModItemTab instance = new ModItemTab(ItemGroup.TABS.length, X3TECH.MOD_ID);

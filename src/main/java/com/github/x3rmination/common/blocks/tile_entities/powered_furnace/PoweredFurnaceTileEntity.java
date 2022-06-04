@@ -427,8 +427,8 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     @Override
     public void setRemoved() {
         super.setRemoved();
+        energyHandler.invalidate();
         for (LazyOptional<? extends IItemHandler> handler : this.itemHandler) {
-            energyHandler.invalidate();
             handler.invalidate();
         }
     }

@@ -259,4 +259,6 @@ public class PowerCableBlock extends Block{
         stateBuilder.add(DOWN);
         stateBuilder.add(HAS_BRAIN);
     }
+
+
 }
