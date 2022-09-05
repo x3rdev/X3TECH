@@ -50,7 +50,7 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
         if(level == null || level.isClientSide) {
             return;
         }
-//        new Thread(() -> {
+
         if(this.cableEnergyStorage.getEnergyStored() > 0) {
             List<BlockPos> iteratedCables = Collections.synchronizedList(new LinkedList<>());
             List<BlockPos> workingList = Collections.synchronizedList(new LinkedList<>());
@@ -58,22 +58,24 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
             List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
             List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
             iteratedCables.clear();
+
             if(!nonCableConnectionList.isEmpty()) {
-                extractEnergy(nonCableConnectionList.get(0));
+//                extractEnergy(nonCableConnectionList.get(0));
+                EnergyHelper.transferEnergy(this, this.level.getBlockEntity(nonCableConnectionList.get(0)), this.energy, this.maxThrough);
                 workingList.clear();
+
             } else if(!cableConnectionList.isEmpty()) {
                 workingList.add(this.getBlockPos());
                 while (!workingList.isEmpty()) {
                     for (BlockPos blockPos : workingList) {
                         List<BlockPos> possibleNeighbors = getNeighbors(blockPos);
                         for (BlockPos pos : possibleNeighbors) {
-                            if (isValidEndpoint(pos, this.level)) {
-                                extractEnergy(pos);
-                                iteratedCables.clear();
-                                break;
-                            }
                             if (isValidCable(pos, this.level, iteratedCables) && !workingList.contains(pos)) {
                                 workingList.add(pos);
+                            } else if (EnergyHelper.isValidEnergyReceiver(this.level, pos, EnergyHelper.isPosAdjacent(this.getBlockPos(), pos, this.level))) {
+                                EnergyHelper.transferAsOther(this.level.getBlockEntity(iteratedCables.get(iteratedCables.size() - 1)), this, this.level.getBlockEntity(pos), this.energy, maxThrough);
+                                iteratedCables.clear();
+                                break;
                             }
                         }
                         if (!iteratedCables.contains(blockPos)) {
@@ -83,19 +85,8 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
                         iteratedCables.addAll(workingList);
                     }
                 }
-//                    Thread.currentThread().interrupt();
-                }
             }
-//        }).start();
-    }
-
-    private boolean isValidEndpoint(BlockPos pos, World level) {
-        Block block = level.getBlockState(pos).getBlock();
-        TileEntity tileEntity = level.getBlockEntity(pos);
-        if(tileEntity != null && !tileEntity.isRemoved() && !(block instanceof PowerCableBlock)) {
-            return EnergyHelper.isValidRecOrExt(level, pos, EnergyHelper.isPosAdjacent(this.getBlockPos(), pos, level));
         }
-        return false;
     }
 
     private boolean isValidCable(BlockPos pos, World level, List<BlockPos> iteratedCables) {
@@ -109,13 +100,6 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
             resultList.add(pos.relative(direction));
         }
         return resultList;
-    }
-
-
-    // Change later to use EnergyHelper
-    private void extractEnergy(BlockPos pos) {
-        int energyLoss = Math.min(this.cableEnergyStorage.getEnergyStored(), this.cableEnergyStorage.getMaxThrough());
-        cableEnergyStorage.extractEnergy(this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(energyLoss, false), false);
     }
 
     @Override

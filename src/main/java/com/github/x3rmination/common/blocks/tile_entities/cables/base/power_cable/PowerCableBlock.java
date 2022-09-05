@@ -87,7 +87,14 @@ public class PowerCableBlock extends Block{
         BlockState westBlockState = world.getBlockState(westBlockPos);
         BlockState upBlockState = world.getBlockState(upBlockPos);
         BlockState downBlockState = world.getBlockState(downBlockPos);
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos, Direction.NORTH)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos, Direction.EAST)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos, Direction.SOUTH)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos, Direction.WEST)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos, Direction.UP)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos, Direction.DOWN)).setValue(HAS_BRAIN, !getNonCableConnections(pCurrentPos, world).isEmpty());
+        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos)
+                .setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos, Direction.NORTH))
+                .setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos, Direction.EAST))
+                .setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos, Direction.SOUTH))
+                .setValue(WEST, canConnectTo(westBlockState, world, westBlockPos, Direction.WEST))
+                .setValue(UP, canConnectTo(upBlockState, world, upBlockPos, Direction.UP))
+                .setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos, Direction.DOWN))
+                .setValue(HAS_BRAIN, !getNonCableConnections(pCurrentPos, world).isEmpty());
     }
 
     @Override
@@ -147,7 +154,7 @@ public class PowerCableBlock extends Block{
     public List<BlockPos> getCableConnections(BlockPos wirePos, World world) {
         List<BlockPos> cableConnections = new java.util.ArrayList<>();
         for(Direction direction : CableHelper.getDirectionList()) {
-            if(world.getBlockState(wirePos.relative(direction, 1)).getBlock() == this.getBlock()) {
+            if(world.getBlockState(wirePos.relative(direction, 1)).getBlock() instanceof PowerCableBlock) {
                 cableConnections.add(wirePos.relative(direction, 1));
             }
         }
@@ -157,8 +164,8 @@ public class PowerCableBlock extends Block{
     public List<BlockPos> getNonCableConnections(BlockPos wirePos, World world) {
         List<BlockPos> nonCableConnections = new java.util.ArrayList<>(Collections.emptyList());
         for(Direction direction : CableHelper.getDirectionList()) {
-            TileEntity tile = world.getBlockEntity(wirePos.north());
-            if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.relative(direction, 1)).getBlock() != this.getBlock()) {
+            TileEntity tile = world.getBlockEntity(wirePos.relative(direction, 1));
+            if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent() && !(world.getBlockState(wirePos.relative(direction, 1)).getBlock() instanceof PowerCableBlock)) {
                 nonCableConnections.add(wirePos.relative(direction, 1));
             }
         }
@@ -168,15 +175,14 @@ public class PowerCableBlock extends Block{
     public List<BlockPos> getNonCableConnectionsCanInput(BlockPos wirePos, World world) {
         List<BlockPos> nonCableConnections = new java.util.ArrayList<>(Collections.emptyList());
         for(Direction direction : CableHelper.getDirectionList()) {
-            TileEntity tile = world.getBlockEntity(wirePos.below());
+            TileEntity tile = world.getBlockEntity(wirePos.relative(direction, 1));
             if(tile != null) {
                 LazyOptional<IEnergyStorage> cap = tile.getCapability(CapabilityEnergy.ENERGY);
-                if (cap.isPresent() && world.getBlockState(wirePos.relative(direction, 1)).getBlock() != this.getBlock() && cap.orElse(null).canReceive() && cap.orElse(null).getMaxEnergyStored() != cap.orElse(null).getEnergyStored()) {
+                if (cap.isPresent() && !(world.getBlockState(wirePos.relative(direction, 1)).getBlock() instanceof PowerCableBlock) && cap.orElse(null).canReceive() && cap.orElse(null).getMaxEnergyStored() != cap.orElse(null).getEnergyStored()) {
                     nonCableConnections.add(wirePos.relative(direction, 1));
                 }
             }
         }
-
         return nonCableConnections;
     }
 

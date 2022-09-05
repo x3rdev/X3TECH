@@ -12,7 +12,6 @@ import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +32,6 @@ public class PoweredFurnaceScreen extends ContainerScreen<PoweredFurnaceContaine
         PlayerEntity player = playerInventory.player;
         pos = ((BlockRayTraceResult)player.pick(10.0D, 0.0F, false)).getBlockPos();
         BlockState state = player.level.getBlockState(pos);
-        TileEntity tileEntity = player.level.getBlockEntity(pos);
         if(!(state.getBlock() instanceof PoweredFurnaceBlock)) {
             this.onClose();
         }

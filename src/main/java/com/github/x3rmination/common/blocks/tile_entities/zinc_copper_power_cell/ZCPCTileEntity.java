@@ -1,6 +1,5 @@
 package com.github.x3rmination.common.blocks.tile_entities.zinc_copper_power_cell;
 
-import com.github.x3rmination.core.util.EnergyHelper;
 import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
@@ -38,9 +37,9 @@ public class ZCPCTileEntity extends TileEntity implements ITickableTileEntity {
             return;
         }
         BlockPos pos = this.getBlockPos().relative(this.getBlockState().getValue(ZCPCBlock.FACING).getOpposite(), 1);
-        if(EnergyHelper.isValidEnergyReceiver(this.level, pos, EnergyHelper.isPosAdjacent(this.getBlockPos(), pos, this.level))) {
-            EnergyHelper.transferEnergy(this, level.getBlockEntity(pos), MAX_THROUGH, MAX_THROUGH);
-        }
+//        if(EnergyHelper.isValidEnergyReceiver(this.level, pos, EnergyHelper.isPosAdjacent(this.getBlockPos(), pos, this.level))) {
+//            EnergyHelper.transferEnergy(this, level.getBlockEntity(pos), MAX_THROUGH, MAX_THROUGH);
+//        }
     }
 
     @Override

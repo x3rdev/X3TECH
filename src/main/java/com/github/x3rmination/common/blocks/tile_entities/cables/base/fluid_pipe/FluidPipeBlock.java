@@ -1,5 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.cables.base.fluid_pipe;
 
+import com.github.x3rmination.core.util.CableHelper;
 import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,9 +18,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -146,53 +146,21 @@ public class FluidPipeBlock extends Block {
 
     public List<BlockPos> getCableConnections(BlockPos wirePos, World world) {
         List<BlockPos> cableConnections = new java.util.ArrayList<>();
-        if(world.getBlockState(wirePos.north()).getBlock() == this.getBlock()) {
-            cableConnections.add(wirePos.north());
-        }
-        if(world.getBlockState(wirePos.east()).getBlock() == this.getBlock()) {
-            cableConnections.add(wirePos.east());
-        }
-        if(world.getBlockState(wirePos.south()).getBlock() == this.getBlock()) {
-            cableConnections.add(wirePos.south());
-        }
-        if(world.getBlockState(wirePos.west()).getBlock() == this.getBlock()) {
-            cableConnections.add(wirePos.west());
-        }
-        if(world.getBlockState(wirePos.above()).getBlock() == this.getBlock()) {
-            cableConnections.add(wirePos.above());
-        }
-        if(world.getBlockState(wirePos.below()).getBlock() == this.getBlock()) {
-            cableConnections.add(wirePos.below());
+        for(Direction direction : CableHelper.getDirectionList()) {
+            if(world.getBlockState(wirePos.relative(direction, 1)).getBlock() instanceof FluidPipeBlock) {
+                cableConnections.add(wirePos.relative(direction, 1));
+            }
         }
         return cableConnections;
     }
 
     public List<BlockPos> getNonCableConnections(BlockPos wirePos, World world) {
         List<BlockPos> nonCableConnections = new java.util.ArrayList<>(Collections.emptyList());
-        TileEntity n = world.getBlockEntity(wirePos.north());
-        TileEntity e = world.getBlockEntity(wirePos.east());
-        TileEntity s = world.getBlockEntity(wirePos.south());
-        TileEntity w = world.getBlockEntity(wirePos.west());
-        TileEntity u = world.getBlockEntity(wirePos.above());
-        TileEntity d = world.getBlockEntity(wirePos.below());
-
-        if(n != null && n.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.north()).getBlock() != this.getBlock()) {
-            nonCableConnections.add(wirePos.north());
-        }
-        if(e != null && e.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.east()).getBlock() != this.getBlock()) {
-            nonCableConnections.add(wirePos.east());
-        }
-        if(s != null && s.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.south()).getBlock() != this.getBlock()) {
-            nonCableConnections.add(wirePos.south());
-        }
-        if(w != null && w.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.west()).getBlock() != this.getBlock()) {
-            nonCableConnections.add(wirePos.west());
-        }
-        if(u != null && u.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.above()).getBlock() != this.getBlock()) {
-            nonCableConnections.add(wirePos.above());
-        }
-        if(d != null && d.getCapability(CapabilityEnergy.ENERGY).isPresent() && world.getBlockState(wirePos.below()).getBlock() != this.getBlock()) {
-            nonCableConnections.add(wirePos.below());
+        for(Direction direction : CableHelper.getDirectionList()) {
+            TileEntity tile = world.getBlockEntity(wirePos.relative(direction, 1));
+            if(tile != null && tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent() && !(world.getBlockState(wirePos.relative(direction, 1)).getBlock() instanceof FluidPipeBlock)) {
+                nonCableConnections.add(wirePos.relative(direction, 1));
+            }
         }
 
         return nonCableConnections;
@@ -200,48 +168,16 @@ public class FluidPipeBlock extends Block {
 
     public List<BlockPos> getNonCableConnectionsCanInput(BlockPos wirePos, World world) {
         List<BlockPos> nonCableConnections = new java.util.ArrayList<>(Collections.emptyList());
-        TileEntity n = world.getBlockEntity(wirePos.north());
-        TileEntity e = world.getBlockEntity(wirePos.east());
-        TileEntity s = world.getBlockEntity(wirePos.south());
-        TileEntity w = world.getBlockEntity(wirePos.west());
-        TileEntity u = world.getBlockEntity(wirePos.above());
-        TileEntity d = world.getBlockEntity(wirePos.below());
-        if(n != null) {
-            LazyOptional<IEnergyStorage> nCap = n.getCapability(CapabilityEnergy.ENERGY);
-            if (nCap.isPresent() && world.getBlockState(wirePos.north()).getBlock() != this.getBlock() && nCap.orElse(null).canReceive() && nCap.orElse(null).getMaxEnergyStored() != nCap.orElse(null).getEnergyStored()) {
-                nonCableConnections.add(wirePos.north());
+        for(Direction direction : CableHelper.getDirectionList()) {
+            TileEntity tile = world.getBlockEntity(wirePos.relative(direction, 1));
+            if(tile != null) {
+                LazyOptional<IFluidHandler> cap = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+                if (cap.isPresent() && !(world.getBlockState(wirePos.relative(direction, 1)).getBlock() instanceof FluidPipeBlock)) {
+                    nonCableConnections.add(wirePos.relative(direction, 1));
+                }
             }
         }
-        if(e != null) {
-            LazyOptional<IEnergyStorage> eCap = e.getCapability(CapabilityEnergy.ENERGY);
-            if (eCap.isPresent() && world.getBlockState(wirePos.east()).getBlock() != this.getBlock() && eCap.orElse(null).canReceive() && eCap.orElse(null).getMaxEnergyStored() != eCap.orElse(null).getEnergyStored()) {
-                nonCableConnections.add(wirePos.east());
-            }
-        }
-        if(s != null) {
-            LazyOptional<IEnergyStorage> sCap = s.getCapability(CapabilityEnergy.ENERGY);
-            if (sCap.isPresent() && world.getBlockState(wirePos.south()).getBlock() != this.getBlock() && sCap.orElse(null).canReceive() && sCap.orElse(null).getMaxEnergyStored() != sCap.orElse(null).getEnergyStored()) {
-                nonCableConnections.add(wirePos.south());
-            }
-        }
-        if(w != null) {
-            LazyOptional<IEnergyStorage> wCap = w.getCapability(CapabilityEnergy.ENERGY);
-            if (wCap.isPresent() && world.getBlockState(wirePos.west()).getBlock() != this.getBlock() && wCap.orElse(null).canReceive() && wCap.orElse(null).getMaxEnergyStored() != wCap.orElse(null).getEnergyStored()) {
-                nonCableConnections.add(wirePos.west());
-            }
-        }
-        if(u != null) {
-            LazyOptional<IEnergyStorage> uCap = u.getCapability(CapabilityEnergy.ENERGY);
-            if (uCap.isPresent() && world.getBlockState(wirePos.above()).getBlock() != this.getBlock() && uCap.orElse(null).canReceive() && uCap.orElse(null).getMaxEnergyStored() != uCap.orElse(null).getEnergyStored()) {
-                nonCableConnections.add(wirePos.above());
-            }
-        }
-        if(d != null) {
-            LazyOptional<IEnergyStorage> dCap = d.getCapability(CapabilityEnergy.ENERGY);
-            if (dCap.isPresent() && world.getBlockState(wirePos.below()).getBlock() != this.getBlock() && dCap.orElse(null).canReceive() && dCap.orElse(null).getMaxEnergyStored() != dCap.orElse(null).getEnergyStored()) {
-                nonCableConnections.add(wirePos.below());
-            }
-        }
+
         return nonCableConnections;
     }
 

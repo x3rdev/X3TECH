@@ -114,7 +114,7 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
         if(!getItem(OUTPUT_SLOT_INDEX).isEmpty()) {
             autoEject();
         }
-        if(recipe != null && useEnergy(defaultUse * (recipe.getCookingTime()/10 + 5))) {
+        if(recipe != null && useEnergy(defaultUse)) {
             doWork(recipe);
             this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(PoweredFurnaceBlock.ACTIVE, Boolean.TRUE), 3);
         } else {
