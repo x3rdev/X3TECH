@@ -3,10 +3,11 @@ package com.github.x3rmination.registry;
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator.CombustionGeneratorTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.archive.double_press.DoublePressTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace.PoweredFurnaceTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer.PoweredPulverizerTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableTileEntity;
-import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.cables.base.fluid_pipe.FluidPipeTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.cables.base.power_cable.PowerCableTileEntity;
 import com.github.x3rmination.common.blocks.tile_entities.zinc_copper_power_cell.ZCPCTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
@@ -35,6 +36,9 @@ public class TileEntityTypeInit {
     public static final RegistryObject<TileEntityType<PowerCableTileEntity>> POWER_CABLE = TILE_ENTITIES.register("power_cable",
             () -> TileEntityType.Builder.of(PowerCableTileEntity::new,
                     BlockInit.POWER_CABLE.get()).build(null));
+    public static final RegistryObject<TileEntityType<FluidPipeTileEntity>> FLUID_PIPE = TILE_ENTITIES.register("fluid_pipe",
+            () -> TileEntityType.Builder.of(FluidPipeTileEntity::new,
+                    BlockInit.FLUID_PIPE.get()).build(null));
     public static final RegistryObject<TileEntityType<ZCPCTileEntity>> ZINC_COPPER_POWER_CELL = TILE_ENTITIES.register("zinc_copper_power_cell",
             () -> TileEntityType.Builder.of(ZCPCTileEntity::new,
                     BlockInit.ZINC_COPPER_POWER_CELL.get()).build(null));

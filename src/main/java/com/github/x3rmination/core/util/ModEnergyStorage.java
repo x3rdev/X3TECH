@@ -7,15 +7,13 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 public class ModEnergyStorage implements IEnergyStorage, INBTSerializable<CompoundNBT> {
 
-    private TileEntity tile;
     private int energy;
-    private int capacity;
-    private int maxThrough;
-    private boolean canExtract;
-    private boolean canReceive;
+    private final int capacity;
+    private final int maxThrough;
+    private final boolean canExtract;
+    private final boolean canReceive;
 
     public ModEnergyStorage(TileEntity tileEntity, int energy, int capacity, int maxThrough, boolean canExtract, boolean canReceive) {
-        this.tile = tileEntity;
         this.energy = energy;
         this.capacity = capacity;
         this.maxThrough = maxThrough;
@@ -34,10 +32,6 @@ public class ModEnergyStorage implements IEnergyStorage, INBTSerializable<Compou
 
     public void setEnergy(int energy) {
         this.energy = energy;
-    }
-
-    public TileEntity getTile() {
-        return this.tile;
     }
 
     @Override

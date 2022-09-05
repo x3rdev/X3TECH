@@ -2,7 +2,6 @@ package com.github.x3rmination.common.items;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,8 +40,7 @@ public class MachineMonitorItem extends Item {
             TileEntity tile = player.level.getBlockEntity(pContext.getClickedPos());
             if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent() && !pContext.getLevel().isClientSide) {
                 double energy = tile.getCapability(CapabilityEnergy.ENERGY).orElse(null).getEnergyStored();
-                NewChatGui chat = Minecraft.getInstance().gui.getChat();
-                chat.addMessage(new StringTextComponent(Double.toString(energy)));
+                Minecraft.getInstance().gui.getChat().addMessage(new StringTextComponent(Double.toString(energy)));
             }
         }
         return ActionResultType.SUCCESS;

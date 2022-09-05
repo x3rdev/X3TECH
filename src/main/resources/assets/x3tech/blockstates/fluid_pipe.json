@@ -2,7 +2,7 @@
   "multipart": [
     {
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_center"
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_center"
       }
     },
     {
@@ -10,7 +10,7 @@
         "north": "true"
       },
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_connection_north",
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_north",
         "uvlock": true
       }
     },
@@ -19,7 +19,7 @@
         "east": "true"
       },
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_connection_east",
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_east",
         "uvlock": true
       }
     },
@@ -28,7 +28,7 @@
         "south": "true"
       },
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_connection_south",
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_south",
         "uvlock": true
       }
     },
@@ -37,7 +37,7 @@
         "west": "true"
       },
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_connection_west",
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_west",
         "uvlock": true
       }
     },
@@ -46,7 +46,7 @@
         "up": "true"
       },
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_connection_up",
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_up",
         "uvlock": true
       }
     },
@@ -55,7 +55,7 @@
         "down": "true"
       },
       "apply": {
-        "model": "x3tech:block/power_cable/power_cable_connection_down",
+        "model": "x3tech:block/fluid_pipe/fluid_pipe_down",
         "uvlock": true
       }
     }

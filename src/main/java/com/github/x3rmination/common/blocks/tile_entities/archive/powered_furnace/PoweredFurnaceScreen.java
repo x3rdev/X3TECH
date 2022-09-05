@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace;
 
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.network.MachineMessage;

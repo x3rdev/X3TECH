@@ -1,5 +1,6 @@
 package com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator;
 
+import com.github.x3rmination.core.util.EnergyHelper;
 import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.BlockState;
@@ -25,7 +26,6 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
@@ -106,14 +106,10 @@ public class CombustionGeneratorTileEntity extends LockableTileEntity implements
         if(combustionGeneratorEnergyStorage.getEnergyStored() > 0) {
             Direction direction = this.getBlockState().getValue(CombustionGeneratorBlock.FACING).getOpposite();
             TileEntity tileEntity = this.level.getBlockEntity(getBlockPos().relative(direction, 1));
-            if(tileEntity != null && !tileEntity.isRemoved() && tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-                // add all directions
-                LazyOptional<IEnergyStorage> capabilityEnergy = tileEntity.getCapability(CapabilityEnergy.ENERGY);
-
-                if(capabilityEnergy.orElse(null).canReceive()) {
+            if(tileEntity != null && !tileEntity.isRemoved() && tileEntity.getCapability(CapabilityEnergy.ENERGY, direction).isPresent()) {
+                if(EnergyHelper.isValidEnergyReceiver(this.level, tileEntity.getBlockPos(), direction)) {
                     int energyLoss = Math.min(combustionGeneratorEnergyStorage.getEnergyStored(), combustionGeneratorEnergyStorage.getMaxThrough());
-
-                    combustionGeneratorEnergyStorage.extractEnergy(capabilityEnergy.orElse(null).receiveEnergy(energyLoss, false), false);
+                    combustionGeneratorEnergyStorage.extractEnergy(tileEntity.getCapability(CapabilityEnergy.ENERGY, direction).orElse(null).receiveEnergy(energyLoss, false), false);
                 }
             }
         }

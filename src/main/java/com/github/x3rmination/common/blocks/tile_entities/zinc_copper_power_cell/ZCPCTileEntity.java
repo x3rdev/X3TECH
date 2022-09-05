@@ -22,7 +22,7 @@ public class ZCPCTileEntity extends TileEntity implements ITickableTileEntity {
     private final ModEnergyStorage energyStorage;
     private final LazyOptional<ModEnergyStorage> energyHandler;
 
-    private static final int MAX_REDSTONE_FLUX = 1000;
+    private static final int MAX_REDSTONE_FLUX = 15000;
     private static final int MAX_THROUGH = 1000;
     private int energy = 0;
 
@@ -38,8 +38,8 @@ public class ZCPCTileEntity extends TileEntity implements ITickableTileEntity {
             return;
         }
         BlockPos pos = this.getBlockPos().relative(this.getBlockState().getValue(ZCPCBlock.FACING).getOpposite(), 1);
-        if(EnergyHelper.isValidEnergyReceiver(this.level, pos)) {
-            EnergyHelper.transferEnergy(this, level.getBlockEntity(pos), MAX_THROUGH);
+        if(EnergyHelper.isValidEnergyReceiver(this.level, pos, EnergyHelper.isPosAdjacent(this.getBlockPos(), pos, this.level))) {
+            EnergyHelper.transferEnergy(this, level.getBlockEntity(pos), MAX_THROUGH, MAX_THROUGH);
         }
     }
 
@@ -70,15 +70,18 @@ public class ZCPCTileEntity extends TileEntity implements ITickableTileEntity {
         return tags;
     }
 
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        System.out.println(side);
-        if (!this.remove && cap == CapabilityEnergy.ENERGY && side == this.getBlockState().getValue(ZCPCBlock.FACING)) {
+        Direction direction = getBlockState().getValue(ZCPCBlock.FACING);
+        if (!this.remove && cap == CapabilityEnergy.ENERGY && (side == null || side == direction || side == direction.getOpposite())) {
             return energyHandler.cast();
         }
         return super.getCapability(cap, side);
     }
+
+
 
     @Override
     public void setRemoved() {
@@ -86,10 +89,4 @@ public class ZCPCTileEntity extends TileEntity implements ITickableTileEntity {
         energyHandler.invalidate();
     }
 
-//    @SubscribeEvent
-//    public void attachCap(AttachCapabilitiesEvent<TileEntity> event) {
-//        if(event.getObject() instanceof ZCPCTileEntity) {
-//            event.addCapability(new ResourceLocation(X3TECH.MOD_ID,".ZCPCCapability"), );
-//        }
-//    }
 }

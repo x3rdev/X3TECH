@@ -1,7 +1,8 @@
-package com.github.x3rmination.common.blocks.tile_entities.cables.power_cable;
+package com.github.x3rmination.common.blocks.tile_entities.cables.base.fluid_pipe;
 
-import com.github.x3rmination.core.util.EnergyHelper;
-import com.github.x3rmination.core.util.ModEnergyStorage;
+import com.github.x3rmination.core.util.CableHelper;
+import com.github.x3rmination.core.util.FluidHelper;
+import com.github.x3rmination.core.util.ModFluidStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,8 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,19 +24,18 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PowerCableTileEntity extends TileEntity implements ITickableTileEntity {
+public class FluidPipeTileEntity extends TileEntity implements ITickableTileEntity {
 
-    private final ModEnergyStorage cableEnergyStorage;
-    private final LazyOptional<ModEnergyStorage> energyHandler;
+    private final ModFluidStorage pipeFluidStorage;
+    private final LazyOptional<ModFluidStorage> fluidHandler;
 
-    private static final int MAX_REDSTONE_FLUX = 1000;
+    private static final int CAPACITY = 1000;
     private static final int MAX_THROUGH = 1000;
-    private int energy = 0;
 
-    public PowerCableTileEntity() {
-        super(TileEntityTypeInit.POWER_CABLE.get());
-        this.cableEnergyStorage = new ModEnergyStorage(this, 0, MAX_REDSTONE_FLUX, MAX_THROUGH, true, true);
-        this.energyHandler = LazyOptional.of(() -> this.cableEnergyStorage);
+    public FluidPipeTileEntity() {
+        super(TileEntityTypeInit.FLUID_PIPE.get());
+        this.pipeFluidStorage = new ModFluidStorage(this, 1, CAPACITY, MAX_THROUGH);
+        this.fluidHandler = LazyOptional.of(() -> this.pipeFluidStorage);
     }
 
     @Override
@@ -45,28 +44,28 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
             return;
         }
 //        new Thread(() -> {
-            if(this.cableEnergyStorage.getEnergyStored() > 0) {
+        if(this.pipeFluidStorage.getFluidAmount() > 0) {
             List<BlockPos> iteratedCables = Collections.synchronizedList(new LinkedList<>());
             List<BlockPos> workingList = Collections.synchronizedList(new LinkedList<>());
-            PowerCableBlock powerCableBlock = (PowerCableBlock) this.getBlockState().getBlock();
-            List<BlockPos> nonCableConnectionList = powerCableBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
-            List<BlockPos> cableConnectionList = powerCableBlock.getCableConnections(this.getBlockPos(), this.level);
+            FluidPipeBlock fluidPipeBlock = (FluidPipeBlock) this.getBlockState().getBlock();
+            List<BlockPos> nonPipeConnectionList = fluidPipeBlock.getNonCableConnectionsCanInput(this.getBlockPos(), this.level);
+            List<BlockPos> pipeConnectionList = fluidPipeBlock.getCableConnections(this.getBlockPos(), this.level);
             iteratedCables.clear();
-            if(!nonCableConnectionList.isEmpty()) {
-                extractEnergy(nonCableConnectionList.get(0));
+            if(!nonPipeConnectionList.isEmpty()) {
+                FluidHelper.transferFluid(this, this.level.getBlockEntity(nonPipeConnectionList.get(0)), MAX_THROUGH, 0);
                 workingList.clear();
-            } else if(!cableConnectionList.isEmpty()) {
+            } else if(!pipeConnectionList.isEmpty()) {
                 workingList.add(this.getBlockPos());
                 while (!workingList.isEmpty()) {
                     for (BlockPos blockPos : workingList) {
                         List<BlockPos> possibleNeighbors = getNeighbors(blockPos);
                         for (BlockPos pos : possibleNeighbors) {
                             if (isValidEndpoint(pos, this.level)) {
-                                extractEnergy(pos);
+                                FluidHelper.transferFluid(this, this.level.getBlockEntity(pos), MAX_THROUGH, 0);
                                 iteratedCables.clear();
                                 break;
                             }
-                            if (isValidCable(pos, this.level, iteratedCables) && !workingList.contains(pos)) {
+                            if (isValidPipe(pos, this.level, iteratedCables) && !workingList.contains(pos)) {
                                 workingList.add(pos);
                             }
                         }
@@ -77,54 +76,42 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
                         iteratedCables.addAll(workingList);
                     }
                 }
-//                    Thread.currentThread().interrupt();
                 }
             }
-//        }).start();
     }
 
     private boolean isValidEndpoint(BlockPos pos, World level) {
         Block block = level.getBlockState(pos).getBlock();
         TileEntity tileEntity = level.getBlockEntity(pos);
-        if(tileEntity != null && !tileEntity.isRemoved() && !(block instanceof PowerCableBlock)) {
-            LazyOptional<IEnergyStorage> cap = tileEntity.getCapability(CapabilityEnergy.ENERGY);
-            if(cap.isPresent() && cap.orElse(null).canReceive() && cap.orElse(null).getMaxEnergyStored() != cap.orElse(null).getEnergyStored()) {
-                return true;
-            }
+        if(tileEntity != null && !tileEntity.isRemoved() && !(block instanceof FluidPipeBlock)) {
+            return FluidHelper.isValidRecOrExt(level, pos, FluidHelper.isPosAdjacent(this.getBlockPos(), pos, level));
         }
         return false;
     }
 
-    private boolean isValidCable(BlockPos pos, World level, List<BlockPos> iteratedCables) {
+    private boolean isValidPipe(BlockPos pos, World level, List<BlockPos> iteratedCables) {
         Block block = level.getBlockState(pos).getBlock();
-        return block instanceof PowerCableBlock && !iteratedCables.contains(pos);
+        return block instanceof FluidPipeBlock && !iteratedCables.contains(pos);
     }
 
     private List<BlockPos> getNeighbors(BlockPos pos) {
         List<BlockPos> resultList = new ArrayList<>();
-        for(Direction direction : PowerCableHelper.getDirectionList()) {
+        for(Direction direction : CableHelper.getDirectionList()) {
             resultList.add(pos.relative(direction));
         }
         return resultList;
     }
 
-    private void extractEnergy(BlockPos pos) {
-        if(EnergyHelper.isValidEnergyReceiver(this.level, pos)) {
-            int energyLoss = Math.min(this.cableEnergyStorage.getEnergyStored(), this.cableEnergyStorage.getMaxThrough());
-            this.cableEnergyStorage.extractEnergy(this.level.getBlockEntity(pos).getCapability(CapabilityEnergy.ENERGY).orElse(null).receiveEnergy(energyLoss, false), false);
-        }
-    }
-
     @Override
     public void load(BlockState state, CompoundNBT tags) {
         super.load(state, tags);
-        energyHandler.ifPresent(modEnergyStorage -> modEnergyStorage.deserializeNBT(tags.getCompound("energy")));
+        pipeFluidStorage.readFromNBT(tags);
     }
 
     @Override
     public CompoundNBT save(CompoundNBT tags) {
         super.save(tags);
-        energyHandler.ifPresent(modEnergyStorage -> tags.put("energy", modEnergyStorage.serializeNBT()));
+        pipeFluidStorage.writeToNBT(tags);
         return tags;
     }
 
@@ -135,25 +122,26 @@ public class PowerCableTileEntity extends TileEntity implements ITickableTileEnt
         return new SUpdateTileEntityPacket(this.worldPosition, 1, tags);
     }
 
-    @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT tags = super.getUpdateTag();
-        tags.putInt("energy", this.energy);
-        return tags;
-    }
+//    @Override
+//    public CompoundNBT getUpdateTag() {
+//        CompoundNBT tags = super.getUpdateTag();
+//        tags.putInt("energy", this.energy);
+//        return tags;
+//    }
 
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if(!this.remove && cap == CapabilityEnergy.ENERGY) {
-            return energyHandler.cast();
-        }
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+            return fluidHandler.cast();
         return super.getCapability(cap, side);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        energyHandler.invalidate();
+        fluidHandler.invalidate();
     }
+
+
 }

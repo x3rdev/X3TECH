@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.powered_furnace;
+package com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace;
 
 import com.github.x3rmination.core.util.ModEnergyStorage;
 import com.github.x3rmination.registry.TileEntityTypeInit;
@@ -37,7 +37,10 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     static int processTime;
 
     private NonNullList<ItemStack> items;
-    private final LazyOptional<? extends IItemHandler>[] itemHandler;
+    private final ModEnergyStorage poweredFurnaceEnergyStorage;
+
+    private LazyOptional<? extends IItemHandler>[] itemHandler;
+    private LazyOptional<ModEnergyStorage> energyHandler;
 
     private int progress = 0;
     private int energy = 0;
@@ -52,9 +55,6 @@ public class PoweredFurnaceTileEntity extends LockableTileEntity implements ISid
     private static final int OUTPUT_SLOT_INDEX = 1;
 
     int defaultUse = 100;
-
-    private final ModEnergyStorage poweredFurnaceEnergyStorage;
-    private final LazyOptional<ModEnergyStorage> energyHandler;
 
     private final IIntArray fields = new IIntArray() {
         @Override

@@ -1,7 +1,7 @@
 package com.github.x3rmination.common.network;
 
-import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
-import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceTileEntity;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace.PoweredFurnaceTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;

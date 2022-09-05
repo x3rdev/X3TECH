@@ -1,37 +1,55 @@
 package com.github.x3rmination.core.util;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public final class EnergyHelper {
 
     EnergyHelper(){}
 
-    public static boolean isValidEnergyReceiver(@Nonnull World level, BlockPos pos) {
+    public static boolean isValidEnergyReceiver(@Nonnull World level, BlockPos pos, @Nullable Direction direction) {
         TileEntity tile = level.getBlockEntity(pos);
-        if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-            return tile.getCapability(CapabilityEnergy.ENERGY).orElse(null).canReceive();
+        if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY, direction).isPresent()) {
+            return tile.getCapability(CapabilityEnergy.ENERGY, direction).orElse(null).canReceive();
         }
         return false;
     }
-    public static boolean isValidEnergyExtractor(@Nonnull World level, BlockPos pos) {
+    public static boolean isValidEnergyExtractor(@Nonnull World level, BlockPos pos, @Nullable Direction direction) {
         TileEntity tile = level.getBlockEntity(pos);
-        if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-            return tile.getCapability(CapabilityEnergy.ENERGY).orElse(null).canExtract();
+        if(tile != null && tile.getCapability(CapabilityEnergy.ENERGY, direction).isPresent()) {
+            return tile.getCapability(CapabilityEnergy.ENERGY, direction).orElse(null).canExtract();
         }
         return false;
     }
 
-    public static void transferEnergy(TileEntity tileEntitySender, TileEntity tileEntityReceiver, int amount) {
-        IEnergyStorage senderCap = tileEntitySender.getCapability(CapabilityEnergy.ENERGY).orElse(null);
-        IEnergyStorage receiverCap = tileEntityReceiver.getCapability(CapabilityEnergy.ENERGY).orElse(null);
-        amount = Math.min(Math.min(amount, senderCap.extractEnergy(amount, true)), Math.min(senderCap.getMaxEnergyStored(), receiverCap.receiveEnergy(amount, true)));
-        senderCap.extractEnergy(amount, false);
-        receiverCap.receiveEnergy(amount, false);
+    public static boolean isValidRecOrExt(@Nonnull World level, BlockPos pos, @Nullable Direction direction) {
+        return isValidEnergyReceiver(level, pos, direction) || isValidEnergyExtractor(level, pos, direction);
+    }
+
+    public static boolean transferEnergy(TileEntity tileEntitySender, TileEntity tileEntityReceiver, int amount, int maxThrough) {
+        Direction direction = isPosAdjacent(tileEntitySender.getBlockPos(), tileEntityReceiver.getBlockPos(), tileEntityReceiver.getLevel());
+        if(direction == null || !isValidEnergyReceiver(tileEntityReceiver.getLevel(), tileEntityReceiver.getBlockPos(), direction.getOpposite())) return false;
+        IEnergyStorage energyStorageS = tileEntitySender.getCapability(CapabilityEnergy.ENERGY, direction).orElse(null);
+        IEnergyStorage energyStorageR = tileEntityReceiver.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null);
+        int energyLoss = Math.min(energyStorageS.getEnergyStored(), maxThrough);
+        energyStorageS.extractEnergy(energyStorageR.receiveEnergy(energyLoss, false), false);
+        return true;
+    }
+
+    @Nullable
+    public static Direction isPosAdjacent(BlockPos pos1, BlockPos pos2, World level) {
+        for(Direction direction : CableHelper.getDirectionList()) {
+            if(pos1.relative(direction) == pos2) {
+                return direction;
+            }
+        }
+        return null;
     }
 }

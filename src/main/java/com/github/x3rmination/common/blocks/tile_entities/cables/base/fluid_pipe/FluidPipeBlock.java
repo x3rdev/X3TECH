@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.blocks.tile_entities.cables.power_cable;
+package com.github.x3rmination.common.blocks.tile_entities.cables.base.fluid_pipe;
 
 import com.github.x3rmination.core.util.CustomBlockProperties;
 import net.minecraft.block.Block;
@@ -19,13 +19,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class PowerCableBlock extends Block{
+public class FluidPipeBlock extends Block {
 
     public static final BooleanProperty NORTH = CustomBlockProperties.NORTH;
     public static final BooleanProperty EAST = CustomBlockProperties.EAST;
@@ -35,7 +36,7 @@ public class PowerCableBlock extends Block{
     public static final BooleanProperty DOWN = CustomBlockProperties.DOWN;
     public static final BooleanProperty HAS_BRAIN = CustomBlockProperties.HAS_BRAIN;
 
-    public PowerCableBlock(Properties properties) {
+    public FluidPipeBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(UP, false).setValue(DOWN, false).setValue(HAS_BRAIN, false));
     }
@@ -48,7 +49,7 @@ public class PowerCableBlock extends Block{
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new PowerCableTileEntity();
+        return new FluidPipeTileEntity();
     }
 
     @Nullable
@@ -68,7 +69,7 @@ public class PowerCableBlock extends Block{
         BlockState westBlockState = world.getBlockState(westBlockPos);
         BlockState upBlockState = world.getBlockState(upBlockPos);
         BlockState downBlockState = world.getBlockState(downBlockPos);
-        return (super.getStateForPlacement(context)).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, !getNonCableConnections(context.getClickedPos(), context.getLevel()).isEmpty());
+        return (super.getStateForPlacement(context)).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos, Direction.NORTH)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos, Direction.EAST)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos, Direction.SOUTH)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos, Direction.WEST)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos, Direction.UP)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos, Direction.DOWN)).setValue(HAS_BRAIN, !getNonCableConnections(context.getClickedPos(), context.getLevel()).isEmpty());
     }
 
     @Override
@@ -86,7 +87,7 @@ public class PowerCableBlock extends Block{
         BlockState westBlockState = world.getBlockState(westBlockPos);
         BlockState upBlockState = world.getBlockState(upBlockPos);
         BlockState downBlockState = world.getBlockState(downBlockPos);
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos)).setValue(HAS_BRAIN, !getNonCableConnections(pCurrentPos, world).isEmpty());
+        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos).setValue(NORTH, canConnectTo(northBlockState, world, northBlockPos, Direction.NORTH)).setValue(EAST, canConnectTo(eastBlockState, world, eastBlockPos, Direction.EAST)).setValue(SOUTH, canConnectTo(southBlockState, world, southBlockPos, Direction.SOUTH)).setValue(WEST, canConnectTo(westBlockState, world, westBlockPos, Direction.WEST)).setValue(UP, canConnectTo(upBlockState, world, upBlockPos, Direction.UP)).setValue(DOWN, canConnectTo(downBlockState, world, downBlockPos, Direction.DOWN)).setValue(HAS_BRAIN, !getNonCableConnections(pCurrentPos, world).isEmpty());
     }
 
     @Override
@@ -100,7 +101,7 @@ public class PowerCableBlock extends Block{
     }
 
     private VoxelShape constructVoxelShape(BlockState state) {
-        VoxelShape box = Block.box(6,6,6, 10, 10, 10);
+        VoxelShape box = Block.box(5.5,5.5,5.5, 10.5, 10.5, 10.5);
         VoxelShape box1 = VoxelShapes.empty();
         VoxelShape box2 = VoxelShapes.empty();
         VoxelShape box3 = VoxelShapes.empty();
@@ -108,29 +109,29 @@ public class PowerCableBlock extends Block{
         VoxelShape box5 = VoxelShapes.empty();
         VoxelShape box6 = VoxelShapes.empty();
         if(Boolean.TRUE.equals(state.getValue(NORTH))) {
-            box1 = Block.box(6,6,0,10,10,6);
+            box1 = Block.box(5.5,5.5,5.5,10.5,10.5,5.5);
         }
         if(Boolean.TRUE.equals(state.getValue(EAST))) {
-            box2 = Block.box(10,6,6,16,10,10);
+            box2 = Block.box(10.5,5.5,5.5,16,10.5,10.5);
         }
         if(Boolean.TRUE.equals(state.getValue(SOUTH))) {
-            box3 = Block.box(6,6,10,10,10,16);
+            box3 = Block.box(5.5,5.5,10.5,10.5,10.5,16);
         }
         if(Boolean.TRUE.equals(state.getValue(WEST))) {
-            box4 = Block.box(0,6,6,6,10,10);
+            box4 = Block.box(0,5.5,5.5,5.5,10.5,10.5);
         }
         if(Boolean.TRUE.equals(state.getValue(UP))) {
-            box5 = Block.box(6,10,6,10,16,10);
+            box5 = Block.box(5.5,10.5,5.5,10.5,16,10.5);
         }
         if(Boolean.TRUE.equals(state.getValue(DOWN))) {
-            box6 = Block.box(6,0,6,10,6,10);
+            box6 = Block.box(5.5,5.5,5.5,10.5,5.5,10.5);
         }
         return VoxelShapes.or(box, box1, box2, box3, box4, box5, box6);
     }
 
-    private boolean canConnectTo(BlockState blockState, World world, BlockPos pos) {
+    private boolean canConnectTo(BlockState blockState, World world, BlockPos pos, Direction direction) {
         Block block = blockState.getBlock();
-        if(block.getBlock() instanceof PowerCableBlock) {
+        if(block.getBlock() instanceof FluidPipeBlock) {
             return true;
         }
         if(!block.hasTileEntity(blockState)){
@@ -138,7 +139,7 @@ public class PowerCableBlock extends Block{
         }
         TileEntity tileEntity = world.getBlockEntity(pos);
         if(tileEntity != null) {
-            return tileEntity.getCapability(CapabilityEnergy.ENERGY).isPresent();
+            return tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
         }
         return false;
     }

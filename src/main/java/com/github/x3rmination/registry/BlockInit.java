@@ -3,10 +3,11 @@ package com.github.x3rmination.registry;
 import com.github.x3rmination.X3TECH;
 import com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator.CombustionGeneratorBlock;
 import com.github.x3rmination.common.blocks.tile_entities.archive.double_press.DoublePressBlock;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace.PoweredFurnaceBlock;
 import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer.PoweredPulverizerBlock;
 import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressBlock;
-import com.github.x3rmination.common.blocks.tile_entities.cables.power_cable.PowerCableBlock;
-import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceBlock;
+import com.github.x3rmination.common.blocks.tile_entities.cables.base.fluid_pipe.FluidPipeBlock;
+import com.github.x3rmination.common.blocks.tile_entities.cables.base.power_cable.PowerCableBlock;
 import com.github.x3rmination.common.blocks.tile_entities.zinc_copper_power_cell.ZCPCBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -57,6 +58,11 @@ public class BlockInit {
                     .noOcclusion()));
     public static final RegistryObject<Block> POWER_CABLE = BLOCKS.register("power_cable",
             () -> new PowerCableBlock(AbstractBlock.Properties.of(Material.METAL)
+                    .strength(1, 10)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
+    public static final RegistryObject<Block> FLUID_PIPE = BLOCKS.register("fluid_pipe",
+            () -> new FluidPipeBlock(AbstractBlock.Properties.of(Material.METAL)
                     .strength(1, 10)
                     .sound(SoundType.METAL)
                     .noOcclusion()));

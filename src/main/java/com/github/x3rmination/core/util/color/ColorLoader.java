@@ -1,8 +1,8 @@
 package com.github.x3rmination.core.util.color;
 
 import com.github.x3rmination.X3TECH;
-import com.github.x3rmination.common.items.MBlockItemBase;
-import com.github.x3rmination.common.items.MItemBase;
+import com.github.x3rmination.core.item.MBlockItemBase;
+import com.github.x3rmination.core.item.MItemBase;
 import com.github.x3rmination.core.material.materialinit.MBlockInit;
 import com.github.x3rmination.core.material.materialinit.MBlockItemInit;
 import com.github.x3rmination.core.material.materialinit.MItemInit;

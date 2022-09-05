@@ -1,4 +1,4 @@
-package com.github.x3rmination.common.items;
+package com.github.x3rmination.core.item;
 
 import com.github.x3rmination.core.util.color.Color;
 import net.minecraft.block.Block;

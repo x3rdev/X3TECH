@@ -5,12 +5,12 @@ import com.github.x3rmination.common.blocks.tile_entities.archive.combustion_gen
 import com.github.x3rmination.common.blocks.tile_entities.archive.combustion_generator.CombustionGeneratorScreen;
 import com.github.x3rmination.common.blocks.tile_entities.archive.double_press.DoublePressContainer;
 import com.github.x3rmination.common.blocks.tile_entities.archive.double_press.DoublePressScreen;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace.PoweredFurnaceContainer;
+import com.github.x3rmination.common.blocks.tile_entities.archive.powered_furnace.PoweredFurnaceScreen;
 import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer.PoweredPulverizerContainer;
 import com.github.x3rmination.common.blocks.tile_entities.archive.powered_pulverizer.PoweredPulverizerScreen;
 import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressContainer;
 import com.github.x3rmination.common.blocks.tile_entities.archive.single_press.SinglePressScreen;
-import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceContainer;
-import com.github.x3rmination.common.blocks.tile_entities.powered_furnace.PoweredFurnaceScreen;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.api.distmarker.Dist;

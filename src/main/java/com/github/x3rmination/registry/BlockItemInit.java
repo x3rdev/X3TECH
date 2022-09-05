@@ -26,6 +26,8 @@ public class BlockItemInit {
             () -> new BlockItem(BlockInit.COMBUSTION_GENERATOR.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> POWER_CABLE = BLOCK_ITEMS.register("power_cable",
             () -> new BlockItem(BlockInit.POWER_CABLE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
+    public static final RegistryObject<BlockItem> FLUID_PIPE = BLOCK_ITEMS.register("fluid_pipe",
+            () -> new BlockItem(BlockInit.FLUID_PIPE.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
     public static final RegistryObject<BlockItem> ZINC_COPPER_POWER_CELL = BLOCK_ITEMS.register("zinc_copper_power_cell",
             () -> new BlockItem(BlockInit.ZINC_COPPER_POWER_CELL.get(), new Item.Properties().tab(ItemInit.ModItemTab.instance)));
 }
